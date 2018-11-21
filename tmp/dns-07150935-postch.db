@@ -1,0 +1,36 @@
+ns-gw-07150935		3600	A	10.130.1.161
+ns-ora-07150935-01	3600	A	10.130.1.162
+ns-ora-07150935-02	3600	A	10.130.1.163
+ns-cen-07150935-01	3600	A	10.130.1.164
+ns-cen-07150935-02	3600	A	10.130.1.165
+ns-rnd-07150935-01	3600	A	10.130.1.166
+ns-rnd-07150935-02	3600	A	10.130.1.167
+ns-svc-07150935-01	3600	A	10.130.1.168
+ns-svc-07150935-02	3600	A	10.130.1.169
+ns-bc-07150935		3600	A	10.130.1.191
+ns-ora-07150935-01-sto	3600	A	10.131.1.162
+ns-ora-07150935-02-sto	3600	A	10.131.1.163
+ns-cen-07150935-01-sto	3600	A	10.131.1.164
+ns-cen-07150935-02-sto	3600	A	10.131.1.165
+ns-sto-07150935-assets	3600	A	10.131.1.166
+ns-sto-07150935-rman	3600	A	10.131.1.167
+ns-css-07150935-01	3600	A	213.95.85.11
+ns-css-07150935-02	3600	A	213.95.85.12
+ns-web-07150935-01	3600	A	213.95.85.149
+ns-web-07150935-02	3600	A	213.95.85.150
+postch-prodns-css01		CNAME	ns-cen-07150935-01
+postch-testns-css01		CNAME	ns-cen-07150935-02
+postch-prodns-db			CNAME	ns-ora-07150935-01
+postch-testns-db			CNAME	ns-ora-07150935-02
+postch-prodns-rnd01		CNAME	ns-rnd-07150935-01
+postch-prodns-rnd02		CNAME	ns-rnd-07150935-02
+postch-testns-rnd01		CNAME	ns-rnd-07150935-01
+postch-testns-rnd02		CNAME	ns-rnd-07150935-02
+postch-prodns-img01		CNAME	ns-svc-07150935-01
+postch-prodns-img02		CNAME	ns-svc-07150935-02
+postch-testns-img01		CNAME	ns-svc-07150935-01
+postch-testns-img02		CNAME	ns-svc-07150935-02
+postch-css			CNAME	ns-css-07150935-01
+postch				CNAME	ns-web-07150935-01
+postch-test-css			CNAME	ns-css-07150935-02
+postch-test			CNAME	ns-web-07150935-02

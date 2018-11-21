@@ -1,0 +1,85 @@
+---
+# tasks file for roles/ns.new.cust.prepare.vars
+- name: "action -> create a playbook and 'vars' file"
+  block:
+    - name: "prepare 'vars' file"
+      blockinfile:
+        path: "~/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml"
+        create: "yes"
+        marker: "# first and second instance, assume that is prod and test system"
+        block: |
+          ---
+          ngzp:                 "ns-ora-0{{'{{'}}srv_vlan{{'}}'}}0{{'{{'}}sto_vlan{{'}}'}}-{{'{{'}}item.value.instance{{'}}'}}"
+          custname:             "{{custname}}"
+          network_srv:          "{{NETdb.stdout.split('|')[1]}}"
+          network_sto:          "{{NETdb.stdout.split('|')[3]}}"
+          srv_vlan:             "{{NETdb.stdout.split('|')[0]}}"
+          sto_vlan:             "{{NETdb.stdout.split('|')[2]}}"
+          SaaS_ID:              "0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}"
+          tpm_project_id:       "{{tpm_project_id}}"
+          Install_Ticket:       "{{ticketID}}"
+          CustomerName:         "{{custfname}}"
+          ngz:
+            {{custname}}-01-prod:
+              name:             "{{custname}}"
+              instance_type:    "prod"
+              instance:         "01"
+              ip_srv:           "{{NETdb.stdout.split('|')[1]|ipaddr('2')}}"
+              ip_sto:           "{{NETdb.stdout.split('|')[3]|ipaddr('2')}}"
+              sys_mem:          "5"
+              sys_cpu:          "100"
+              censhare_version: "{{cssvpt.user_input}}"
+            {{custname}}-02-test:
+              name:             "{{custname}}"
+              instance_type:    "test"
+              instance:         "02"
+              ip_srv:           "{{NETdb.stdout.split('|')[1]|ipaddr('3')}}"
+              ip_sto:           "{{NETdb.stdout.split('|')[3]|ipaddr('3')}}"
+              sys_mem:          "5"
+              sys_cpu:          "100"
+              censhare_version: "{{cssvpt.user_input}}"
+      when: "check_vars_file|success"
+      register: "initialvarsfile"
+      tags: "initialvarsfile"
+
+    - name: "add third instance to the customer 'vars' file"
+      blockinfile:
+        path: "~/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml"
+        backup: "no"
+        insertafter: "EOF"
+        marker: "# third instance"
+        block: |2
+            {{custname}}-03-{{inst3name}}:
+              instance:           "03"
+              instance_type:      "{{inst3name}}"
+              ip_srv:             "{{NETdb.stdout.split('|')[1]|ipaddr('11')}}"
+              ip_sto:             "{{NETdb.stdout.split('|')[3]|ipaddr('11')}}"
+              sys_mem:            "5"
+              sys_cpu:            "10"
+              censhare_version:   "{{cssv3.user_input}}"
+      when:
+        - "initialvarsfile|success"
+        - "inst3name|default('0') != '0'"
+      register: "inst3varsfile"
+      tags: "inst3varsfile"
+#
+    - name: "add fourth instance to the customer 'vars' file"
+      blockinfile:
+        path: "~/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml"
+        backup: "no"
+        insertafter: "EOF"
+        marker: "# fourth instance"
+        block: |2
+            {{custname}}-04-{{inst4name}}:
+              instance:           "04"
+              instance_type:      "{{inst4name}}"
+              ip_srv:             "{{NETdb.stdout.split('|')[1]|ipaddr('13')}}"
+              ip_sto:             "{{NETdb.stdout.split('|')[3]|ipaddr('13')}}"
+              sys_mem:            "5"
+              sys_cpu:            "100"
+              censhare_version:   "{{cssv4.user_input}}"
+      when: 
+        - "initialvarsfile|success"
+        - "inst4name|default('0') != '0'"
+      register: "inst4varsfile"
+      tags: "inst4varsfile"

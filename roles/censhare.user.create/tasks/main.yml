@@ -1,0 +1,35 @@
+---
+# tasks file for roles/censhare.user.create
+- shell: "/usr/bin/date +%s|/usr/bin/md5sum|/usr/bin/cut -b -10"
+  register: "corpus_pw"
+- set_fact: 
+    pw: "{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{ansible_hostname}} ssh corpus', 'create=True', 'project_id={{tpm_project_id}}', 'password={{corpus_pw.stdout}}', 'username=corpus', 'access_info=ssh://corpus@{{ansible_hostname}}', 'tags=usr:corpus,svc:ssh,site:ns', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}') }}"
+- name: "create group corpus"
+  group: 
+    name: "{{cen_group}}"
+    gid: "{{cen_gid}}"
+  register: "create_group_corpus"
+  tags: "censhare.user.group corpus.group"
+
+- name: "create user corpus" 
+  user: 
+    name: "{{cen_user}}"
+    comment: "corpus user for censhare"
+    home: "/opt/corpus"
+    uid: "{{cen_gid}}"
+    group: "{{cen_group}}"
+    shell: "{{cen_shell}}"
+    generate_ssh_key: "yes"
+    ssh_key_bits: "4096"
+    ssh_key_file: ".ssh/id_rsa"
+    password: "{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{ansible_hostname}} ssh {{cen_user}}') }}"
+  when: "create_group_corpus|success"
+  tags: "censhare.user corpus.user corpus"
+  register: "create_user_corpus" 
+
+- name: "deploy pub ssh keys of ansible@censhare to NGZ user oracle"
+  authorized_key:
+    user: "{{cen_user}}"
+    state: "present"
+    key: "{{ssh_key_root_ansible}}"
+  when: "create_user_corpus|success"

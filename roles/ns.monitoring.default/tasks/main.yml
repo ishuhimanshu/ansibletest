@@ -1,0 +1,106 @@
+---
+# tasks file for roles/ns.monitoring.default
+- name: "create on icinga2 an host file"
+  block:
+    - name: "delete the existing 'icinga2' repo - its easier to manage as merge and rebase ..."
+      file:
+        path: "~/git/icinga2"
+        state: "absent"
+      register: "re_icicnga2_repo"
+      delegate_to: "localhost"
+      run_once: "true"
+      tags: "re_icicnga2_repo"
+    
+    - name: "checkout the staging git branche of 'icinga2'"
+      git:
+        repo: "git@git:departments/itservices/icinga2.git"
+        dest: "~/git/icinga2"
+        refspec: "+refs/pull/*:refs/staging/*"
+        accept_hostkey: "yes"
+        force: "yes"
+        version: "staging"
+      delegate_to: "localhost"
+      run_once: "true"
+      register: "refresh_icinga2_repo"
+      tags: "refresh_icinga2_repo"
+
+    - name: "get some informations from 'NETdb'"
+      shell: "grep ^{{srv_vlan}} {{netdb}}; true"
+      delegate_to: "localhost"
+      run_once: "true"
+      register: "NETdb"
+      tags: "NETdb"
+
+    - name: "deploy host template"
+      blockinfile:
+        path: "~/git/icinga2/hosts/ns/{{custname}}.conf"
+        create: "yes"
+        mode: "0644"
+        owner: "0"
+        marker: "/* {mark} ansible managed config */"
+        group: "0"
+        block: "{{icinga_template}}"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "refresh_icinga2_repo|success"
+      register: "create_customer_icicnga_template"
+      tags: "create_customer_icicnga_template"
+
+    - name: "set the git commit values (LDAP name)"
+      git_config:
+        name: "{{item.name}}"
+        repo: "~/git/icinga2"
+        value: "{{item.value}}"
+        scope: "local"
+      delegate_to: "localhost"
+      run_once: "true"
+      with_items:
+        - { name: "user.name", value: "{{LDAP_user}}" }
+        - { name: "user.email", value: "{{LDAP_user}}@censhare.com" }
+      when: "create_customer_icicnga_template|success"
+      tags: "set_git_config"
+      register: "set_git_config"
+
+    - name: "git - add the new created var file"
+      shell: "cd ~/git/icinga2 && git add ~/git/icinga2/hosts/ns/{{custname}}.conf"
+      delegate_to: "localhost"
+      run_once: "true"
+      register: "git_add_icicnga_cust_file"
+      tags: "git_add_icicnga_cust_file"
+      when: "set_git_config|success"
+
+    - name: "git - checkin the new created var file"
+      shell: "cd ~/git/icinga2 && git commit -m 'create for SaaS customer: {{custname}}; Ticket-ID: {{Install_Ticket}}; SaaS-ID: {{SaaS_ID}}' ~/git/icinga2/hosts/ns/{{custname}}.conf"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "git_add_icicnga_cust_file|success"
+      register: "git_commit_icicnga_cust_file"
+      tags: "git_commit_icicnga_cust_file"
+
+    - name: "git - push the new created icinga hosts file"
+      shell: "cd ~/git/icinga2 && git push"
+      delegate_to: "localhost"
+      run_once: "true"
+      register: "git_push_vars_file"
+      tags: "git_push_vars_file"
+      when: "git_commit_icicnga_cust_file|success"
+      
+    - name: "unset the git commit values (LDAP name)"
+      git_config:
+        name: "{{item.name}}"
+        repo: "~/git/icinga2"
+        value: "{{item.value}}"
+        scope: "local"
+      delegate_to: "localhost"
+      run_once: "true"
+      with_items:
+        - { name: "user.name", value: "ansible" }
+        - { name: "user.email", value: "do-not-reply@censhare.com" }
+      tags: "set_git_config_2_default"
+      register: "set_git_config_2_default"
+
+- debug:
+    msg: "it looks that the monitoring is deployed, please check on the staging system\n\n -> https://de-nue-monitoring-staging/icingaweb2/search?q={{custname}}\n\nplease assign a the ecosphere subTicket of {{Install_Ticket}} to the monitoring group to rebase the changes in the master branch"
+  when: "git_push_vars_file|success"
+  delegate_to: "localhost"
+  run_once: "true"

@@ -1,0 +1,14 @@
+---
+# handlers file for roles/test
+- name: KZmig_2_ns-zone-02
+  command: zoneadm -z {{kzp}}prod migrate ssh://ns-zone-02
+  with_dict: "{{kz}}"
+  register: KZmig_2_ns-zone-02
+  ignore_errors: yes
+  notify: "KZmig_2_ns-zone-03"
+
+- name: KZmig_2_ns-zone-03
+  shell: "ssh root@ns-zone-02 'zoneadm -z {{kzp}}prod migrate ssh://ns-zone-03'"
+  with_dict: "{{kz}}"
+  register: KZmig_2_ns-zone-03
+  ignore_errors: yes

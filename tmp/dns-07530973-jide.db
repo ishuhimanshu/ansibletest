@@ -1,0 +1,36 @@
+ns-gw-07530973		3600	A	10.130.6.97
+ns-ora-07530973-01	3600	A	10.130.6.98
+ns-ora-07530973-02	3600	A	10.130.6.99
+ns-cen-07530973-01	3600	A	10.130.6.100
+ns-cen-07530973-02	3600	A	10.130.6.101
+ns-rnd-07530973-01	3600	A	10.130.6.102
+ns-rnd-07530973-02	3600	A	10.130.6.103
+ns-svc-07530973-01	3600	A	10.130.6.104
+ns-svc-07530973-02	3600	A	10.130.6.105
+ns-bc-07530973		3600	A	10.130.6.127
+ns-ora-07530973-01-sto	3600	A	10.131.6.98
+ns-ora-07530973-02-sto	3600	A	10.131.6.99
+ns-cen-07530973-01-sto	3600	A	10.131.6.100
+ns-cen-07530973-02-sto	3600	A	10.131.6.101
+ns-sto-07530973-assets	3600	A	10.131.6.102
+ns-sto-07530973-rman	3600	A	10.131.6.103
+ns-css-07530973-01	3600	A	213.95.85.87
+ns-css-07530973-02	3600	A	213.95.85.88
+ns-web-07530973-01	3600	A	213.95.85.225
+ns-web-07530973-02	3600	A	213.95.85.226
+jide-prodns-css01		CNAME	ns-cen-07530973-01
+jide-testns-css01		CNAME	ns-cen-07530973-02
+jide-prodns-db			CNAME	ns-ora-07530973-01
+jide-testns-db			CNAME	ns-ora-07530973-02
+jide-prodns-rnd01		CNAME	ns-rnd-07530973-01
+jide-prodns-rnd02		CNAME	ns-rnd-07530973-02
+jide-testns-rnd01		CNAME	ns-rnd-07530973-01
+jide-testns-rnd02		CNAME	ns-rnd-07530973-02
+jide-prodns-img01		CNAME	ns-svc-07530973-01
+jide-prodns-img02		CNAME	ns-svc-07530973-02
+jide-testns-img01		CNAME	ns-svc-07530973-01
+jide-testns-img02		CNAME	ns-svc-07530973-02
+jide-css			CNAME	ns-css-07530973-01
+jide				CNAME	ns-web-07530973-01
+jide-test-css			CNAME	ns-css-07530973-02
+jide-test			CNAME	ns-web-07530973-02

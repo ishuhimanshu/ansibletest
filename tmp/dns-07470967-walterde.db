@@ -1,0 +1,32 @@
+ns-gw-07470967		3600	A	10.130.5.161
+ns-ora-07470967-01	3600	A	10.130.5.162
+ns-ora-07470967-02	3600	A	10.130.5.163
+ns-cen-07470967-01	3600	A	10.130.5.164
+ns-cen-07470967-02	3600	A	10.130.5.165
+ns-rnd-07470967-01	3600	A	10.130.5.166
+ns-rnd-07470967-02	3600	A	10.130.5.167
+ns-svc-07470967-01	3600	A	10.130.5.168
+ns-svc-07470967-02	3600	A	10.130.5.169
+ns-bc-07470967		3600	A	10.130.5.191
+ns-ora-07470967-01-sto	3600	A	10.131.5.162
+ns-ora-07470967-02-sto	3600	A	10.131.5.163
+ns-cen-07470967-01-sto	3600	A	10.131.5.164
+ns-cen-07470967-02-sto	3600	A	10.131.5.165
+ns-sto-07470967-assets	3600	A	10.131.5.166
+ns-sto-07470967-rman	3600	A	10.131.5.167
+ns-css-07470967-01	3600	A	213.95.85.75
+ns-css-07470967-02	3600	A	213.95.85.76
+ns-web-07470967-01	3600	A	213.95.85.213
+ns-web-07470967-02	3600	A	213.95.85.214
+walterde-prodns-css01		CNAME	ns-cen-07470967-01
+walterde-testns-css01		CNAME	ns-cen-07470967-02
+walterde-prodns-db			CNAME	ns-ora-07470967-01
+walterde-testns-db			CNAME	ns-ora-07470967-02
+walterde-prodns-rnd01		CNAME	ns-rnd-07470967-01
+walterde-prodns-rnd02		CNAME	ns-rnd-07470967-02
+walterde-testns-rnd01		CNAME	ns-rnd-07470967-01
+walterde-testns-rnd02		CNAME	ns-rnd-07470967-02
+walterde-css			CNAME	ns-css-07470967-01
+walterde				CNAME	ns-web-07470967-01
+walterde-test-css			CNAME	ns-css-07470967-02
+walterde-test			CNAME	ns-web-07470967-02

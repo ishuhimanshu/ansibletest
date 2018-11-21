@@ -1,0 +1,6 @@
+---
+# vars file for roles/solaris.helpfull.aliasses
+marker:         "# added by ansibel@censhare -> roles/solaris.helpfull.aliasses"
+zl:             "alias zl='zoneadm list -iv'"
+zll:            "alias zll='zoneadm list -icv'"
+lastboot:       "alias lastboot='zfs list -rd1 -oname,com.oracle.libbe:last-boot-time rpool/ROOT'"

@@ -1,0 +1,17 @@
+---
+# tasks file for roles/oracle.db.install.sqlplus.client
+- name: "install Oracle SQLPlus Client"
+  block:
+    - name: "check censhare 3rd-party repo"
+      stat:
+        path: "/etc/yum.repos.d/censhare-3rdparty.repo"
+      register: "cs3rdpartyrepo"
+      tags: "cs3rdpartyrepo"
+      
+    - name: "install Oracle SQLPlus Client from censhare 3rd-party repo"
+      yum:
+        name: "{{sqlplus}}"
+        state: "latest"
+      register: "instSQLPus"
+      tags: "instSQLPus"
+      when: "cs3rdpartyrepo.stat.exists is defined"

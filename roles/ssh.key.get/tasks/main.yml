@@ -1,0 +1,142 @@
+---
+# tasks file for roles/ssh.key.get
+
+- name: "prepare environment"
+  block:
+    - name: "refresh git repos"
+      git:
+        repo: "{{item.repo}}"
+        dest: "{{item.dest}}"
+        refspec: "+refs/pull/*:refs/heads/*"
+        accept_hostkey: "yes"
+      delegate_to: "localhost"
+      run_once: "yes"
+      register: "refresh_git_repo"
+      tags: "refresh_git_repo"
+      with_items:
+        - { repo: 'git@git.censhare.de:departments/itservices.git', dest: '~/git/itservices' }
+        - { repo: 'git@carna:/srv/git/censhare.io.git', dest: '~/git/dns-censhare.io' }
+        - { repo: 'git@carna.censhare.com:/srv/git/bind.git', dest: '~/git/dns-censhare.com' }
+
+    - name: "check the environment to be sure there are no old dir's"
+      file: 
+        path: "{{HOME}}tmp/{{item}}" 
+        state: "absent"
+      delegate_to: "localhost"
+      run_once: "true"
+      ignore_errors: "true"
+      when: "refresh_git_repo|success"
+      register: "clear_old_ssh_keys"
+      tags: "clear_old_ssh_keys"
+      with_items:
+       - "corpus"
+       - "root"
+       - "demigods"
+       - "keys/*"
+   
+- name: "get and prepare ssh-keys of restricted, corpus and root users"
+  block:
+    - name: "local actions to prepare the ssh keys"
+      block:
+        - name: "get root ssh keys from de-nue-dc"
+          script: "{{HOME}}git/itservices/scripts/internal/getSshPublicKeys-ansible.pl root"
+          until: "get_root_ssh_keys.rc == 0"
+          delegate_to: "localhost"
+          run_once: "true"
+          register: "get_root_ssh_keys"
+          tags: "get_root_ssh_keys"
+
+        - name: "copy IT keys in demigod keys"
+          raw: "cp -v {{HOME}}tmp/keys/root/* {{HOME}}tmp/keys/demigods/"
+          delegate_to: "localhost"
+          run_once: "true"
+          when: "get_root_ssh_keys|success"
+          register: "create_ssh_keys4all_IT"
+          tags: "get_ssh_keys"
+
+        - name: "move root keys to 'tmp' dir"
+          raw: "cp -rv {{HOME}}tmp/keys/* {{HOME}}tmp/"
+          delegate_to: "localhost"
+          run_once: "true"
+          when: "create_ssh_keys4all_IT|success"
+          tags: "ssh_keys_new_tmp_dir" 
+
+      rescue:
+        - debug: 
+            msg: "couldn't get root ssh keys, please analyse"
+
+    - name: "local action to get non-privileged ssh keys"
+      block:
+        - name: "get corpus ssh keys from de-nue-dc"
+          script: "{{HOME}}git/itservices/scripts/internal/getSshPublicKeys-ansible.pl corpus"
+          until: "get_corpus_ssh_keys.rc == 0"
+          delegate_to: "localhost"
+          run_once: "true"
+          register: "get_corpus_ssh_keys"
+          tags: "get_corpus_ssh_keys"
+    
+        - name: "move corpus keys to new 'tmp' dir"
+          raw: "cp -rv {{HOME}}tmp/keys/corpus {{HOME}}tmp/"
+          delegate_to: "localhost"
+          run_once: "true"
+          when: "get_corpus_ssh_keys|success"
+          tags: "ssh_keys_new_tmp_dir"
+
+      rescue:
+        - debug: 
+            msg: "couldn't get non-privileged ssh keys, please analyse"
+
+  always:
+    - name: "cleanup bli's env"
+      file:
+        path: "{{HOME}}tmp/keys"
+        state: "absent"
+      delegate_to: "localhost"
+      run_once: "true"
+      register: "cleanup_blis_env"
+      tags: "cleanup_blis_env"
+
+    - name: "prepare a new dir to be sure to deploy only our new keys and not some old ones"
+      file:
+        path: "{{HOME}}tmp/keys"
+        state: "directory"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "cleanup_blis_env|success"
+      register: "create_new_ssh_key_dir"
+      tags: "create_new_ssh_keys_dir"
+
+    - name: "move all keys to the new dir - non-privileged"
+      shell: "mv {{HOME}}tmp/corpus {{HOME}}tmp/keys/non-privileged"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "create_new_ssh_key_dir|success"
+      tags: "move_ssh_keys_to_new_dir"
+      
+    - name: "move all keys to the new dir - only-root"
+      shell: "mv {{HOME}}tmp/root {{HOME}}tmp/keys/only-root"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "create_new_ssh_key_dir|success"
+      tags: "move_ssh_keys_to_new_dir"
+      
+    - name: "move all keys to the new dir - all_IT"
+      shell: "mv {{HOME}}tmp/demigods {{HOME}}tmp/keys/all_IT"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "create_new_ssh_key_dir|success"
+      tags: "move_ssh_keys_to_new_dir"
+      
+    - name: "copy description template into the new key dir's"
+      template:
+        src: "1a_comment.pub"
+        dest: "{{HOME}}tmp/keys/{{item}}"
+        backup: "no"
+        group: "root"
+        owner: "root"
+      delegate_to: "localhost"
+      run_once: "true"
+      with_items:
+        - "all_IT"
+        - "only-root"
+        - "non-privileged"

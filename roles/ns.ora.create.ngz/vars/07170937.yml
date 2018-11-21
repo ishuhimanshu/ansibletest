@@ -1,0 +1,30 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "ocdev2"
+network_srv:          "10.130.1.225/27"
+network_sto:          "10.131.1.225/27"
+srv_vlan:             "717"
+sto_vlan:             "937"
+SaaS_ID:              "07170937"
+tpm_project_id:       ""
+Install_Ticket:       "123456789"
+CustomerName:         ""
+ngz:
+  ocdev2-01-prod:
+    name:             "ocdev2"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.1.226/27"
+    ip_sto:           "10.131.1.226/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+  ocdev2-02-test:
+    name:             "ocdev2"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.1.227/27"
+    ip_sto:           "10.131.1.227/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+# first and second instance, assume that is prod and test system

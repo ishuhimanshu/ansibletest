@@ -1,0 +1,8 @@
+---
+# vars file for roles/password.update.unix.tpm
+pw_lengh: "25"
+users:
+  - "root"
+  - "corpus"
+  - "oracle"
+  - "postgres"

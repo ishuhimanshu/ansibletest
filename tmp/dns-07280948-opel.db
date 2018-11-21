@@ -1,0 +1,36 @@
+ns-gw-07280948		3600	A	10.130.3.65
+ns-ora-07280948-01	3600	A	10.130.3.66
+ns-ora-07280948-02	3600	A	10.130.3.67
+ns-cen-07280948-01	3600	A	10.130.3.68
+ns-cen-07280948-02	3600	A	10.130.3.69
+ns-rnd-07280948-01	3600	A	10.130.3.70
+ns-rnd-07280948-02	3600	A	10.130.3.71
+ns-svc-07280948-01	3600	A	10.130.3.72
+ns-svc-07280948-02	3600	A	10.130.3.73
+ns-bc-07280948		3600	A	10.130.3.95
+ns-ora-07280948-01-sto	3600	A	10.131.3.66
+ns-ora-07280948-02-sto	3600	A	10.131.3.67
+ns-cen-07280948-01-sto	3600	A	10.131.3.68
+ns-cen-07280948-02-sto	3600	A	10.131.3.69
+ns-sto-07280948-assets	3600	A	10.131.3.70
+ns-sto-07280948-rman	3600	A	10.131.3.71
+ns-css-07280948-01	3600	A	213.95.85.37
+ns-css-07280948-02	3600	A	213.95.85.38
+ns-web-07280948-01	3600	A	213.95.85.175
+ns-web-07280948-02	3600	A	213.95.85.176
+opel-prodns-css01		CNAME	ns-cen-07280948-01
+opel-testns-css01		CNAME	ns-cen-07280948-02
+opel-prodns-db			CNAME	ns-ora-07280948-01
+opel-testns-db			CNAME	ns-ora-07280948-02
+opel-prodns-rnd01		CNAME	ns-rnd-07280948-01
+opel-prodns-rnd02		CNAME	ns-rnd-07280948-02
+opel-testns-rnd01		CNAME	ns-rnd-07280948-01
+opel-testns-rnd02		CNAME	ns-rnd-07280948-02
+opel-prodns-img01		CNAME	ns-svc-07280948-01
+opel-prodns-img02		CNAME	ns-svc-07280948-02
+opel-testns-img01		CNAME	ns-svc-07280948-01
+opel-testns-img02		CNAME	ns-svc-07280948-02
+opel-css			CNAME	ns-css-07280948-01
+opel				CNAME	ns-web-07280948-01
+opel-test-css			CNAME	ns-css-07280948-02
+opel-test			CNAME	ns-web-07280948-02

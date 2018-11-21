@@ -1,0 +1,4 @@
+---
+- hosts: "premium-cust"
+  roles:
+    - { role: "os.upgrade.all", tags: "os.upgrade.all" }

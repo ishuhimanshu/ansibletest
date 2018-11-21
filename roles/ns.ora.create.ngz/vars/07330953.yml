@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "officew"
+network_srv:          "10.130.3.225/27"
+network_sto:          "10.131.3.225/27"
+srv_vlan:             "733"
+sto_vlan:             "953"
+SaaS_ID:              "07330953"
+tpm_project_id:       "30"
+Install_Ticket:       "3420759"
+CustomerName:         "Office World AG"
+ngz:
+  officew-01-prod:
+    name:             "officew"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.3.226/27"
+    ip_sto:           "10.131.3.226/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare51"
+  officew-02-test:
+    name:             "officew"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.3.227/27"
+    ip_sto:           "10.131.3.227/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare51"
+# first and second instance, assume that is prod and test system

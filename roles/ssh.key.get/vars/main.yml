@@ -1,0 +1,3 @@
+---
+# vars file for roles/ssh.key.get
+HOME:           "/root/"

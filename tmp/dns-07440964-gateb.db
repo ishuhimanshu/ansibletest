@@ -1,0 +1,36 @@
+ns-gw-07440964		3600	A	10.130.5.65
+ns-ora-07440964-01	3600	A	10.130.5.66
+ns-ora-07440964-02	3600	A	10.130.5.67
+ns-cen-07440964-01	3600	A	10.130.5.68
+ns-cen-07440964-02	3600	A	10.130.5.69
+ns-rnd-07440964-01	3600	A	10.130.5.70
+ns-rnd-07440964-02	3600	A	10.130.5.71
+ns-svc-07440964-01	3600	A	10.130.5.72
+ns-svc-07440964-02	3600	A	10.130.5.73
+ns-bc-07440964		3600	A	10.130.5.95
+ns-ora-07440964-01-sto	3600	A	10.131.5.66
+ns-ora-07440964-02-sto	3600	A	10.131.5.67
+ns-cen-07440964-01-sto	3600	A	10.131.5.68
+ns-cen-07440964-02-sto	3600	A	10.131.5.69
+ns-sto-07440964-assets	3600	A	10.131.5.70
+ns-sto-07440964-rman	3600	A	10.131.5.71
+ns-css-07440964-01	3600	A	213.95.85.69
+ns-css-07440964-02	3600	A	213.95.85.70
+ns-web-07440964-01	3600	A	213.95.85.207
+ns-web-07440964-02	3600	A	213.95.85.208
+gateb-prodns-css01		CNAME	ns-cen-07440964-01
+gateb-testns-css01		CNAME	ns-cen-07440964-02
+gateb-prodns-db			CNAME	ns-ora-07440964-01
+gateb-testns-db			CNAME	ns-ora-07440964-02
+gateb-prodns-rnd01		CNAME	ns-rnd-07440964-01
+gateb-prodns-rnd02		CNAME	ns-rnd-07440964-02
+gateb-testns-rnd01		CNAME	ns-rnd-07440964-01
+gateb-testns-rnd02		CNAME	ns-rnd-07440964-02
+gateb-prodns-img01		CNAME	ns-svc-07440964-01
+gateb-prodns-img02		CNAME	ns-svc-07440964-02
+gateb-testns-img01		CNAME	ns-svc-07440964-01
+gateb-testns-img02		CNAME	ns-svc-07440964-02
+gateb-css			CNAME	ns-css-07440964-01
+gateb				CNAME	ns-web-07440964-01
+gateb-test-css			CNAME	ns-css-07440964-02
+gateb-test			CNAME	ns-web-07440964-02

@@ -1,0 +1,36 @@
+ns-gw-07190939		3600	A	10.130.2.33
+ns-ora-07190939-01	3600	A	10.130.2.34
+ns-ora-07190939-02	3600	A	10.130.2.35
+ns-cen-07190939-01	3600	A	10.130.2.36
+ns-cen-07190939-02	3600	A	10.130.2.37
+ns-rnd-07190939-01	3600	A	10.130.2.38
+ns-rnd-07190939-02	3600	A	10.130.2.39
+ns-svc-07190939-01	3600	A	10.130.2.40
+ns-svc-07190939-02	3600	A	10.130.2.41
+ns-bc-07190939		3600	A	10.130.2.63
+ns-ora-07190939-01-sto	3600	A	10.131.2.34
+ns-ora-07190939-02-sto	3600	A	10.131.2.35
+ns-cen-07190939-01-sto	3600	A	10.131.2.36
+ns-cen-07190939-02-sto	3600	A	10.131.2.37
+ns-sto-07190939-assets	3600	A	10.131.2.38
+ns-sto-07190939-rman	3600	A	10.131.2.39
+ns-css-07190939-01	3600	A	213.95.85.19
+ns-css-07190939-02	3600	A	213.95.85.20
+ns-web-07190939-01	3600	A	213.95.85.157
+ns-web-07190939-02	3600	A	213.95.85.158
+linkg-prodns-css01		CNAME	ns-cen-07190939-01
+linkg-testns-css01		CNAME	ns-cen-07190939-02
+linkg-prodns-db			CNAME	ns-ora-07190939-01
+linkg-testns-db			CNAME	ns-ora-07190939-02
+linkg-prodns-rnd01		CNAME	ns-rnd-07190939-01
+linkg-prodns-rnd02		CNAME	ns-rnd-07190939-02
+linkg-testns-rnd01		CNAME	ns-ora-07190939-01
+linkg-testns-rnd02		CNAME	ns-ora-07190939-02
+linkg-prodns-img01		CNAME	ns-svc-07190939-01
+linkg-prodns-img02		CNAME	ns-svc-07190939-02
+linkg-testns-img01		CNAME	ns-ora-07190939-01
+linkg-testns-img02		CNAME	ns-svc-07190939-02
+linkg-css			CNAME	ns-css-07190939-01
+linkg				CNAME	ns-web-07190939-01
+linkg-test-css			CNAME	ns-css-07190939-02
+linkg-test			CNAME	ns-web-07190939-02

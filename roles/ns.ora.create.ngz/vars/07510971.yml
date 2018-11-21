@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "mcdde"
+network_srv:          "10.130.6.33/27"
+network_sto:          "10.131.6.33/27"
+srv_vlan:             "751"
+sto_vlan:             "971"
+SaaS_ID:              "07510971"
+tpm_project_id:       "177"
+Install_Ticket:       "3421445"
+CustomerName:         "McDonalds Deutschland"
+ngz:
+  mcdde-01-prod:
+    name:             "mcdde"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.6.34/27"
+    ip_sto:           "10.131.6.34/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare58"
+  mcdde-02-test:
+    name:             "mcdde"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.6.35/27"
+    ip_sto:           "10.131.6.35/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare58"
+# first and second instance, assume that is prod and test system

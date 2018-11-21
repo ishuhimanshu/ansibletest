@@ -1,0 +1,67 @@
+---
+# tasks file for roles/censhare.server.systemd
+- name: "PreAction: - extract start/stop scripts from GIT repo -> s2s installer"
+  shell: "cd ~/tmp && tar -zxf {{git_itservices}}/scripts/censhare/s2s-install-update.tar.gz s2s/init.tpl/censhare s2s/sysconfig.tpl/censhare.tpl"
+  delegate_to: "localhost"
+  tags: "localTASK"
+  register: "localTASK"
+
+- name: "copy s2s files"
+  copy:
+    src: "{{item.0}}"
+    dest: "{{item.1}}"
+    mode: "0755"
+  with_together:
+  - [ '~/tmp/s2s/init.tpl/censhare', '~/tmp/s2s/sysconfig.tpl/censhare.tpl' ]
+  - [ '/etc/init.d/', '/etc/sysconfig/censhare' ]
+  when: "localTASK|success"
+  register: "cpcssstartfiles"
+  tags: "cpcssstartfiles"
+
+- name: "set '$CSS_ID' in sysconfig file"
+  replace:
+    path: "/etc/sysconfig/censhare"
+    regexp: "CSS_ID=\"\""
+    replace: "CSS_ID=\"master\""
+  when: "cpcssstartfiles|success"
+  register: "setCSS_ID"
+  tags: "setCSS_ID"
+
+- name: "write service file for systemd"
+  blockinfile:
+    path: "/etc/systemd/system/censhare.server.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+    create: "yes"
+    block: |
+      [Unit]
+      Description=censhare server
+      Documentation=https://ecosphere.censhare.com/en/Search?s.text=censhare=server
+      After=network.target
+      RequiresMountsFor=/opt/corpus/work/assets
+      
+      [Service]
+      EnvironmentFile=/etc/sysconfig/censhare
+      ExecStart=/etc/init.d/censhare start
+      ExecStop=/etc/init.d/censhare stop
+      Restart=on-failure
+      Type=forking
+      RestartSec=15s
+      PIDFile=/opt/corpus/work/run/master
+      TimeoutStartSec=600
+      
+      [Install]
+      WantedBy=default.target
+      Alias=css.service
+  when: "setCSS_ID|success"
+  register: "wrsystemdfile"
+  tags: "wrsystemdfile"
+  notify: "start censhare server"
+  
+- name: "cleanup locally"
+  file:
+    path: "~/tmp/s2s"
+    state: "absent"
+  delegate_to: "localhost"
+  run_once: "true"

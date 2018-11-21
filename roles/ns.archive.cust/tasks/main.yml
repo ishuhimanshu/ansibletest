@@ -1,0 +1,222 @@
+---
+# tasks file for roles/ns.archive.cust
+- name: "check expected environment"
+  block:
+    - name: "set variables of to-delete-customer"
+      include_vars:
+        file: "~/roles/ns.ora.create.ngz/vars/{{customer.split('.')[0]}}.yml"
+    - set_fact:
+        instance_{{item.value.instance}}: "{{ngzp}}" 
+      with_dict: "{{ngz}}"
+
+    - name: "get lock file informations for live system (instance 01)"
+      shell: "md5sum /var/svc/log/censhare-ora_censhare*"
+      register: "md5_of_01"
+      tags: "md5_of_01"
+      when: "instance_01 is defined"
+      delegate_to: "{{instance_01}}"
+
+    - name: "get lock file informations for live system (instance 02)"
+      shell: "md5sum /var/svc/log/censhare-ora_censhare*"
+      register: "md5_of_02"
+      tags: "md5_of_02"
+      when: "instance_02 is defined"
+      delegate_to: "{{instance_02}}"
+
+    - name: "get lock file informations for live system (instance 03)"
+      shell: "md5sum /var/svc/log/censhare-ora_censhare*"
+      register: "md5_of_03"
+      tags: "md5_of_03"
+      when: "instance_03 is defined"
+      delegate_to: "{{instance_03}}"
+
+    - name: "get lock file informations for live system (instance 04)"
+      shell: "md5sum /var/svc/log/censhare-ora_censhare*"
+      register: "md5_of_04"
+      tags: "md5_of_04"
+      when: "instance_04 is defined"
+      delegate_to: "{{instance_04}}"
+
+    - set_fact:
+         md5_of_01_tmp: "~/tmp/{{instance_01}}.lock"
+         md5_of_02_tmp: "~/tmp/{{instance_02}}.lock"
+         md5_of_03_tmp: "~/tmp/{{instance_03|default()}}.lock"
+         md5_of_04_tmp: "~/tmp/{{instance_04|default()}}.lock"
+
+    - name: "get cksum of live system  (instance 01)"
+      shell: "cat ~/tmp/{{instance_01}}.lock"
+      register: "md5_of_01_older_than_24h"
+      tags: "md5_of_01_older_than_24h"
+
+    - name: "get cksum of test system  (instance 02)"
+      shell: "cat ~/tmp/{{instance_02}}.lock"
+      register: "md5_of_02_older_than_24h"
+      tags: "md5_of_02_older_than_24h"
+
+    - name: "get cksum of test system  (instance 03)"
+      shell: "cat ~/tmp/{{instance_03}}.lock"
+      register: "md5_of_03_older_than_24h"
+      tags: "md5_of_03_older_than_24h"
+      when: "instance_03 is defined"
+
+    - name: "get cksum of test system  (instance 04)"
+      shell: "cat ~/tmp/{{instance_04}}.lock"
+      register: "md5_of_04_older_than_24h"
+      tags: "md5_of_04_older_than_24h"
+      when: "instance_04 is defined"
+
+#    - name: "check if the prod system is untouched last 24h (instance 01)"
+#      fail: 
+#        msg: "prod system was touched in the last 24h - please check, can't archive the system now"
+#      when: "md5_of_01.stdout.split()[0] != md5_of_01_older_than_24h.stdout"
+#
+#    - name: "check if the test system is untouched last 24h (instance 02)"
+#      fail: 
+#        msg: "test system was touched in the last 24h - please check, can't archive the system now"
+#      when: "md5_of_02.stdout.split()[0] != md5_of_02_older_than_24h.stdout"
+#
+#    - name: "check if the test system is untouched last 24h (instance 03)"
+#      fail: 
+#        msg: "the system instance no 03 was touched in the last 24h - please check, can't archive the system now"
+#      when:
+#        - "instance_03 is defined"
+#        - "md5_of_03.stdout.split()[0] != md5_of_03_older_than_24h.stdout"
+#
+#    - name: "check if the test system is untouched last 24h (instance 04)"
+#      fail: 
+#        msg: "the system instance no 04 was touched in the last 24h - please check, can't archive the system now"
+#      when:
+#        - "instance_04 is defined"
+#        - "md5_of_04.stdout.split()[0] != md5_of_04_older_than_24h.stdout"
+
+    - name: "ask for the uninstall ticket"
+      pause:
+        prompt: "all pre-checks are looking good, please enter the ticket of uninstall the customer {{CustomerName}}\nyou can't see your input"
+      register: "uninstall_ticket"
+      tags: "uninstall_ticket"
+ 
+    - pause:
+        prompt: |
+          
+          you entered the ticket ID {{uninstall_ticket.user_input}} of the uninstall ticket 
+          ID for coustomer {{custname}}
+          followig systems will be achived: {{instance_01}} {{instance_02}} {{instance_03|default()}} {{instance_04|default()}}
+          all default censhare relevant data will be stored on the asset share, that included:
+            - assets ;)
+            - cscs area
+            - DB export
+          you have to take care to archive, delete or hand over the data to the customer, 
+          also it is your responsibility to save additional customer relevant data
+          if that is Okay, and only than, press enter
+
+    - name: "generate an string with customer ID and timestamp for export"
+      set_fact:
+         pattern: "{{customer}}.{{ansible_date_time.iso8601_basic}}"
+
+    - name: "action block"
+      block:
+        - name: "startup db to get 'flashbak_scn' for export"
+          service:
+            name: "censhare/ora_censhare"
+            state: "started"
+          when: 
+            - "item is defined"
+            - "item != ''"
+          with_items:
+            - "{{instance_01}}"
+            - "{{instance_02}}"
+            - "{{instance_03|default()}}"
+            - "{{instance_04|default()}}"
+          register: "start_db4flashbak_scn"
+          tags: "start_db4flashbak_scn"
+          become_user: "oracle"
+          delegate_to: "{{item}}"
+
+        - name: "get flashbak_scn number"
+          shell: "source /export/home/oracle/.profile; echo -e 'select to_char(current_scn) from v$database;' | /u01/app/oracle/product/11.2.0.4/db_1/bin/sqlplus -s corpus/corpus "
+          args:
+            executable: "/bin/bash"
+          when:
+            - "item|success"
+            - "item.item != ''"
+          with_items:
+            - "{{start_db4flashbak_scn.results}}"
+          register: "flashbak_scn"
+          tags: "flashbak_scn"
+          become_user: "oracle"
+          delegate_to: "{{item.item}}"
+
+        - name: "export db"
+          shell: "source /export/home/oracle/.profile; /u01/app/oracle/product/11.2.0.4/db_1/bin/expdp 'system/asdQWE' full=y flashback_scn={{item.stdout_lines[3]|default('')}} dumpfile={{pattern}}.dmp logfile={{pattern}}.log"
+          args:
+            executable: "/bin/bash"
+          when:
+            - "item|success"
+            - "item.item.item != ''"
+          with_items:
+            - "{{flashbak_scn.results}}"
+          register: "expdp"
+          tags: "expdp"
+          become_user: "oracle"
+          delegate_to: "{{item.item.item}}"
+
+        - name: "stop db - is not longer needed to have a db in this env"
+          service:
+            name: "/censhare/ora_censhare"
+            state: "stopped"
+          when:
+            - "item|success"
+            - "item.item.item.item != ''"
+          with_items:
+            - "{{expdp.results}}"
+          register: "stop_db"
+          tags: "stop_db"
+          become_user: "oracle"
+          delegate_to: "{{item.item.item.item}}"
+
+# not working 'scp' does hanging
+#        - name: "send the export db to the assets share of the censhare system"
+#          shell: "scp /u01/app/oracle/admin/corpus/dpdump/{{pattern}}.* {{item.item.item.item|replace('ora', 'cen')}}:/opt/corpus/work/assets/"
+#          when:
+#            - "item|success"
+#            - "item.item.item.item != ''"
+#          with_items:
+#            - "{{expdp.results}}"
+#          register: "store_expdp_on_asset_share_01"
+#          tags: "store_expdp_on_asset_share_01"
+#          delegate_to: "{{item.item.item.item}}"
+
+
+
+        - name: "store the 'cscs' censhare custom area to the assets share"
+          archive:
+            path: "/opt/corpus/cscs"
+            dest: "/opt/corpus/work/assets/cscs.bz2"
+            format: "bz2"
+          when:
+            - "item|success"
+            - "item.item.item.item != ''"
+          with_items:
+            - "{{expdp.results}}"
+          register: "save_cscs_to_asset_1"
+          tags: "save_cscs_to_asset_01"
+          delegate_to: "{{item.item.item.item|replace('ora', 'cen')}}"
+
+
+
+
+- meta: "end_play"
+
+
+
+
+
+
+
+
+
+
+
+
+
+

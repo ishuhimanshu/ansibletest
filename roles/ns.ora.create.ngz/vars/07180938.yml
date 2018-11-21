@@ -1,0 +1,52 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "tracker"
+network_srv:          "10.130.2.1/27"
+network_sto:          "10.131.2.1/27"
+srv_vlan:             "718"
+sto_vlan:             "938"
+SaaS_ID:              "07180938"
+tpm_project_id:       "4"
+Install_Ticket:       "33420682"
+CustomerName:         "ecosphere tracker"
+ngz:
+  tracker-01-prod:
+    name:             "tracker"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.2.2/27"
+    ip_sto:           "10.131.2.2/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+  tracker-02-test:
+    name:             "tracker"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.2.3/27"
+    ip_sto:           "10.131.2.3/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+# first and second instance, assume that is prod and test system
+# third instance
+  tracker-03-dev:
+    instance:           "03"
+    instance_type:      "dev"
+    ip_srv:             "10.130.2.11/27"
+    ip_sto:             "10.131.2.11/27"
+    sys_mem:            "5"
+    sys_cpu:            "10"
+    censhare_version:   "stable/latest"
+# third instance
+# fourth instance
+  tracker-04-av:
+    instance:           "04"
+    instance_type:      "av"
+    ip_srv:             "10.130.2.13/27"
+    ip_sto:             "10.131.2.13/27"
+    sys_mem:            "5"
+    sys_cpu:            "100"
+    censhare_version:   "stable/latest"
+# fourth instance

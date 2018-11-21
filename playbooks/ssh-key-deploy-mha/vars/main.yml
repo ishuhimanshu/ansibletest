@@ -1,0 +1,11 @@
+---
+# vars file for roles/ssh-key-deploy
+tmp_dir: /tmp/
+ansible_root_ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDCo+DKswZMuYlxznQfct2VC4Ic7oX45t3YIVL30OHSMMtn96uCq7CJdwXwcMSb6zfqqC8zrbbJc8PxOhRJmgYBsmsvQEcE1XPvGxp6+N8/HgnosNitBvytipyxXQoDqBTbjxfTwMWpKv8QfywslM8Fl1ItLEnLLB6+rccks64SoYUB0+onsobt4+d69+RE07t+ZnKDPEqXiYze2HArycS16f05Cr+pHSUo9Uii5uht/EJPineiQpLVAq00WlIi6ZoUAjTWZwQXEZEmHDC+l0tMNAJV5NXohlwIWBQrln3x+lJfqVJ9TtzFJJnjutzyg0NVvW7ZLilR3lO3yAY/W3nHAGkI8em0ko0+4BhxMaAEPwsuy/xeHOkosL0iG5pN8g/oEUWMyIUwamnWWXVl8o6EO5P5D/TRTSZkZlyosZX3FbWOc+jxSm0muOW9y1sfmC6e2No1HKwbldLN9O8mv45qpN6e2zfPg22bBfTRRd6UViXJbahjNJXFY7f55230KhUMlFGILh0MJvlLrk00uk8hT7v/4fNJFFK8D/AaGagmWS1wivmdWqC2Eh4S1AW+ROLcXYIQS6pETiUpTF9LqzKpKlC6nrA96v0/OMGtMnigLxFCjyI595CK8ryysMip13KxWOFbNHWoKJORQIhE8IUd8/D7im0gPmDzHZ9XLAkcpw== root@ansible"
+users:
+  root:
+    ident: [ '' ]
+  corpus:
+    ident: [ 'css', 'img' ]
+  oracle:
+    ident: [ 'db', 'ora' ]

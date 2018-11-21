@@ -1,0 +1,6 @@
+---
+# tasks file for roles/ns.ora.adjust.swap.size
+- zfs:
+    name: "rpool/swap"
+    state: "present"
+    volsize: "{{swap_size}}"

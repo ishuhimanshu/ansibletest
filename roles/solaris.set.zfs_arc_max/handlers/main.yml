@@ -1,0 +1,15 @@
+---
+# handlers file for roles/solaris.set.zfs_arc_max
+
+#- name: "reboot"
+#  command: "reboot"
+#  notify: "waiting for server"
+#  
+#- name: "waiting for server"
+#  local_action:
+#    module: wait_for
+#      host: {{ansible_default_ipv4.address}}
+#      port: 22
+#      delay: 1
+#      timeout: 300
+#      state: "started"

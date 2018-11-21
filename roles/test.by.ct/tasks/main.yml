@@ -1,0 +1,21 @@
+---
+# tasks file for roles/test.by.ct
+#- name: "test"
+#  block:
+#    - name: "get memory"
+#      shell: echo '::memstat'|mdb -k|gawk '/freelist/{print("\${HOSTNAME}."$4)}'
+#      register: "mem"
+
+#    - name: "write mem"
+#      debug: 
+#        msg: "{{mem.stdout.split('.')[-9]}}"
+
+#    - name: "addition test"
+#      debug:
+#        msg: "{{network_srv|ipaddr('3')|ipaddr('address')}}"
+
+- fail:
+    msg: "you haven't changed the var"
+  when: "test == 'aa'"
+- debug:
+    msg: "{{test}}"

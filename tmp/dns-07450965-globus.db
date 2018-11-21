@@ -1,0 +1,36 @@
+ns-gw-07450965		3600	A	10.130.5.97
+ns-ora-07450965-01	3600	A	10.130.5.98
+ns-ora-07450965-02	3600	A	10.130.5.99
+ns-cen-07450965-01	3600	A	10.130.5.100
+ns-cen-07450965-02	3600	A	10.130.5.101
+ns-rnd-07450965-01	3600	A	10.130.5.102
+ns-rnd-07450965-02	3600	A	10.130.5.103
+ns-svc-07450965-01	3600	A	10.130.5.104
+ns-svc-07450965-02	3600	A	10.130.5.105
+ns-bc-07450965		3600	A	10.130.5.127
+ns-ora-07450965-01-sto	3600	A	10.131.5.98
+ns-ora-07450965-02-sto	3600	A	10.131.5.99
+ns-cen-07450965-01-sto	3600	A	10.131.5.100
+ns-cen-07450965-02-sto	3600	A	10.131.5.101
+ns-sto-07450965-assets	3600	A	10.131.5.102
+ns-sto-07450965-rman	3600	A	10.131.5.103
+ns-css-07450965-01	3600	A	213.95.85.71
+ns-css-07450965-02	3600	A	213.95.85.72
+ns-web-07450965-01	3600	A	213.95.85.209
+ns-web-07450965-02	3600	A	213.95.85.210
+globus-prodns-css01		CNAME	ns-cen-07450965-01
+globus-testns-css01		CNAME	ns-cen-07450965-02
+globus-prodns-db			CNAME	ns-ora-07450965-01
+globus-testns-db			CNAME	ns-ora-07450965-02
+globus-prodns-rnd01		CNAME	ns-rnd-07450965-01
+globus-prodns-rnd02		CNAME	ns-rnd-07450965-02
+globus-testns-rnd01		CNAME	ns-rnd-07450965-01
+globus-testns-rnd02		CNAME	ns-rnd-07450965-02
+globus-prodns-img01		CNAME	ns-svc-07450965-01
+globus-prodns-img02		CNAME	ns-svc-07450965-02
+globus-testns-img01		CNAME	ns-svc-07450965-01
+globus-testns-img02		CNAME	ns-svc-07450965-02
+globus-css			CNAME	ns-css-07450965-01
+globus				CNAME	ns-web-07450965-01
+globus-test-css			CNAME	ns-css-07450965-02
+globus-test			CNAME	ns-web-07450965-02

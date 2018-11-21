@@ -1,0 +1,36 @@
+ns-gw-07340954		3600	A	10.130.4.1
+ns-ora-07340954-01	3600	A	10.130.4.2
+ns-ora-07340954-02	3600	A	10.130.4.3
+ns-cen-07340954-01	3600	A	10.130.4.4
+ns-cen-07340954-02	3600	A	10.130.4.5
+ns-rnd-07340954-01	3600	A	10.130.4.6
+ns-rnd-07340954-02	3600	A	10.130.4.7
+ns-svc-07340954-01	3600	A	10.130.4.8
+ns-svc-07340954-02	3600	A	10.130.4.9
+ns-bc-07340954		3600	A	10.130.4.31
+ns-ora-07340954-01-sto	3600	A	10.131.4.2
+ns-ora-07340954-02-sto	3600	A	10.131.4.3
+ns-cen-07340954-01-sto	3600	A	10.131.4.4
+ns-cen-07340954-02-sto	3600	A	10.131.4.5
+ns-sto-07340954-assets	3600	A	10.131.4.6
+ns-sto-07340954-rman	3600	A	10.131.4.7
+ns-css-07340954-01	3600	A	213.95.85.49
+ns-css-07340954-02	3600	A	213.95.85.50
+ns-web-07340954-01	3600	A	213.95.85.187
+ns-web-07340954-02	3600	A	213.95.85.188
+zeit-prodns-css01		CNAME	ns-cen-07340954-01
+zeit-testns-css01		CNAME	ns-cen-07340954-02
+zeit-prodns-db			CNAME	ns-ora-07340954-01
+zeit-testns-db			CNAME	ns-ora-07340954-02
+zeit-prodns-rnd01		CNAME	ns-rnd-07340954-01
+zeit-prodns-rnd02		CNAME	ns-rnd-07340954-02
+zeit-testns-rnd01		CNAME	ns-rnd-07340954-01
+zeit-testns-rnd02		CNAME	ns-rnd-07340954-02
+zeit-prodns-img01		CNAME	ns-svc-07340954-01
+zeit-prodns-img02		CNAME	ns-svc-07340954-02
+zeit-testns-img01		CNAME	ns-svc-07340954-01
+zeit-testns-img02		CNAME	ns-svc-07340954-02
+zeit-css			CNAME	ns-css-07340954-01
+zeit				CNAME	ns-web-07340954-01
+zeit-test-css			CNAME	ns-css-07340954-02
+zeit-test			CNAME	ns-web-07340954-02

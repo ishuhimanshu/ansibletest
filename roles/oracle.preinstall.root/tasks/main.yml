@@ -1,0 +1,55 @@
+---
+# tasks file for roles/oracle.preinstall
+- name: "start oracle PreInstall, required: oracle user exists"
+  block:
+    - name: "check if user Oracle exists"
+      user:
+        name: "oracle"
+      register: "useroracleexists"
+      tags: "useroracleexists"
+
+    - name: "create directory for oracle"
+      file: 
+        path: "{{item}}"
+        owner: "oracle"
+        group: "{{dba_db_gid}}"
+        mode: "0644"
+        state: "directory"
+      register: "oradir"
+      when: 
+        - "ansible_system == 'SunOS'"
+        - "useroracleexists|success"
+      tags: "oradir"
+      with_items:
+        - "/u01/app/oracle/software/"
+        - "/var/opt/oracle/"
+      
+    - name: "write the oraInst.loc"
+      blockinfile:
+        path: "/var/opt/oracle/oraInst.loc"
+        create: "yes"
+        group: "{{dba_db_gid}}"
+        owner: "oracle"
+        marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+        block: |
+            inventory_loc=/u01/app/oracle/oraInventory
+            inst_group=oinstall
+      when: 
+        - "ansible_system == 'SunOS'"
+        - "useroracleexists|success"
+        - "oradir|success"
+      
+    - name: "write the oraInst.loc"
+      blockinfile:
+        path: "/etc/oraInst.loc"
+        create: "yes"
+        group: "{{dba_db_gid}}"
+        owner: "oracle"
+        marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+        block: |
+            inventory_loc=/u01/app/oracle/oraInventory
+            inst_group=oinstall
+      when: 
+        - "ansible_system == 'Linux'"
+        - "useroracleexists|success"
+

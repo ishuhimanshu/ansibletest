@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "pent"
+network_srv:          "10.130.4.129/27"
+network_sto:          "10.131.4.129/27"
+srv_vlan:             "738"
+sto_vlan:             "958"
+SaaS_ID:              "07380958"
+tpm_project_id:       "4"
+Install_Ticket:       "3551155"
+CustomerName:         "censhare penetration test system"
+ngz:
+  pent-01-prod:
+    name:             "pent"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.4.130/27"
+    ip_sto:           "10.131.4.130/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+  pent-02-test:
+    name:             "pent"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.4.131/27"
+    ip_sto:           "10.131.4.131/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+# first and second instance, assume that is prod and test system

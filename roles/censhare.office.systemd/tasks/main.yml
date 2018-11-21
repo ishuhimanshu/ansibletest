@@ -1,0 +1,55 @@
+---
+# tasks file for roles/censhare.office.systemd
+- name: "PreAction: - extract start/stop scripts from GIT repo -> s2s installer"
+  shell: "cd ~/tmp && tar -zxf {{git_itservices}}/scripts/censhare/s2s-install-update.tar.gz s2s/init.tpl/office s2s/sysconfig.tpl/office.tpl"
+  delegate_to: "localhost"
+  tags: "localTASK"
+  register: "localTASK"
+
+- name: "copy s2s files"
+  copy:
+    src: "{{item.0}}"
+    dest: "{{item.1}}"
+    mode: "0755"
+  with_together:
+  - [ '~/tmp/s2s/init.tpl/office', '~/tmp/s2s/sysconfig.tpl/office.tpl' ]
+  - [ '/etc/init.d/', '/etc/sysconfig/office' ]
+  when: "localTASK|success"
+  register: "cp_office_start_files"
+  tags: "cp_office_start_files"
+
+- name: "write service file for systemd"
+  blockinfile:
+    path: "/etc/systemd/system/censhare.office.service"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+    create: "yes"
+    block: |
+      [Unit]
+      Description=office services for censhare
+      Documentation=https://ecosphere.censhare.com/en/documentation/system-administration/article/2377965
+      After=censhare.server.service
+      
+      [Service]
+      EnvironmentFile=/etc/sysconfig/office
+      ExecStart=/etc/init.d/office start
+      ExecStop=/etc/init.d/office stop
+      Restart=on-failure
+      Type=forking
+      PIDFile=/opt/corpus/office/run/office.pid
+      TimeoutStartSec=60
+      
+      [Install]
+      WantedBy=default.target
+      Alias=css.service
+  when: "cp_office_start_files|success"
+  register: "wr_systemd_file"
+  tags: "wr_systemd_file"
+  
+- name: "cleanup locally"
+  file:
+    path: "~/tmp/s2s"
+    state: "absent"
+  delegate_to: "localhost"
+  run_once: "true"

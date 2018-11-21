@@ -1,0 +1,46 @@
+---
+# tasks file for roles/ns.ora.mount_db_share
+- name: "mount rman share persistent"
+  block:
+    - name: "create a mnt-dir for oracle db share"
+      file:
+        path: "/u01"
+        state: "directory"
+        owner: "oracle"
+        group: "oinstall"
+      register: "odbdir"
+      tags: "odbdir"
+
+    - name: "add share in '/etc/vfstab'"
+      lineinfile:
+        line: "{{network_sto|ipaddr('6')|ipaddr('address')}}:/vol_censhare_saas_data_nfs_ora_0{{srv_vlan}}0{{sto_vlan}}_{{inventory_hostname.split('-')[-1]}}   -       /u01  nfs     -       yes     rw,hard,rsize=32768,wsize=32768,actimeo=3,timeo=100"
+        regexp: "^{{network_sto|ipaddr('6')|ipaddr('address')}}:/u01"
+        backup: "yes"
+        path: "/etc/vfstab"
+      register: "addmnt2fstab"
+      tags: "addmnt2fstab"
+      when: "odbdir|success"
+
+    - name: "mount oracle db-dir"
+      shell: "true; mount /u01"
+      register: "mntodir"
+      tags: "mntodir"
+      when: "addmnt2fstab|success"
+
+    - name: "set permission to user Oracle"
+      file:
+        path: "/u01"
+        mode: "0777"
+      when: "mntodir|success"
+      tags: "perm2oshare"
+
+    - name: "enable svc's to mount the share automatically at bootup"
+      service:
+        name: "{{item}}"
+        enabled: "yes"
+        state: "started"
+      when: "addmnt2fstab|success"
+      with_items:
+        - "/network/nfs/client"
+        - "/network/nfs/rquota"
+      tags: "start_nfs_svc"

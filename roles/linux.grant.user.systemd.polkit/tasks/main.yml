@@ -1,0 +1,25 @@
+---
+# tasks file for roles/linux.grant.user.systemd.polkit
+- name: "deploy a rule file for 'user' to manage systemd"
+  blockinfile:
+    path: "/etc/polkit-1/rules.d/48-polkit-censhare.rules"
+    create: "yes"
+    backup: "yes"
+    marker: "// {mark}"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+    block: |
+      polkit.addRule(function(action, subject) {
+          if (action.id == "org.freedesktop.systemd1.manage-units" &&
+              subject.user == "{{allowed_user}}") {
+              polkit.log("action=" + action);
+              polkit.log("subject=" + subject);
+              polkit.log("unit="+action.lookup("unit"))
+              polkit.log("verb="+action.lookup("verb"))
+              return polkit.Result.YES;
+          }
+      });
+  tags: "grant_user_systemd"
+  register: "grant_user_systemd"
+  when: "ansible_os_family == 'RedHat'"

@@ -1,0 +1,9 @@
+---
+- hosts: ssh_key
+  gather_facts: False
+  roles:
+    - ssh-key-deploy-mha
+- hosts: pg
+  gather_facts: False
+  roles:
+    - /root/tmp/ansible-ssh-key-deploy/roles/ssh-key-deploy-pg-mha

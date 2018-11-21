@@ -1,0 +1,31 @@
+---
+# tasks file for roles/oracle.db.install
+- name: "install db software"
+  block:
+    - name: "clear old logs"
+      file:
+        path: "/u01/app/oracle/oraInventory/logs/*"
+        state: "absent"
+#
+#    - name: "install db binarys"
+#      shell: "((/var/tmp/database/runInstaller -silent -waitforcompletion -force FROM_LOCATION={{FROMLOC}} oracle.install.option={{INOPT}} UNIX_GROUP_NAME={{UGN}} ORACLE_HOME={{ORAHOME}} ORACLE_HOME_NAME={{HOMENAME}} ORACLE_BASE={{BASE}} oracle.install.db.InstallEdition={{INTYPE}} oracle.install.db.isCustomInstall=false oracle.install.db.DBA_GROUP={{DBAGRP}} oracle.install.db.OPER_GROUP={{DBAGRP}} DECLINE_SECURITY_UPDATES=true)& while sleep 3; do grep 'The installation of Oracle Database 11g was successful' `ls -1t /u01/app/oracle/oraInventory/logs/installActions*|tail -1` && break ; done)"
+#      register: "instdb"
+#      tags: "instdb"
+#
+#    - meta: end_play
+    - name: "install db binarys"
+      shell: "/var/tmp/database/runInstaller -silent -waitforcompletion -force FROM_LOCATION={{FROMLOC}} oracle.install.option={{INOPT}} UNIX_GROUP_NAME={{UGN}} ORACLE_HOME={{ORAHOME}} ORACLE_HOME_NAME={{HOMENAME}} ORACLE_BASE={{BASE}} oracle.install.db.InstallEdition={{INTYPE}} oracle.install.db.isCustomInstall=false oracle.install.db.DBA_GROUP={{DBAGRP}} oracle.install.db.OPER_GROUP={{DBAGRP}} DECLINE_SECURITY_UPDATES=true"
+      failed_when: "inst_db.rc == '6'"
+      register: "inst_db"
+      tags: "inst_db"
+      ignore_errors: "true"
+#      async: "1800"
+#      poll: "0"
+#    - name: "ask for db binary install status"
+#      async_status: 
+#        jid: "{{inst_db.ansible_job_id}}"
+#      register: "db_inst_status"
+#      tags: "db_inst_status"
+#      until: "db_inst_status.stdout == 'The installation of Oracle Database 11g was successful.'"
+##      changed_when: "inst_db.stdout == 'The installation of Oracle Database 11g was successful.'"
+#      retries: "360"

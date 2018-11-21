@@ -1,0 +1,36 @@
+ns-gw-07130933		3600	A	10.130.1.97
+ns-ora-07130933-01	3600	A	10.130.1.98
+ns-ora-07130933-02	3600	A	10.130.1.99
+ns-cen-07130933-01	3600	A	10.130.1.100
+ns-cen-07130933-02	3600	A	10.130.1.101
+ns-rnd-07130933-01	3600	A	10.130.1.102
+ns-rnd-07130933-02	3600	A	10.130.1.103
+ns-svc-07130933-01	3600	A	10.130.1.104
+ns-svc-07130933-02	3600	A	10.130.1.105
+ns-bc-07130933		3600	A	10.130.1.127
+ns-ora-07130933-01-sto	3600	A	10.131.1.98
+ns-ora-07130933-02-sto	3600	A	10.131.1.99
+ns-cen-07130933-01-sto	3600	A	10.131.1.100
+ns-cen-07130933-02-sto	3600	A	10.131.1.101
+ns-sto-07130933-assets	3600	A	10.131.1.102
+ns-sto-07130933-rman	3600	A	10.131.1.103
+ns-css-07130933-01	3600	A	213.95.85.7
+ns-css-07130933-02	3600	A	213.95.85.8
+ns-web-07130933-01	3600	A	213.95.85.145
+ns-web-07130933-02	3600	A	213.95.85.146
+eh-prodns-css01		CNAME	ns-cen-07130933-01
+eh-testns-css01		CNAME	ns-cen-07130933-02
+eh-prodns-db			CNAME	ns-ora-07130933-01
+eh-testns-db			CNAME	ns-ora-07130933-02
+eh-prodns-rnd01		CNAME	ns-rnd-07130933-01
+eh-prodns-rnd02		CNAME	ns-rnd-07130933-02
+eh-testns-rnd01		CNAME	ns-rnd-07130933-01
+eh-testns-rnd02		CNAME	ns-rnd-07130933-02
+eh-prodns-img01		CNAME	ns-svc-07130933-01
+eh-prodns-img02		CNAME	ns-svc-07130933-02
+eh-testns-img01		CNAME	ns-svc-07130933-01
+eh-testns-img02		CNAME	ns-svc-07130933-02
+eh-css			CNAME	ns-css-07130933-01
+eh				CNAME	ns-web-07130933-01
+eh-test-css			CNAME	ns-css-07130933-02
+eh-test			CNAME	ns-web-07130933-02

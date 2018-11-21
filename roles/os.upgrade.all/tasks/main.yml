@@ -1,0 +1,57 @@
+---
+# tasks file for roles/os.upgrade.all
+- name: "OS upgrade"
+  block:
+    - name: "upgrade Solaris 11"
+      pkg5:
+        name: "pkg://solaris/entire"
+        state: "latest"
+        accept_licenses: "yes"
+      when:
+        - "ansible_distribution == 'Solaris'"
+        - "ansible_distribution_version|int >= '11.0'"
+      register: "os_update"
+      tags: "os_update"
+        
+    - name: "upgrade CentOS/RHEL"
+      yum:
+        name: "*"
+        state: "latest"
+      when: "ansible_os_family == 'RedHat'"
+      register: "os_update"
+      tags: "os_update"
+
+    - name: "updating OS X"
+      shell: "softwareupdate --install --all"
+      when: "ansible_distribution == 'MacOSX'"
+      register: "os_update_RHEL"
+      tags: "os_update"
+      
+    - name: "updating debian and ubuntu"
+      apt: 
+        upgrade: "dist"
+        update_cache: "yes"
+        cache_valid_time: "3600"
+      when: "ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'"
+      register: "os_update"
+      tags: "os_update"
+
+- name: "reboot systems, if parameter 'reboot' is seted to 'yes'"
+  block:
+    - name: "reboot debian and ubuntu, CentOS, RedHat, Amazon Linux, Solaris 11"
+      shell: "init 6"
+      when: 
+        - "ansible_distribution == 'CentOS' or ansible_os_family == 'RedHat' or ansible_distribution == 'Amazon' or ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu' or (ansible_distribution == 'Solaris' and ansible_distribution_version|int >= '11.0')"
+        - "os_update|success"
+        - "reboot|default('') == 'yes'"
+      register: "reboot"
+      tags: "reboot"
+      
+    - name: "reboot OS X"
+      shell: "reboot"
+      when: 
+        - "ansible_distribution == 'MacOSX'"
+        - "os_update|success"
+        - "reboot|default('') == 'yes'"
+      register: "reboot"
+      tags: "reboot"

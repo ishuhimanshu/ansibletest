@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "dbk"
+network_srv:          "10.130.3.1/27"
+network_sto:          "10.131.3.1/27"
+srv_vlan:             "726"
+sto_vlan:             "946"
+SaaS_ID:              "07260946"
+tpm_project_id:       "141"
+Install_Ticket:       "3420739"
+CustomerName:         "Typodrom"
+ngz:
+  dbk-01-prod:
+    name:             "dbk"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.3.2/27"
+    ip_sto:           "10.131.3.2/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare58"
+  dbk-02-test:
+    name:             "dbk"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.3.3/27"
+    ip_sto:           "10.131.3.3/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare58"
+# first and second instance, assume that is prod and test system

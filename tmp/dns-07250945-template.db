@@ -1,0 +1,36 @@
+ns-gw-07250945		3600	A	10.130.2.225
+ns-ora-07250945-01	3600	A	10.130.2.226
+ns-ora-07250945-02	3600	A	10.130.2.227
+ns-cen-07250945-01	3600	A	10.130.2.228
+ns-cen-07250945-02	3600	A	10.130.2.229
+ns-rnd-07250945-01	3600	A	10.130.2.230
+ns-rnd-07250945-02	3600	A	10.130.2.231
+ns-svc-07250945-01	3600	A	10.130.2.232
+ns-svc-07250945-02	3600	A	10.130.2.233
+ns-bc-07250945		3600	A	10.130.2.255
+ns-ora-07250945-01-sto	3600	A	10.131.2.226
+ns-ora-07250945-02-sto	3600	A	10.131.2.227
+ns-cen-07250945-01-sto	3600	A	10.131.2.228
+ns-cen-07250945-02-sto	3600	A	10.131.2.229
+ns-sto-07250945-assets	3600	A	10.131.2.230
+ns-sto-07250945-rman	3600	A	10.131.2.231
+ns-css-07250945-01	3600	A	213.95.85.31
+ns-css-07250945-02	3600	A	213.95.85.32
+ns-web-07250945-01	3600	A	213.95.85.169
+ns-web-07250945-02	3600	A	213.95.85.170
+template-prodns-css01		CNAME	ns-cen-07250945-01
+template-testns-css01		CNAME	ns-cen-07250945-02
+template-prodns-db			CNAME	ns-ora-07250945-01
+template-testns-db			CNAME	ns-ora-07250945-02
+template-prodns-rnd01		CNAME	ns-rnd-07250945-01
+template-prodns-rnd02		CNAME	ns-rnd-07250945-02
+template-testns-rnd01		CNAME	ns-rnd-07250945-01
+template-testns-rnd02		CNAME	ns-rnd-07250945-02
+template-prodns-img01		CNAME	ns-svc-07250945-01
+template-prodns-img02		CNAME	ns-svc-07250945-02
+template-testns-img01		CNAME	ns-svc-07250945-01
+template-testns-img02		CNAME	ns-svc-07250945-02
+template-css			CNAME	ns-css-07250945-01
+template				CNAME	ns-web-07250945-01
+template-test-css			CNAME	ns-css-07250945-02
+template-test			CNAME	ns-web-07250945-02

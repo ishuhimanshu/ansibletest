@@ -1,0 +1,60 @@
+---
+# tasks file for roles/ns.new.cust.generate.pass
+- name: "generate passwords for the upcoming installation and store they in TPM"
+  block:
+    - set_fact: 
+        SaaS_ID: "0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}"
+    - name: "generate passwords for prod and test instance"
+      set_fact:
+        pw_{{item.hostname|replace('-', '_')}}: "{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{item.hostname}} {{item.svc}} {{item.user}}', 'create=True', 'project_id={{tpm_project_id}}', 'password=random', 'username={{item.user}}', 'access_info={{item.protocol}}://{{item.user}}@{{item.hostname}}', 'tags={{item.user}},{{item.svc}},SaaS{{item.tags}}', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{ticketID}}, SaaS-ID: {{SaaS_ID}}') }}"
+      tags: "tpm_prod_test"
+      register: "tpm_prod_test"
+      with_items: 
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,solaris,prod" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,solaris,test" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,centos,prod" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,centos,test" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "ssh", user: "oracle", protocol: "ssh", tags: ",nue,solaris,prod" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "ssh", user: "oracle", protocol: "ssh", tags: ",nue,solaris,test" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "ssh", user: "corpus", protocol: "ssh", tags: ",nue,centos,prod" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "ssh", user: "corpus", protocol: "ssh", tags: ",nue,centos,test" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "service-client", user: "service-client", protocol: "frmis", tags: ",nue,prod" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "service-client", user: "service-client", protocol: "frmis", tags: ",nue,test" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "censhare", user: "censhare", protocol: "frmis", tags: ",nue,prod" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "censhare", user: "censhare", protocol: "frmis", tags: ",nue,test" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "sqlplus", user: "corpus", protocol: "sqlplus", tags: ",nue,solaris,prod" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "sqlplus", user: "corpus", protocol: "sqlplus", tags: ",nue,solaris,test" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", svc: "sqlplus", user: "system", protocol: "ssh", tags: ",nue,solaris,prod" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", svc: "sqlplus", user: "system", protocol: "ssh", tags: ",nue,solaris,test" }
+
+    - name: "generate passwords for third instance"
+      set_fact:
+        pw_{{item.hostname|replace('-', '_')}}: "{{ lookup('tpmstore', url, LDAP_user, LDAP_pass, 'name={{item.hostname}} {{item.svc}} {{item.user}}', 'create=True', 'project_id={{tpm_project_id}}', 'password=random', 'username={{item.user}}', 'access_info={{item.protocol}}://{{item.user}}@{{item.hostname}}', 'tags={{item.user}},{{item.svc}},SaaS{{item.tags}}', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{ticketID}}, SaaS-ID: {{SaaS_ID}}') }}"
+      tags: "tpm_{{inst3name}}"
+      register: "tpm_{{inst3name}}"
+      with_items: 
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,solaris,{{inst3name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,centos,{{inst3name}}" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "ssh", user: "oracle", protocol: "ssh", tags: ",nue,solaris,{{inst3name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "ssh", user: "corpus", protocol: "ssh", tags: ",nue,centos,{{inst3name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "service-client", user: "service-client", protocol: "frmis", tags: ",nue,{{inst3name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "censhare", user: "censhare", protocol: "frmis", tags: ",nue,{{inst3name}}" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "sqlplus", user: "corpus", protocol: "sqlplus", tags: ",nue,solaris,{{inst3name}}" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", svc: "sqlplus", user: "system", protocol: "ssh", tags: ",nue,solaris,{{inst3name}}" }
+      when: "inst3name != '0'"
+
+    - name: "generate passwords for fourth instance"
+      set_fact:
+        pw_{{item.hostname|replace('-', '_')}}: "{{ lookup('tpmstore', url, LDAP_user, LDAP_pass, 'name={{item.hostname}} {{item.svc}} {{item.user}}', 'create=True', 'project_id={{tpm_project_id}}', 'password=random', 'username={{item.user}}', 'access_info={{item.protocol}}://{{item.user}}@{{item.hostname}}', 'tags={{item.user}},{{item.svc}},SaaS{{item.tags}}', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{ticketID}}, SaaS-ID: {{SaaS_ID}}') }}"
+      tags: "tpm_{{inst4name}}"
+      register: "tpm_{{inst4name}}"
+      with_items: 
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,solaris,{{inst4name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "ssh", user: "root", protocol: "ssh", tags: ",nue,centos,{{inst4name}}" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "ssh", user: "oracle", protocol: "ssh", tags: ",nue,solaris,{{inst4name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "ssh", user: "corpus", protocol: "ssh", tags: ",nue,centos,{{inst4name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "service-client", user: "service-client", protocol: "frmis", tags: ",nue,{{inst4name}}" }
+        - { hostname: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "censhare", user: "censhare", protocol: "frmis", tags: ",nue,{{inst4name}}" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "sqlplus", user: "corpus", protocol: "sqlplus", tags: ",nue,solaris,{{inst4name}}" }
+        - { hostname: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", svc: "sqlplus", user: "system", protocol: "ssh", tags: ",nue,solaris,{{inst4name}}" }
+      when: "inst4name != '0'"

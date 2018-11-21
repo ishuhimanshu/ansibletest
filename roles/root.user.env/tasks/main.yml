@@ -1,0 +1,82 @@
+---
+# tasks file for roles/root.user.env
+- shell: "/usr/bin/date +%s|/usr/bin/md5sum|/usr/bin/cut -b -10"
+  register: "root_pw"
+- set_fact: 
+    pw: "{{lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{ansible_hostname}} ssh root', 'create=True', 'project_id={{tpm_project_id}}', 'password={{root_pw.stdout}}', 'username=root', 'access_info=ssh://root@{{ansible_hostname}}', 'tags=svc:ssh,usr:root,site:ns', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}')}}"
+- name: "set password of root user"
+  user:
+    name: "root"
+    password: "{{pw}}"
+  register: "root_pw"
+  tags: "root_pw"
+
+- name: "copy alias file for root user"
+  copy: 
+    src: "{{git_itservices}}/environment/alias.root" 
+    dest: "~/.alias"
+  tags: "root_env_alias"
+  register: "root_env_alias"
+  when: "root_pw|success"
+
+- name: "source root alias file"
+  lineinfile: 
+    dest: "~/.profile"
+    create: "yes"
+    mode: "0644"
+    regexp: "test -f ~/.alias && . ~/.alias"
+    line: "test -f ~/.alias && . ~/.alias"
+  tags: "root_env_profile"
+  register: "root_env_profile"
+  when: "root_env_alias|success"
+
+- name: "add some properties for bash history"
+  blockinfile:
+    dest: "~/.bash_profile"
+    create: "yes"
+    backup: "yes"
+    group: "root"
+    owner: "root"
+    block: |
+      HISTTIMEFORMAT='%Y.%m.%d-%T :: '
+      HISTSIZE=5000
+      HISTFILESIZE=5000
+      test -f ~/.profile && . ~/.profile
+  tags: "root_env_better_history"
+  register: "root_env_better_history"
+  when: "root_env_profile|success"
+
+- name: "install helpfull OS packages"
+  pkg5:
+    name:
+      - "pkg:/terminal/screen"
+      - "pkg:/diagnostic/top"
+  when:
+    - "ansible_distribution_version|int >= 11"
+    - "root_env_better_history|success"
+  register: "root_env_helpful_pkg"
+  tags: "root_env_helpful_pkg"
+
+- name: "create root hint to start stop censhare oracle tasks"
+  blockinfile:
+    dest: "~/.alias"
+    create: "no"
+    backup: "yes"
+    block: |
+      alias s2s="echo -e '########################################\n\ns2s is not available on this system, please use following commands to control censhare Services:\n\nsvcs \"censhare/*\"                       # list status of configurated censhare Services\nsvcs -l \"censhare/*\"                    # list extended status of configurated censhare Service (check logfile for errors)\nsvcadm disable censhare/<servicename>   # shutdown Service\nsvcadm enable censhare/<servicename>    # startup Service\nsvcadm restart censhare/<servicename>   # restart Service\n\n# Examples:\nsvcadm disable censhare/server          # shutdown censhare server\nsvcadm enable censhare/server           # startup censhare server\nsvcadm restart censhare/server          # restarts censhare server\n\n##########################################'"
+      alias rccss="echo -e '########################################\n\nrccss is not available on this system, please use following commands to control censhare Services:\n\nsvcs \"censhare/*\"                       # list status of configurated censhare Services\nsvcs -l \"censhare/*\"                    # list extended status of configurated censhare Service (check logfile for errors)\nsvcadm disable censhare/<servicename>   # shutdown Service\nsvcadm enable censhare/<servicename>    # startup Service\nsvcadm restart censhare/<servicename>   # restart Service\n\n# Examples:\nsvcadm disable censhare/server          # shutdown censhare server\nsvcadm enable censhare/server           # startup censhare server\nsvcadm restart censhare/server          # restarts censhare server\n\n##########################################'"
+  when: 
+    - "root_env_helpful_pkg|success"
+    - "ansible_os_family == 'Solaris'"
+  tags: "start_stop_hint"
+  register: "start_stop_hint"
+
+- name: "add '/usr/gnu/bin' to PATH"
+  lineinfile:
+    path: "~/.profile"
+    regexp: "export PATH=/usr/bin:/usr/sbin"
+    line: "{{usrgnu}}"
+  tags: "censhare.env.usrgnubin"  
+  when: 
+    - "ansible_os_family == 'Solaris'"
+    - "start_stop_hint|success"

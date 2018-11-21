@@ -1,0 +1,3 @@
+destpath: /usr/local/bin/docker-compose
+version: 1.18.0
+checksum_sha256: b2f2c3834107f526b1d9cc8d8e0bdd132c6f1495b036a32cbc61b5288d2e2a01

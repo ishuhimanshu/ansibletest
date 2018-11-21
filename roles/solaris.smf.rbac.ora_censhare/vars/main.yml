@@ -1,0 +1,4 @@
+---
+# vars file for roles/solaris.smf.rbac.ora_censhare
+auth_attr_desc:         ":::Manage censhare Service States::"
+auth_attr:              "solaris.smf.manage.censhare"

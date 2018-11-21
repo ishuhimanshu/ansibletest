@@ -1,0 +1,36 @@
+[premium-cust]
+#bpny-testaws-css01
+burus-prod-css01
+burus-prod-css02
+burus-prod-db
+burus-prod-service1-srv
+burus-prod-service2-srv
+#burus-test-css01 #no repos enabled
+burus-test-db
+#fti-dev-css01 #access currently not possible due firewall shit de-nue-noris and de-nue
+#fti-test-css01 #access currently not possible due firewall shit de-nue-noris and de-nue
+geberit-prod-css01
+#geberit-prod-db # access given via censhare user and then root
+#geberit-test-db # access given via censhare user and then root
+iwm-prod-css01
+iwm-prod-db
+iwm-prod-web01
+iwm-test-css01
+#parra-dev-css02 # root pass unknown
+parra-devww-css01
+parra-prod-css01
+parra-prod-css02
+parra-prod-db
+#parra-prodaws-css03 #not reachable
+parra-prodrcp-css01
+parra-test-css01
+parra-test-db
+#parra-testrcp-css01 # root password unknown
+#Weka gives us the maintenance window
+#weka-prod-css01
+#weka-prod-css01hw
+#weka-prod-db
+#weka-prod-fs
+#weka-prod-web
+#weka-test-css01
+#weka-test-db

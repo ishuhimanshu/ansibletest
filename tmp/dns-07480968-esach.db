@@ -1,0 +1,32 @@
+ns-gw-07480968		3600	A	10.130.5.193
+ns-ora-07480968-01	3600	A	10.130.5.194
+ns-ora-07480968-02	3600	A	10.130.5.195
+ns-cen-07480968-01	3600	A	10.130.5.196
+ns-cen-07480968-02	3600	A	10.130.5.197
+ns-rnd-07480968-01	3600	A	10.130.5.198
+ns-rnd-07480968-02	3600	A	10.130.5.199
+ns-svc-07480968-01	3600	A	10.130.5.200
+ns-svc-07480968-02	3600	A	10.130.5.201
+ns-bc-07480968		3600	A	10.130.5.223
+ns-ora-07480968-01-sto	3600	A	10.131.5.194
+ns-ora-07480968-02-sto	3600	A	10.131.5.195
+ns-cen-07480968-01-sto	3600	A	10.131.5.196
+ns-cen-07480968-02-sto	3600	A	10.131.5.197
+ns-sto-07480968-assets	3600	A	10.131.5.198
+ns-sto-07480968-rman	3600	A	10.131.5.199
+ns-css-07480968-01	3600	A	213.95.85.77
+ns-css-07480968-02	3600	A	213.95.85.78
+ns-web-07480968-01	3600	A	213.95.85.215
+ns-web-07480968-02	3600	A	213.95.85.216
+esach-prodns-css01		CNAME	ns-cen-07480968-01
+esach-testns-css01		CNAME	ns-cen-07480968-02
+esach-prodns-db			CNAME	ns-ora-07480968-01
+esach-testns-db			CNAME	ns-ora-07480968-02
+esach-prodns-rnd01		CNAME	ns-rnd-07480968-01
+esach-prodns-rnd02		CNAME	ns-rnd-07480968-02
+esach-testns-rnd01		CNAME	ns-rnd-07480968-01
+esach-testns-rnd02		CNAME	ns-rnd-07480968-02
+esach-css			CNAME	ns-css-07480968-01
+esach				CNAME	ns-web-07480968-01
+esach-test-css			CNAME	ns-css-07480968-02
+esach-test			CNAME	ns-web-07480968-02

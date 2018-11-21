@@ -1,0 +1,4 @@
+---
+# vars file for roles/oracle.db.rman.backup
+dba: "54321"
+oracle: "54321"

@@ -1,0 +1,15 @@
+---
+# tasks file for roles/oracle.db.cron.cleanup
+- name: "add cronjobs for user oracle"
+  block:
+    - name: "cleanup cronjobs"
+      cron:
+        name: "{{item.value.name}}"
+        hour: "{{item.value.hour}}"
+        minute: "{{item.value.minute}}"
+        user: "{{item.value.user}}"
+        backup: "{{item.value.backup}}"
+        job: "{{item.value.job}}"
+        state: "present"
+      register: "add_cleaning_cron_for_oracle"
+      with_dict: "{{cron}}"

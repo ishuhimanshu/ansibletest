@@ -1,0 +1,32 @@
+ns-gw-07460966		3600	A	10.130.5.129
+ns-ora-07460966-01	3600	A	10.130.5.130
+ns-ora-07460966-02	3600	A	10.130.5.131
+ns-cen-07460966-01	3600	A	10.130.5.132
+ns-cen-07460966-02	3600	A	10.130.5.133
+ns-rnd-07460966-01	3600	A	10.130.5.134
+ns-rnd-07460966-02	3600	A	10.130.5.135
+ns-svc-07460966-01	3600	A	10.130.5.136
+ns-svc-07460966-02	3600	A	10.130.5.137
+ns-bc-07460966		3600	A	10.130.5.159
+ns-ora-07460966-01-sto	3600	A	10.131.5.130
+ns-ora-07460966-02-sto	3600	A	10.131.5.131
+ns-cen-07460966-01-sto	3600	A	10.131.5.132
+ns-cen-07460966-02-sto	3600	A	10.131.5.133
+ns-sto-07460966-assets	3600	A	10.131.5.134
+ns-sto-07460966-rman	3600	A	10.131.5.135
+ns-css-07460966-01	3600	A	213.95.85.73
+ns-css-07460966-02	3600	A	213.95.85.74
+ns-web-07460966-01	3600	A	213.95.85.211
+ns-web-07460966-02	3600	A	213.95.85.212
+ikease-prodns-css01		CNAME	ns-cen-07460966-01
+ikease-testns-css01		CNAME	ns-cen-07460966-02
+ikease-prodns-db			CNAME	ns-ora-07460966-01
+ikease-testns-db			CNAME	ns-ora-07460966-02
+ikease-prodns-rnd01		CNAME	ns-rnd-07460966-01
+ikease-prodns-rnd02		CNAME	ns-rnd-07460966-02
+ikease-testns-rnd01		CNAME	ns-rnd-07460966-01
+ikease-testns-rnd02		CNAME	ns-rnd-07460966-02
+ikease-css			CNAME	ns-css-07460966-01
+ikease				CNAME	ns-web-07460966-01
+ikease-test-css			CNAME	ns-css-07460966-02
+ikease-test			CNAME	ns-web-07460966-02

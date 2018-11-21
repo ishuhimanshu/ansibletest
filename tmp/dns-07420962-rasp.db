@@ -1,0 +1,36 @@
+ns-gw-07420962		3600	A	10.130.5.1
+ns-ora-07420962-01	3600	A	10.130.5.2
+ns-ora-07420962-02	3600	A	10.130.5.3
+ns-cen-07420962-01	3600	A	10.130.5.4
+ns-cen-07420962-02	3600	A	10.130.5.5
+ns-rnd-07420962-01	3600	A	10.130.5.6
+ns-rnd-07420962-02	3600	A	10.130.5.7
+ns-svc-07420962-01	3600	A	10.130.5.8
+ns-svc-07420962-02	3600	A	10.130.5.9
+ns-bc-07420962		3600	A	10.130.5.31
+ns-ora-07420962-01-sto	3600	A	10.131.5.2
+ns-ora-07420962-02-sto	3600	A	10.131.5.3
+ns-cen-07420962-01-sto	3600	A	10.131.5.4
+ns-cen-07420962-02-sto	3600	A	10.131.5.5
+ns-sto-07420962-assets	3600	A	10.131.5.6
+ns-sto-07420962-rman	3600	A	10.131.5.7
+ns-css-07420962-01	3600	A	213.95.85.65
+ns-css-07420962-02	3600	A	213.95.85.66
+ns-web-07420962-01	3600	A	213.95.85.203
+ns-web-07420962-02	3600	A	213.95.85.204
+rasp-prodns-css01		CNAME	ns-cen-07420962-01
+rasp-testns-css01		CNAME	ns-cen-07420962-02
+rasp-prodns-db			CNAME	ns-ora-07420962-01
+rasp-testns-db			CNAME	ns-ora-07420962-02
+rasp-prodns-rnd01		CNAME	ns-rnd-07420962-01
+rasp-prodns-rnd02		CNAME	ns-rnd-07420962-02
+rasp-testns-rnd01		CNAME	ns-rnd-07420962-01
+rasp-testns-rnd02		CNAME	ns-rnd-07420962-02
+rasp-prodns-img01		CNAME	ns-svc-07420962-01
+rasp-prodns-img02		CNAME	ns-svc-07420962-02
+rasp-testns-img01		CNAME	ns-svc-07420962-01
+rasp-testns-img02		CNAME	ns-svc-07420962-02
+rasp-css			CNAME	ns-css-07420962-01
+rasp				CNAME	ns-web-07420962-01
+rasp-test-css			CNAME	ns-css-07420962-02
+rasp-test			CNAME	ns-web-07420962-02

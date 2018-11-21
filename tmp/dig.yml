@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  vars:
+    test: asd
+  tasks:
+    - debug:
+        msg: "{{lookup('dig', '213.95.85.31')}}"

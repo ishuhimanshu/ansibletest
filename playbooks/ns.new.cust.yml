@@ -1,0 +1,206 @@
+---
+- hosts: "localhost"
+  vars:
+    grep:       "/bin/grep"
+    netdb:      "~/roles/ns.new.cust.preapre.vars/vars/network.db"
+    NScatdb:    "~/roles/ns.new.cust/vars/categories.db"
+    cs_repo:    "https://repos.censhare.com/" 
+    repo_dest:  "/etc/yum.repos.d/"
+    TPM_url:    "https://de-nue-pass-new.int.censhare.com"
+  vars_prompt:
+  - name: "LDAP_user"
+    prompt: "Please enter your LDAP username"
+    private: no
+  - name: "LDAP_pass"
+    prompt: "Please enter your LDAP password"
+    private: yes
+  - name: "tpm_project_id"
+    prompt: "Please enter the TPM project ID\n\tyou can find in TPM\n\thttps://pass.int.censhare.com/index.php/prj/active\n\tselect the right project\n\tlook to the url line in browser end enter the url-ending-number (only the number)"
+    private: no
+  - name: "ticketID"
+    prompt: "Please enter the Ticket ID of the installation or migration Ticket for the customer"
+    private: no
+  - name: "custname"
+    prompt: "Please enter the customer shortname name\n(just customer name, not instance like: 'test', 'qual', 'prod', or so ...)"
+    private: no
+  - name: "custfname"
+    prompt: "Please enter the customer full name (name can including spaces, its just an comment into the 'vars' file)"
+    private: no
+  - name: "srvVLAN"
+    prompt: "Please enter the server VLAN"
+    private: no
+  - name: "inst3name"
+    prompt: "If a third instance is requested, please type here the name like 'qual', 'dev', or so ...(press enter or [0 + enter] to skip)"
+    private: no
+    default: "0"
+  - name: "inst4name"
+    prompt: "If a fourth instance is requested, please type here the name like 'qual', 'dev', or so ...(press enter or [0 + enter] to skip)"
+    private: no
+    default: "0"
+  pre_tasks:
+   - name: "checkout the current master of ansible from git"
+     git:
+       repo: "git@gitlab.censhare.com:devops/ansible.git"
+       dest: "~"
+       refspec: "+refs/pull/*:refs/heads/*"
+       accept_hostkey: "yes"
+     register: "refresh_ansible_repo"
+     tags: "refresh_ansible_repo"
+     when: "ansible_hostname == 'de-nue-ansible'"
+   - fail:
+       msg: "couldn't checkout the current master of ansible from git - please check manually"
+     when: "refresh_ansible_repo|failed"
+   - name: "ask for censhare versions"
+     block:
+       - name: "css version questions of prod and test system"
+         block:
+           - name: "get censhare versions from repo server"
+             uri:
+               url: "{{cs_repo}}"
+               return_content: "yes"
+             register: "getrepos"
+             tags: "getrepos"
+
+       - name: "which censhare server version for prod and test system?"
+         block:
+           - pause:
+               prompt: "{{getrepos.content | replace ('<h1>Available repo files</h1><h2>stable</h2>https://repos.censhare.com/stable/censhare-3rdparty', 'Please select the censhare version to install on the new system (for prod and test instance) - you can not see you input\n') | replace (' <br>', '\n') | replace ('.repo', '') | replace ('https://repos.censhare.com/', '') | replace ('<h2>testing</h2><h4>contains early releases and RPMs for testing only (could be used in combination with stable)</h4>', '') | replace ('<h2>nightly</h2><h4>nightly builds from develop branch</h4>nightly', '') | replace ('testing/censhare-3rdparty', '')}}"
+             register: "cssvpt"
+             tags: "cssvpt"
+           - name: "check css version of prod and test instance"
+             uri:
+               url: "{{cs_repo}}{{cssvpt.user_input}}.repo"
+               return_content: "yes"
+             register: "ckcssvpt"
+             tags: "ckcssvpt"
+             run_once: "true"
+             ignore_errors: "true"
+           - fail:
+               msg: "couldn't reach the repo of prod and test system, please check manually"
+             when: "ckcssvpt.status != 200"
+             
+       - name: "which censhare server version for third instance?"
+         block:
+           - pause:
+               prompt: "{{getrepos.content | replace ('<h1>Available repo files</h1><h2>stable</h2>https://repos.censhare.com/stable/censhare-3rdparty', 'Please select the censhare version to install on the third instance - you can not see you input\n') | replace (' <br>', '\n') | replace ('.repo', '') | replace ('https://repos.censhare.com/', '') | replace ('<h2>testing</h2><h4>contains early releases and RPMs for testing only (could be used in combination with stable)</h4>', '') | replace ('<h2>nightly</h2><h4>nightly builds from develop branch</h4>nightly', '') | replace ('testing/censhare-3rdparty', '')}}"
+             register: "cssv3"
+             tags: "cssv3"
+             when: "inst3name != '0'"
+           - name: "check css version of third instance"
+             uri:
+               url: "{{cs_repo}}{{cssv3.user_input}}.repo"
+               return_content: "yes"
+             register: "ckcssv3"
+             tags: "ckcssv3"
+             run_once: "true"
+             when: "inst3name != '0'"
+             ignore_errors: "true"
+           - fail:
+               msg: "couldn't reach the repo of third instance, please check manually"
+             when:
+               - "inst3name != '0'"
+               - "ckcssv3.status != 200"
+             
+       - name: "which censhare server version for fourth instance?"
+         block:
+           - pause:
+               prompt: "{{getrepos.content | replace ('<h1>Available repo files</h1><h2>stable</h2>https://repos.censhare.com/stable/censhare-3rdparty', 'Please select the censhare version to install on the fourth instance - you can not see you input\n') | replace (' <br>', '\n') | replace ('.repo', '') | replace ('https://repos.censhare.com/', '') | replace ('<h2>testing</h2><h4>contains early releases and RPMs for testing only (could be used in combination with stable)</h4>', '') | replace ('<h2>nightly</h2><h4>nightly builds from develop branch</h4>nightly', '') | replace ('testing/censhare-3rdparty', '')}}"
+             register: "cssv4"
+             tags: "cssv4"
+             when: "inst4name != '0'"
+           - name: "check css version of fourth instance"
+             uri:
+               url: "{{cs_repo}}{{cssv4.user_input}}.repo"
+               return_content: "yes"
+             register: "ckcssv4"
+             tags: "ckcssv4"
+             run_once: "true"
+             when: "inst4name != '0'"
+             ignore_errors: "true"
+           - fail:
+               msg: "couldn't reach the repo of third instance, please check manually"
+             when: 
+               - "inst4name != '0'"
+               - "ckcssv4.status != 200"
+
+   - name: "check server VLAN"
+     block:
+       - name: "check if server VLAN is in the template range"
+         shell: "{{grep}} ^{{srvVLAN}} {{netdb}}; true"
+         register: "NETdb"
+         tags: "NETdb"
+   
+   - name: "check if the 'vars' file exists"
+     block:
+       - stat:
+           path: "~/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml"
+         register: "check_vars_file"
+         tags: "check_vars_file"
+       - fail:
+           msg: "please check, it seems the 'vars' file already exists: '~/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml'"
+         when: "check_vars_file.stat.exists == True"
+         
+   - name: "check all given variables"
+     block:
+       - name: "check 'customer' variable"
+         fail:
+           msg: "Plaese check given 'customer' variable, customer does exist, or variable is empty"
+         when: "custname == ''"
+       - name: "check 'VLAN' variable"
+         fail:
+           msg: "Please check given 'VLAN' variable, seems like VLAN is not in the database of allowed VLANs"
+         when: "srvVLAN == '' or (NETdb.stdout|default('') == '')"
+   
+       - name: "check if ticket ID is given"
+         fail:
+           msg: "Please enter a valid censhare Tracker Ticket ID"
+         when: 
+               - "ticketID <= 1000000"
+               - "ticketID|default('0') != '0'"
+
+  post_tasks:
+    - name: "git part"
+      block:
+        - name: "git - add the new created var file"
+          shell: "git add /root/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml"
+          register: "git_add_vars_file"
+          tags: "git_add_vars_file"
+          when: "initialvarsfile|success"
+    
+        - name: "git - checkin the new created var file"
+          shell: "git commit -m 'create for SaaS customer: {{custname}}; Ticket-ID: {{ticketID}}; SaaS-ID: 0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}' /root/roles/ns.ora.create.ngz/vars/0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}.yml"
+          when: "git_add_vars_file|success"
+          register: "git_commit_vars_file"
+          tags: "git_commit_vars_file"
+    
+        - name: "git - push the new created var file"
+          shell: "git push"
+          register: "git_push_vars_file"
+          tags: "git_push_vars_file"
+          when: "git_commit_vars_file|success"
+          
+        - name: "unset the git commit values (LDAP name)"
+          git_config:
+            name: "{{item.name}}"
+            repo: "/root"
+            value: "{{item.value}}"
+            scope: "global"
+          with_items:
+            - { name: "user.name", value: "ansible" }
+            - { name: "user.email", value: "do-not-replay@censhare.com" }
+          tags: "set_git_config_2_default"
+          register: "set_git_config_2_default"
+
+    - name: "print some hints"
+      block:
+        - debug:
+            msg: "please note that you have to request for the third and/or fourth instance the NFS shares at noris and prepare the censhare VMs (network, ssh from ansible host should be enough)"
+          when: "(inst3name != '0' or inst4name != '0')"
+      always:
+        - debug:
+            msg: "to install the system enter the following command: 'ansible-playbook ~/playbooks/ns.inst.cust.yml -eSaaS_ID=0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}} -eLDAP_user={{LDAP_user}}'"
+          when: "initialvarsfile|success"
+    
+  roles:
+   - { role: "ns.new.cust.generate.DNS", tags: "ns.new.cust.generate.DNS" }
+   - { role: "ns.new.cust.preapre.vars", tags: "ns.new.cust.preapre.vars" }

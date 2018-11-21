@@ -1,0 +1,21 @@
+---
+# tasks file for roles/censhare.server.ulimits
+- name: "add ulimit hard for corpus"
+  lineinfile:
+    path: "/etc/security/limits.conf"
+    regexp: "^{{corpus_hard}}"
+    line: "{{corpus_hard}}"
+    owner: root
+    group: root
+    mode: 0644
+  tags: "ulimits_corpus ulimit_hard_corpus"
+
+- name: "add ulimit soft for corpus"
+  lineinfile:
+    path: "/etc/security/limits.conf"
+    regexp: "^{{corpus_soft}}"
+    line: "{{corpus_soft}}"
+    owner: root
+    group: root
+    mode: 0644
+  tags: "ulimits_corpus ulimit_soft_corpus"

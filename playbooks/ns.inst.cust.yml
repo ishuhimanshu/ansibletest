@@ -1,0 +1,165 @@
+---
+- hosts: "ns_gz"
+  vars_prompt:
+  - name: "LDAP_user"
+    prompt: "Please enter your LDAP username"
+    private: no
+  - name: "LDAP_pass"
+    prompt: "Please enter your LDAP password"
+    private: yes
+  - name: "SaaS_ID"
+    prompt: "Please enter the SaaS-ID of the customer which you want to install"
+    private: no
+  vars:
+    TPM_url:        "https://de-nue-pass.int.censhare.com"
+    netdb:          "/root/roles/ns.new.cust.preapre.vars/vars/network.db"
+  user: "root"
+  pre_tasks:
+    - shell: "ls /root/roles/ns.ora.create.ngz/vars/; true"
+      register: "cust"
+      delegate_to: "localhost"
+      run_once: "true"
+      when: "SaaS_ID|default() == ''"
+    - pause:
+        prompt: "Which Customer you want to install?\n{{cust.stdout|replace('.yml', '')}}\nYou can't see your input"
+      delegate_to: "localhost"
+      register: "given_SaaS_ID"
+      when: 
+        - "vars|success"
+        - "SaaS_ID|default() == ''"
+    - set_fact:
+        SaaS_ID: "{{given_SaaS_ID.user_input}}"
+      run_once: "true"
+      delegate_to: "localhost"
+      when: "(SaaS_ID|default('') == '')"
+    - include_vars:
+        file: "~/roles/ns.ora.create.ngz/vars/{{SaaS_ID}}.yml"
+      tags: "always"
+    - add_host:
+        name: "ns-cen-{{SaaS_ID}}-{{item.value.instance}}"
+        groups: "censhare"
+        LDAP_user: "{{LDAP_user}}"
+        LDAP_pass: "{{LDAP_pass}}"
+        TPM_url: "{{TPM_url}}"
+        tpm_project_id: "{{tpm_project_id}}"
+        Install_Ticket: "{{Install_Ticket}}"
+        SaaS_ID: "{{SaaS_ID}}"
+      no_log: "true"
+      delegate_to: "localhost"
+      with_dict: "{{ngz}}"
+      tags: "always"
+    - add_host:
+        name: "ns-ora-{{SaaS_ID}}-{{item.value.instance}}"
+        groups: "oracle"
+        LDAP_user: "{{LDAP_user}}"
+        LDAP_pass: "{{LDAP_pass}}"
+        TPM_url: "{{TPM_url}}"
+        tpm_project_id: "{{tpm_project_id}}"
+        Install_Ticket: "{{Install_Ticket}}"
+        SaaS_ID: "{{SaaS_ID}}"
+      no_log: "true"
+      delegate_to: "localhost"
+      with_dict: "{{ngz}}"
+      tags: "always"
+  roles:
+    - { role: "solaris.helpfull.aliasses", tags: "solaris.helpfull.aliasses" }
+    - { role: "ssh.key.get", tags: "ssh.key.get" }
+    - { role: "ssh.key.deploy", tags: "ssh.key.deploy" }
+    - { role: "solaris.zfs.backup.zfssnapbak", tags: "solaris.zfs.backup.zfssnapbak" }
+    - { role: "ns.ora.create.ngz", tags: "ns.ora.create.ngz", when: "inventory_hostname == 'ns-zone-01'" }
+    - { role: "ns.ora.get.install.sw", tags: "ns.ora.get.install.sw", when: "inventory_hostname == 'ns-zone-01'" }
+  tags: "ns_ngz"
+
+- hosts: "oracle"
+  gather_facts: "yes"
+  user: "root"
+  pre_tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/roles/ns.ora.create.ngz/vars/{{SaaS_ID}}.yml"
+     tags: "always"
+  roles:
+    - { role: "ns.ora.adjust.hosts.file", tags: "ns.ora.adjust.hosts.file", become: "yes", become_user: "root" }
+    - { role: "root.user.env", tags: "root.user.env", become: "yes", become_user: "root" }
+    - { role: "oracle.user.create", tags: "oracle.user.create", become: "yes", become_user: "root" }
+    - { role: "ns.ora.mount_db_share", tags: "ns.ora.mount_db_share", become: "yes", become_user: "root" }
+    - { role: "oracle.db.rman.backup", tags: "oracle.db.rman.backup", become: "yes", become_user: "root" }
+    - { role: "ns.ora.backup_rman.prepare", tags: "ns.ora.backup_rman.prepare", become: "yes", become_user: "root" }
+    - { role: "oracle.db.dependencies", tags: "oracle.db.dependencies", become: "yes", become_user: "root" }
+    - { role: "oracle.kernel_parameter", tags: "oracle.kernel_parameter", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.ora_censhare", tags: "solaris.smf.ora_censhare", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.rbac.ora_censhare", tags: "solaris.smf.rbac.ora_censhare", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.ora_lsnr", tags: "solaris.smf.ora_lsnr", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.rbac.ora_lsnr", tags: "solaris.smf.rbac.ora_lsnr", become: "yes", become_user: "root" }
+    - { role: "oracle.db.cron.cleanup", tags: "oracle.db.cron.cleanup", become: "yes", become_user: "root" }
+    - { role: "oracle.db.oraInst", tags: "oracle.db.oraInst", become: "yes", become_user: "root" }
+    - { role: "ssh.key.get", tags: "ssh.key.get", become: "yes", become_user: "root" }
+    - { role: "ssh.key.deploy", tags: "ssh.key.deploy", become: "yes", become_user: "root" }
+    - { role: "ssh.key.deploy.SN2NS.migration", tags: "ssh.key.deploy.SN2NS.migration", become: "yes", become_user: "root" }
+    - { role: "oracle.user.env", tags: "oracle.user.env", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install", tags: "oracle.db.install", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install.opatch", tags: "oracle.db.install.opatch", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install.root.sh", tags: "oracle.db.install.root.sh", become: "yes", become_user: "root" }
+    - { role: "oracle.db.install.dbca", tags: "oracle.db.install.dbca", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install.postconfiguration", tags: "oracle.db.install.postconfiguration", become: "yes", become_user: "oracle" }
+    - { role: "ns.ora.start.services", tags: "ns.ora.start.services", become: "yes", become_user: "root" }
+  tags: "oracle"
+
+- hosts: "censhare"
+  user: "root"
+  vars:
+    censhare_repo:  "https://repos.censhare.com/"
+    repo_dest:      "/etc/yum.repos.d/"
+  pre_tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/roles/ns.ora.create.ngz/vars/{{SaaS_ID}}.yml"
+     tags: "always"
+  roles:
+    - { role: "ns.cen.hostname", tags: "ns.cen.hostname", become: "yes", become_user: "root" }
+    - { role: "censhare.remove.rccss.service.systemd", tags: "censhare.remove.rccss.service.systemd", become: "yes", become_user: "root" }
+    - { role: "ns.cen.uninstall_img_tools-fix_ahus_shit", tags: "ns.cen.uninstall_img_tools-fix_ahus_shit" }
+    - { role: "os.upgrade.all", tags: "os.upgrade.all", become: "yes", become_user: "root" }
+    - { role: "root.user.env", tags: "root.user.env" }
+    - { role: "censhare.user.create", tags: "censhare.user.create", become: "yes", become_user: "root" }
+    - { role: "censhare.server.ulimits", tags: "censhare.server.ulimits", become: "yes", become_user: "root" }
+    - { role: "ns.cen.install.server.rpm", tags: "ns.cen.install.server.rpm", become: "yes", become_user: "root" }
+    - { role: "censhare.serviceclient.install", tags: "censhare.serviceclient.install", become: "yes", become_user: "root" }
+    - { role: "censhare.install.nginx.rpm", tags: "censhare.install.nginx.rpm", become: "yes", become_user: "root" }
+    - { role: "oracle.db.install.sqlplus.client", tags: "oracle.db.install.sqlplus.client", become: "yes", become_user: "root" }
+    - { role: "ns.cen.mount_asset_share", tags: "ns.cen.mount_asset_share", become: "yes", become_user: "root" }
+    - { role: "censhare.server.systemd", tags: "censhare.server.systemd", become: "yes", become_user: "root" }
+    - { role: "censhare.serviceclient.systemd", tags: "censhare.serviceclient.systemd", become: "yes", become_user: "root" }
+    - { role: "censhare.office.systemd", tags: "censhare.office.systemd", become: "yes", become_user: "root" }
+    - { role: "censhare.v4-webclient.systemd", tags: "censhare.v4-webclient.systemd" }
+    - { role: "censhare.dependencies", tags: "censhare.dependencies" }
+    - { role: "linux.grant.user.systemd.polkit", tags: "linux.grant.user.systemd.polkit" }
+    - { role: "ssh.key.deploy.SN2NS.migration", tags: "ssh.key.deploy.SN2NS.migration" }
+    - { role: "censhare.user.env", tags: "censhare.user.env", become: "yes", become_user: "corpus" }
+    - { role: "censhare.configure.server.initial", tags: "censhare.configure.server.initial", become: "yes", become_user: "corpus" }
+    - { role: "ns.cen.default.config", tags: "ns.cen.default.config", become: "yes", become_user: "corpus" }
+    - { role: "ns.ora.create.user_and_db", tags: "ns.ora.create.user_and_db", become: "yes", become_user: "corpus" }
+    - { role: "ns.nginx.configuration", tags: "ns.nginx.configuration" }
+  tags: "censhare"
+
+- hosts: "oracle censhare"
+  user: "root"
+  vars:
+    netdb: "/root/roles/ns.new.cust.preapre.vars/vars/network.db"
+  pre_tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/roles/ns.ora.create.ngz/vars/{{SaaS_ID}}.yml"
+     tags: "always"
+   - meta: "clear_host_errors"
+  roles:
+    - { role: "ns.cust.ssh.key.exchange", tags: "ns.cust.ssh.key.exchange" }
+    - { role: "deploy.monitoring.plugins", tags: "deploy.monitoring.plugins" }
+    - { role: "ns.monitoring.default", tags: "ns.monitoring.default" }
+    - { role: "ns.colour.bash.prompt.testsystems", tags: "ns.colour.bash.prompt.testsystems" }
+  post_tasks:
+    - debug:
+        msg: "Installation done !"
+      delegate_to: "localhost"
+      run_once: "true"
+  tags: "environment"

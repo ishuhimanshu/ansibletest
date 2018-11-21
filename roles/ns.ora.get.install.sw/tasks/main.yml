@@ -1,0 +1,78 @@
+---
+# tasks file for roles/ns.ora.get.install.sw
+- name: "extract the oracle install software in GZ for NGZ"
+  block:
+    - name: "extract software - p13390677_112040_SunOS_1of6.zip"
+      unarchive:
+        src: "/data/install/oracle_sw/p13390677_112040_SunOS_1of6.zip"
+        dest: "/zones/{{ngzp}}/root/var/tmp/"
+        creates: "yes"
+        remote_src: "yes"
+      with_dict: "{{ngz}}"
+      register: "unarchive_1"
+
+    - name: "extract software - p13390677_112040_SunOS_2of6.zip"
+      unarchive:
+        src: "/data/install/oracle_sw/p13390677_112040_SunOS_2of6.zip"
+        dest: "/zones/{{ngzp}}/root/var/tmp/"
+        creates: "yes"
+        remote_src: "yes"
+      with_dict: "{{ngz}}"
+      register: "unarchive_2"
+
+    - name: "extract software - p24006111_112040_Solaris86-64.zip"
+      unarchive:
+        src: "/data/install/oracle_sw/p24006111_112040_Solaris86-64.zip"
+        dest: "/zones/{{ngzp}}/root/var/tmp/"
+        creates: "yes"
+        remote_src: "yes"
+      with_dict: "{{ngz}}"
+      register: "unarchive_3"
+      
+    - name: "extract software - p6880880_112000_Solaris86-64.zip"
+      unarchive:
+        src: "/data/install/oracle_sw/p6880880_112000_Solaris86-64.zip"
+        dest: "/zones/{{ngzp}}/root/var/tmp/"
+        creates: "yes"
+        remote_src: "yes"
+      with_dict: "{{ngz}}"
+      register: "unarchive_4"
+
+    - fail:
+        msg: "one or more of the achives couldn't extracted"
+      when: "unarchive_1|failed or unarchive_2|failed or unarchive_3|failed or unarchive_4|failed"
+      register: "unarchive_success"
+
+    - name: "copy software - p25351440_81517314_Solaris86-64.zip"
+      copy:
+        src: "/data/install/oracle_sw/p25351440_81517314_Solaris86-64.zip"
+        dest: "/zones/{{ngzp}}/root/var/tmp/"
+        remote_src: "yes"
+      with_dict: "{{ngz}}"
+      register: "copy_patches1"
+      tags: "copy_patches1"
+
+    - name: "copy software - p6880880_112000_Solaris86-64.zip"
+      copy:
+        src: "/data/install/oracle_sw/p6880880_112000_Solaris86-64.zip"
+        dest: "/zones/{{ngzp}}/root/var/tmp/"
+        remote_src: "yes"
+      with_dict: "{{ngz}}"
+      register: "copy_patches2"
+      tags: "copy_patches2"
+
+- name: "change ownership of those exported content"
+  file:
+    path: "/zones/{{ngzp}}/root/var/tmp/"
+    owner: "{{oracle_db_uid}}"
+    group: "{{oinstall_db_gid}}"
+    recurse: "yes"
+  register: "change_perm_oracle_sw"
+  tags: "change_perm_oracle_sw"
+  with_dict: "{{ngz}}"
+  when: 
+    - "unarchive_success|success"
+    - "copy_patches1|success"
+    - "copy_patches2|success"
+
+# quick and dirty, if time i will change that to a nested loop

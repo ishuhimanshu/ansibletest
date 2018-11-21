@@ -1,0 +1,36 @@
+ns-gw-07580978		3600	A	10.130.7.1
+ns-ora-07580978-01	3600	A	10.130.7.2
+ns-ora-07580978-02	3600	A	10.130.7.3
+ns-cen-07580978-01	3600	A	10.130.7.4
+ns-cen-07580978-02	3600	A	10.130.7.5
+ns-rnd-07580978-01	3600	A	10.130.7.6
+ns-rnd-07580978-02	3600	A	10.130.7.7
+ns-svc-07580978-01	3600	A	10.130.7.8
+ns-svc-07580978-02	3600	A	10.130.7.9
+ns-bc-07580978		3600	A	10.130.7.31
+ns-ora-07580978-01-sto	3600	A	10.131.7.2
+ns-ora-07580978-02-sto	3600	A	10.131.7.3
+ns-cen-07580978-01-sto	3600	A	10.131.7.4
+ns-cen-07580978-02-sto	3600	A	10.131.7.5
+ns-sto-07580978-assets	3600	A	10.131.7.6
+ns-sto-07580978-rman	3600	A	10.131.7.7
+ns-css-07580978-01	3600	A	213.95.85.97
+ns-css-07580978-02	3600	A	213.95.85.98
+ns-web-07580978-01	3600	A	213.95.85.235
+ns-web-07580978-02	3600	A	213.95.85.236
+newmarketuk-prodns-css01		CNAME	ns-cen-07580978-01
+newmarketuk-testns-css01		CNAME	ns-cen-07580978-02
+newmarketuk-prodns-db			CNAME	ns-ora-07580978-01
+newmarketuk-testns-db			CNAME	ns-ora-07580978-02
+newmarketuk-prodns-rnd01		CNAME	ns-rnd-07580978-01
+newmarketuk-prodns-rnd02		CNAME	ns-rnd-07580978-02
+newmarketuk-testns-rnd01		CNAME	ns-rnd-07580978-01
+newmarketuk-testns-rnd02		CNAME	ns-rnd-07580978-02
+newmarketuk-prodns-img01		CNAME	ns-svc-07580978-01
+newmarketuk-prodns-img02		CNAME	ns-svc-07580978-02
+newmarketuk-testns-img01		CNAME	ns-svc-07580978-01
+newmarketuk-testns-img02		CNAME	ns-svc-07580978-02
+newmarketuk-css			CNAME	ns-css-07580978-01
+newmarketuk				CNAME	ns-web-07580978-01
+newmarketuk-test-css			CNAME	ns-css-07580978-02
+newmarketuk-test			CNAME	ns-web-07580978-02

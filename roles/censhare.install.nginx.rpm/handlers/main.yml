@@ -1,0 +1,8 @@
+---
+# handlers file for roles/censhare.install.nginx.rpm
+- name: "start nginx"
+  service:
+    name: "nginx"
+    state: "started"
+  register: "startnginx"
+  tags: "startnginx"

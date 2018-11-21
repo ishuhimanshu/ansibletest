@@ -1,0 +1,42 @@
+---
+# tasks file for roles/oracle.db.install.dbca
+- shell: "/usr/bin/date +%s|/usr/bin/md5sum|/usr/bin/cut -b -10"
+  register: "system_pw"
+#- set_fact: 
+#    pw_system: "{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{custname}}-{{item.value.instance_type}}ns-db sqlplus system', 'create=True', 'project_id={{tpm_project_id}}', 'password={{system_pw.stdout}}', 'username=system', 'access_info=sqlplus://system@{{ansible_hostname}}', 'tags=system,sqlplus,SaaS', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}') }}"
+#  with_dict: "{{ngz}}"
+- name: "DBCA - create database"
+  block:
+    - name: "copy dbca template to server"
+      template:
+        src: "cs-ora11204-template.dbc"
+        dest: "/var/tmp/"
+        group: "dba"
+        owner: "oracle"
+      register: "cpDBCAtpl"
+      tags: "cpDBCAtpl"
+
+    - name: "link ORAHOME"
+      file:
+        src: "{{ORAHOME}}"
+        dest: "~/orahome"
+        state: "link"
+        owner: "oracle"
+        group: "dba"
+      register: "linkorahome"
+      tags: "linkorahome"
+      when: "cpDBCAtpl|success"
+
+    - name: "Quick and dirty - get hostname to get the right password"
+      shell: "hostname"
+      register: "hostname"
+      
+    - name: "execute dbca"
+      shell: "{{ORAHOME}}/bin/dbca -silent -createDatabase -cloneTemplate -gdbName {{GDBNAME}} -sid {{SID}} -templateName /var/tmp/cs-ora11204-template.dbc -systemPassword {{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{hostname.stdout}} sqlplus system', 'create=True', 'project_id={{tpm_project_id}}', 'password={{system_pw.stdout}}', 'username=system', 'access_info=sqlplus://system@{{ansible_hostname}}', 'tags=svc:sqlplus,site:ns,usr:system', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}') }} -sysmanPassword {{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{hostname.stdout}} sqlplus system', 'create=True', 'project_id={{tpm_project_id}}', 'password={{system_pw.stdout}}', 'username=system', 'access_info=sqlplus://system@{{ansible_hostname}}', 'tags=svc:sqlplus,site:ns,usr:system', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}') }} -sysPassword {{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{hostname.stdout}} sqlplus system', 'create=True', 'project_id={{tpm_project_id}}', 'password={{system_pw.stdout}}', 'username=system', 'access_info=sqlplus://system@{{ansible_hostname}}', 'tags=svc:sqlplus,site:ns,usr:system', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}') }} -characterSet AL32UTF8 -nationalCharacterSet AL16UTF16 -totalMemory 1024"
+      register: "dbca"
+      tags: "dbca"
+      when: "linkorahome|success"
+
+
+
+

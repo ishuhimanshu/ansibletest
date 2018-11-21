@@ -1,0 +1,179 @@
+---
+# tasks file for roles/ns-create-cust-ngz-prod
+- name: "check if ngz already exists"
+  shell: "zoneadm -z {{ngzp}} list; true"
+  with_dict: "{{ngz}}"
+  register: "ngz_list"
+  when: "ansible_system == 'SunOS'"
+
+- name: "copy ngz template to GZ"
+  template: 
+    src: "ngz-template.xml" 
+    dest: "/etc/zones/ngz-template.xml"
+    backup: "no"
+    group: "root"
+    owner: "root"
+    mode: "0666"
+  register: "tempcopy"
+  when: "ngz_list.stdout|default('') == ''"
+
+- name: "copy ngz template to GZ"
+  template:
+    src: "sc_profile.xml"
+    dest: "/var/tmp/sc_profile.xml"
+    backup: "no"
+    group: "root"
+    owner: "root"
+    mode: "0666"
+  register: "sccopy"
+  when: 
+    - "tempcopy|success"
+    - "ngz_list.stdout|default('') == ''"
+
+- name: "create Oracle Solaris NGZ"
+  command: "zonecfg -z {{ngzp}} 'create; exit'"
+  with_dict: "{{ngz}}"
+  when: 
+    - "sccopy|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "create_ngz"
+
+- name: "remove 'anet' from default config of NGZ -> will not use '-b' option"
+  shell: "zonecfg -z {{ngzp}} 'remove anet 0; exit'"
+  with_dict: "{{ngz}}"
+  when: 
+    - "create_ngz|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "rm_anet_net"  
+
+- name: "set zonepath for NGZ"
+  shell: "zonecfg -z {{ngzp}} 'set zonepath=\"/zones/{{ngzp}}\"; exit'"
+  with_dict: "{{ngz}}"
+  when:
+    - "rm_anet_net|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "set_ngz_path"
+  tags: "set_ngz_path"
+
+- name: "networking for NGZ"
+  block:
+    - name: "add server network for NGZ"
+      shell: "zonecfg -z {{ngzp}} 'add anet; set vlan-id={{srv_vlan}}; set lower-link=aggr0; set defrouter=\"{{network_srv|ipaddr('1')|ipaddr('address')}}\"; set allowed-address=\"{{item.value.ip_srv}}\"; end; exit'"
+      with_dict: "{{ngz}}"
+      when:
+        - "set_ngz_path|success"
+        - "ngz_list.stdout|default('') == ''"
+      register: "create_srv_net"
+    - name: "add storage network for NGZ"
+      shell: "zonecfg -z {{ngzp}} 'add anet; set vlan-id={{sto_vlan}}; set lower-link=aggr0; set allowed-address=\"{{item.value.ip_sto}}\"; end; exit'"
+      with_dict: "{{ngz}}"
+      when:
+        - "set_ngz_path|success"
+        - "ngz_list.stdout|default('') == ''"
+      register: "create_sto_net"
+
+- name: "set memory settings for NGZ"
+  command: "zonecfg -z {{ngzp}} 'add capped-memory; set physical={{item.value.sys_mem}}G; set swap={{item.value.sys_mem * 3}}G; end'"
+  with_dict: "{{ngz}}"
+  when: 
+    - "create_sto_net|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "set_mem_ngz"
+
+- name: "set CPU settings for NGZ"
+  command: "zonecfg -z {{ngzp}} 'set cpu-shares={{item.value.sys_cpu}};'"
+  with_dict: "{{ngz}}"
+  when: 
+    - "set_mem_ngz|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "set_cpu_ngz"
+
+- name: "install Oracle Solaris NGZ"
+  command: "zoneadm -z {{ngzp}} install -c /var/tmp/sc_profile.xml"
+  with_dict: "{{ngz}}"
+  when:
+    - "set_cpu_ngz|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "install_ngz"
+
+- name: "distribute NGZ config to other GZs"
+  block:
+    - name: "get NGZ index line of NGZs"
+      shell: "grep ^{{ngzp}} /etc/zones/index"
+      with_dict: "{{ngz}}"
+      register: "indexlineofngz"
+      tags: "indexlineofngz"
+      when: "install_ngz|success"
+    
+    - name: "distribute NGZ index line to ns-zone-0{2..3}"
+      lineinfile:
+        path: "/etc/zones/index"
+        backup: "yes"
+        regexp: "{{item[0].stdout.split(':')[0]}}"
+        line: "{{item[0].stdout}}"
+      delegate_to: "{{item[1]}}"
+      with_nested: 
+        - "{{indexlineofngz.results}}"
+        - [ 'ns-zone-02', 'ns-zone-03' ]
+      when: "indexlineofngz|success"
+      register: "distngzindex2otherGZ"
+      tags: "distngzindex2otherGZ"
+    
+    - name: "sync NGZ.xml files to ns-zone-02"
+      shell: "scp /etc/zones/{{ngzp}}.xml ns-zone-02:/etc/zones/{{ngzp}}.xml"
+      with_dict: "{{ngz}}"
+      when: "install_ngz|success"
+      register: "ngzxml202"
+      tags: "ngzxml202"
+    - name: "sync NGZ.xml files to ns-zone-03"
+      shell: "scp /etc/zones/{{ngzp}}.xml ns-zone-03:/etc/zones/{{ngzp}}.xml"
+      with_dict: "{{ngz}}"
+      when: "install_ngz|success"
+      register: "ngzxml203"
+      tags: "ngzxml203"
+    
+- name: "boot Oracle Solaris NGZ"
+  command: "zoneadm -z {{ngzp}} boot"
+  with_dict: "{{ngz}}"
+  when: 
+    - "install_ngz|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "boot_ngz"
+
+- pause:
+    seconds: "30"
+    promt: "make 30sec pause to get the NGZ changs to boot up..."
+  when: "ngz_list.stdout|default('') == ''"
+    
+- name: "set customer services hostname into the ngz"
+  command: "zlogin {{ngzp}} \"hostname {{custname}}-{{item.value.instance_type}}ns-db\""
+  with_dict: "{{ngz}}"
+  when: 
+    - "boot_ngz|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "set_hostname"
+    
+- name: "generate an ssh key into the NGZ"
+  command: "zlogin {{ngzp}} \"test ! -f /root/.ssh/id_rsa && { ssh-keygen -b 4096 -t rsa -N '' -f /root/.ssh/id_rsa &>/dev/null; cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys; cat /root/.ssh/id_rsa.pub; }\""
+  with_dict: "{{ngz}}"
+  when: 
+    - "set_hostname|success"  
+    - "ngz_list.stdout|default('') == ''"
+  register: "gensshkey"
+
+- name: "deploy pub ssh keys of 'ansible@censhare' to NGZ"
+  command: "zlogin {{ngzp}} \"echo {{ssh_key_root_ansible}} >> /root/.ssh/authorized_keys\""
+  with_dict: "{{ngz}}"
+  when: 
+    - "gensshkey|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "deploy_ansible_ssh_key"
+  
+- name: "allow ssh login 'without-password' for root for NGZ"
+  shell: "zlogin {{ngzp}} 'mv /etc/ssh/sshd_config{,.org} && sed \"s/PermitRootLogin no/PermitRootLogin without-password/g\" /etc/ssh/sshd_config.org > /etc/ssh/sshd_config && svcadm refresh ssh'"
+  with_dict: "{{ngz}}"
+  when: 
+    - "deploy_ansible_ssh_key|success"
+    - "ngz_list.stdout|default('') == ''"
+  register: "ngzsshkey"
+  tags: "ngzsshkey"

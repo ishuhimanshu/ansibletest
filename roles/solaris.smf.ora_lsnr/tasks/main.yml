@@ -1,0 +1,58 @@
+---
+# tasks file for roles/solaris.smf.ora_lsnr
+- name: "PreAction: - extract start/stop scripts from GIT repo -> s2s installer"
+  shell: "cd ~/tmp && tar -zxf {{git_itservices}}/scripts/censhare/s2s-install-update.tar.gz s2s/init.tpl/ora_lsnr s2s/sysconfig.tpl/ora_lsnr.tpl"
+  delegate_to: "localhost"
+  until: "extract.rc == 0"
+  register: "extract"
+  tags: "localTASK"
+
+- name: "create dir for SMF manifests"
+  file: 
+    path: "/var/svc/manifest/censhare"
+    state: "directory"
+  when: "ansible_system == 'SunOS'"
+  register: "createSMFdir"
+  tags: "SMF"
+
+- name: "copy SMF files"
+  copy: 
+    src: "{{item.0}}"
+    dest: "{{item.1}}"
+    mode: "0755"
+  with_together:
+  - [ '{{git_itservices}}/scripts/censhare/solaris/smf/manifest/censhare/ora_lsnr.xml', '~/tmp/s2s/init.tpl/ora_lsnr', '~/tmp/s2s/sysconfig.tpl/ora_lsnr.tpl' ]
+  - [ '/var/svc/manifest/censhare/', '/etc/init.d/', '/etc/svc-ora_lsnr', ]
+  when: "createSMFdir|success"
+  register: "cpSMFfiles"
+  tags: "SMF"
+
+- name: "add 'nfs/client' as dependency if in our NS environment"
+  include_role:
+    name: "ns.ora.smf.nfs.dependency.ora_lsnr"
+  when: "(inventory_hostname.split('-')[0] == 'ns')"
+
+- name: "symlinks for St-art/op-Scripts of Oracle"
+  file: 
+    src: "/etc/init.d/ora_lsnr"
+    dest: "/lib/svc/method/svc-ora_lsnr"
+    state: "link"
+  when: "cpSMFfiles|success"
+  register: "slinkORAsscript"
+  tags: "SMF"
+
+- name: "validate and import SMF services"
+  command: "svccfg {{item.0}} /var/svc/manifest/censhare/ora_{{item.1}}.xml"
+  with_together:
+  - [ 'validate', 'import' ]
+  - [ 'lsnr', 'lsnr' ]
+  when: "slinkORAsscript|success"
+  register: "validateORAsmf"
+  tags: "SMF"
+
+- name: "cleanup locally"
+  file: 
+    path: "~/tmp/s2s"
+    state: "absent"
+  delegate_to: "localhost"
+  run_once: true

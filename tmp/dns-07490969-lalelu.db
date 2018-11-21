@@ -1,0 +1,36 @@
+ns-gw-07490969		3600	A	10.130.5.225
+ns-ora-07490969-01	3600	A	10.130.5.226
+ns-ora-07490969-02	3600	A	10.130.5.227
+ns-cen-07490969-01	3600	A	10.130.5.228
+ns-cen-07490969-02	3600	A	10.130.5.229
+ns-rnd-07490969-01	3600	A	10.130.5.230
+ns-rnd-07490969-02	3600	A	10.130.5.231
+ns-svc-07490969-01	3600	A	10.130.5.232
+ns-svc-07490969-02	3600	A	10.130.5.233
+ns-bc-07490969		3600	A	10.130.5.255
+ns-ora-07490969-01-sto	3600	A	10.131.5.226
+ns-ora-07490969-02-sto	3600	A	10.131.5.227
+ns-cen-07490969-01-sto	3600	A	10.131.5.228
+ns-cen-07490969-02-sto	3600	A	10.131.5.229
+ns-sto-07490969-assets	3600	A	10.131.5.230
+ns-sto-07490969-rman	3600	A	10.131.5.231
+ns-css-07490969-01	3600	A	213.95.85.79
+ns-css-07490969-02	3600	A	213.95.85.80
+ns-web-07490969-01	3600	A	213.95.85.217
+ns-web-07490969-02	3600	A	213.95.85.218
+lalelu-prodns-css01		CNAME	ns-cen-07490969-01
+lalelu-testns-css01		CNAME	ns-cen-07490969-02
+lalelu-prodns-db			CNAME	ns-ora-07490969-01
+lalelu-testns-db			CNAME	ns-ora-07490969-02
+lalelu-prodns-rnd01		CNAME	ns-rnd-07490969-01
+lalelu-prodns-rnd02		CNAME	ns-rnd-07490969-02
+lalelu-testns-rnd01		CNAME	ns-rnd-07490969-01
+lalelu-testns-rnd02		CNAME	ns-rnd-07490969-02
+lalelu-prodns-img01		CNAME	ns-svc-07490969-01
+lalelu-prodns-img02		CNAME	ns-svc-07490969-02
+lalelu-testns-img01		CNAME	ns-svc-07490969-01
+lalelu-testns-img02		CNAME	ns-svc-07490969-02
+lalelu-css			CNAME	ns-css-07490969-01
+lalelu				CNAME	ns-web-07490969-01
+lalelu-test-css			CNAME	ns-css-07490969-02
+lalelu-test			CNAME	ns-web-07490969-02

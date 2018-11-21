@@ -1,0 +1,36 @@
+ns-gw-07270947		3600	A	10.130.3.33
+ns-ora-07270947-01	3600	A	10.130.3.34
+ns-ora-07270947-02	3600	A	10.130.3.35
+ns-cen-07270947-01	3600	A	10.130.3.36
+ns-cen-07270947-02	3600	A	10.130.3.37
+ns-rnd-07270947-01	3600	A	10.130.3.38
+ns-rnd-07270947-02	3600	A	10.130.3.39
+ns-svc-07270947-01	3600	A	10.130.3.40
+ns-svc-07270947-02	3600	A	10.130.3.41
+ns-bc-07270947		3600	A	10.130.3.63
+ns-ora-07270947-01-sto	3600	A	10.131.3.34
+ns-ora-07270947-02-sto	3600	A	10.131.3.35
+ns-cen-07270947-01-sto	3600	A	10.131.3.36
+ns-cen-07270947-02-sto	3600	A	10.131.3.37
+ns-sto-07270947-assets	3600	A	10.131.3.38
+ns-sto-07270947-rman	3600	A	10.131.3.39
+ns-css-07270947-01	3600	A	213.95.85.35
+ns-css-07270947-02	3600	A	213.95.85.36
+ns-web-07270947-01	3600	A	213.95.85.173
+ns-web-07270947-02	3600	A	213.95.85.174
+csweb-prodns-css01		CNAME	ns-cen-07270947-01
+csweb-testns-css01		CNAME	ns-cen-07270947-02
+csweb-prodns-db			CNAME	ns-ora-07270947-01
+csweb-testns-db			CNAME	ns-ora-07270947-02
+csweb-prodns-rnd01		CNAME	ns-rnd-07270947-01
+csweb-prodns-rnd02		CNAME	ns-rnd-07270947-02
+csweb-testns-rnd01		CNAME	ns-rnd-07270947-01
+csweb-testns-rnd02		CNAME	ns-rnd-07270947-02
+csweb-prodns-img01		CNAME	ns-svc-07270947-01
+csweb-prodns-img02		CNAME	ns-svc-07270947-02
+csweb-testns-img01		CNAME	ns-svc-07270947-01
+csweb-testns-img02		CNAME	ns-svc-07270947-02
+csweb-css			CNAME	ns-css-07270947-01
+csweb				CNAME	ns-web-07270947-01
+csweb-test-css			CNAME	ns-css-07270947-02
+csweb-test			CNAME	ns-web-07270947-02

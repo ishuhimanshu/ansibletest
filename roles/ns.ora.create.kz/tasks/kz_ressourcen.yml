@@ -1,0 +1,53 @@
+---
+- name: "backup kz config"
+  shell: "zonecfg -z {{kzp}}prod info > /var/tmp/{{kzp}}prod.curr"
+  with_dict: "{{kz}}"
+  register: "backup_kz_config"
+
+- name: "check server network for KZ"
+  shell: "zonecfg -z {{kzp}}prod 'select anet id=0; set vlan-id=0; set vlan-id={{item.value.srv_vlan}}; set lower-link=aggr0; set defrouter=\"{{item.value.network_srv|ipaddr('1')|ipaddr('address')}}\"; set allowed-address=\"{{item.value.network_srv|ipaddr('2')}}\"; set id=0; end; exit'"
+  with_dict: "{{kz}}"
+  when: "(backup_kz_config|success)"
+  register: "create_srv_net"
+
+- name: "check storage network for KZ"
+  shell: "zonecfg -z {{kzp}}prod 'select anet id=1; set vlan-id=0; set vlan-id={{item.value.sto_vlan}}; set lower-link=aggr0; set allowed-address=\"{{item.value.network_sto|ipaddr('2')}}\"; set id=1; end; exit'"
+  with_dict: "{{kz}}"
+  when: "(backup_kz_config|success)"
+  register: "create_sto_net"
+
+- name: "check boot device for KZ"
+  command: "zonecfg -z {{kzp}}prod 'select device id=0; set storage=nfs://0:0@10.131.0.5/vol_censhare_saas_data_nfs_kz_0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}_prod/ns-0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}-{{item.key}}-ora-prod_rpool; set create-size={{item.value.rootzpool_prod}}g; set bootpri=0; end; exit'"
+  with_dict: "{{kz}}"
+  when: "(backup_kz_config|success)"
+  register: "create_sto_dev"
+
+- name: "check memory settings for KZ"
+  command: "zonecfg -z {{kzp}}prod 'select capped-memory; set physical={{item.value.sys_mem_prod}}G; end'"
+  with_dict: "{{kz}}"
+  when: "(backup_kz_config|success)"
+  register: "set_mem_kz"
+
+- name: "check CPU settings for KZ"
+  command: "zonecfg -z {{kzp}}prod 'select virtual-cpu; set ncpus=5; end'"
+  with_dict: "{{kz}}"
+  when: "(backup_kz_config|success)"
+  register: "set_cpu_kz"
+
+- name: "backup kz config"
+  shell: "zonecfg -z {{kzp}}prod info > /var/tmp/{{kzp}}prod.new"
+  with_dict: "{{kz}}"
+  register: "backup_kz_config"
+
+- name: "check for config change"
+  shell: "diff /var/tmp/{{kzp}}prod.new /var/tmp/{{kzp}}prod.curr"
+  with_dict: "{{kz}}"
+  register: "diff_kz_config"
+  ignore_errors: "yes"
+  when: "backup_kz_config|success"
+
+- name: "kz need reboot? yes/no"
+  debug:
+    msg: "ressources of KZ has changed, to apply this changes reboot the KZ - execute > zoneadm -z kzpprod reboot < - you need a downtime"
+  when: "item.rc != '0'"
+  with_items: "{{diff_kz_config.results}}"

@@ -1,0 +1,3 @@
+---
+# vars file for roles/linux.grant.user.systemd.polkit
+allowed_user: "corpus"

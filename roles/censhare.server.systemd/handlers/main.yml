@@ -1,0 +1,8 @@
+---
+# handlers file for roles/censhare.server.systemd
+# #3390680
+- name: "start censhare server"
+  systemd:
+    name: "censhare"
+    state: "started"
+    enabled: "yes"

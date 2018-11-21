@@ -1,0 +1,36 @@
+ns-gw-07210941		3600	A	10.130.2.97
+ns-ora-07210941-01	3600	A	10.130.2.98
+ns-ora-07210941-02	3600	A	10.130.2.99
+ns-cen-07210941-01	3600	A	10.130.2.100
+ns-cen-07210941-02	3600	A	10.130.2.101
+ns-rnd-07210941-01	3600	A	10.130.2.102
+ns-rnd-07210941-02	3600	A	10.130.2.103
+ns-svc-07210941-01	3600	A	10.130.2.104
+ns-svc-07210941-02	3600	A	10.130.2.105
+ns-bc-07210941		3600	A	10.130.2.127
+ns-ora-07210941-01-sto	3600	A	10.131.2.98
+ns-ora-07210941-02-sto	3600	A	10.131.2.99
+ns-cen-07210941-01-sto	3600	A	10.131.2.100
+ns-cen-07210941-02-sto	3600	A	10.131.2.101
+ns-sto-07210941-assets	3600	A	10.131.2.102
+ns-sto-07210941-rman	3600	A	10.131.2.103
+ns-css-07210941-01	3600	A	213.95.85.23
+ns-css-07210941-02	3600	A	213.95.85.24
+ns-web-07210941-01	3600	A	213.95.85.161
+ns-web-07210941-02	3600	A	213.95.85.162
+tracker-dev-prodns-css01		CNAME	ns-cen-07210941-01
+tracker-dev-testns-css01		CNAME	ns-cen-07210941-02
+tracker-dev-prodns-db			CNAME	ns-ora-07210941-01
+tracker-dev-testns-db			CNAME	ns-ora-07210941-02
+tracker-dev-prodns-rnd01		CNAME	ns-rnd-07210941-01
+tracker-dev-prodns-rnd02		CNAME	ns-rnd-07210941-02
+tracker-dev-testns-rnd01		CNAME	ns-ora-07210941-01
+tracker-dev-testns-rnd02		CNAME	ns-ora-07210941-02
+tracker-dev-prodns-img01		CNAME	ns-svc-07210941-01
+tracker-dev-prodns-img02		CNAME	ns-svc-07210941-02
+tracker-dev-testns-img01		CNAME	ns-ora-07210941-01
+tracker-dev-testns-img02		CNAME	ns-svc-07210941-02
+tracker-dev-css			CNAME	ns-css-07210941-01
+tracker-dev				CNAME	ns-web-07210941-01
+tracker-dev-test-css			CNAME	ns-css-07210941-02
+tracker-dev-test			CNAME	ns-web-07210941-02

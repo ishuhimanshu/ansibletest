@@ -1,0 +1,79 @@
+---
+# tasks file for roles/ns.cust.ssh.key.exchange
+# not nice, but helps to deploy all the ssh keys between all the customer instance 
+# systems. corpus and root exchange, root can login to all
+- name: "get ssh keys of all censhare relevant users of the customer"
+  block:
+    - name: "check if ssh key exists for root user of VM"
+      user:
+        name: "root"
+        generate_ssh_key: "yes"
+
+- name: "exchange the ssh keys (root -> all; corpus <-> oracle)"
+  block:
+    - name: "get users HOME of all customer hosts"
+      shell: "grep ^{{item}} /etc/passwd; true"
+      args:
+        executable: "/bin/bash"
+      register: "user_home"
+      tags: "user_home"
+      with_items:
+        - "root"
+        - "oracle"
+        - "corpus"
+
+    - name: "get users ssh key of all users"
+      shell: "cat {{item.stdout.split(':')[5]}}/.ssh/id_rsa.pub"
+      args:
+        executable: "/bin/bash"
+      register: "ssh_key"
+      with_items: 
+        - "{{user_home.results}}"
+      when:
+        - "item.stdout is defined"
+        - "item.stdout != ''"
+
+    - name: "prepare local ssh-key files"
+      lineinfile:
+        line: "{{item.stdout}}"
+        backup: "yes"
+        regexp: "{{item.stdout.split()[-1]}}"
+        path: "~/tmp/tmp_ssh_{{inventory_hostname}}-{{item.item.item}}.key"
+        state: "present"
+        create: "yes"
+      with_items: "{{ssh_key.results}}"
+      when:
+        - "item.stdout is defined"
+        - "item.stdout != ''"
+      delegate_to: "localhost"
+      register: "create_ssh_key_template"
+    
+    - name: "deploy ssh template to the customer for root user"
+      lineinfile:
+        line: "{{lookup('pipe', 'cat ~/tmp/tmp_ssh_*-root.key')}}"
+        path: "{{item.stdout.split(':')[5]}}/.ssh/authorized_keys"
+        backup: "yes"
+        mode: "0600"
+      with_items: 
+        - "{{user_home.results}}"
+      when:
+        - "item.stdout is defined"
+        - "item.stdout != ''"
+        - "create_ssh_key_template|success"
+      register: "deploy_root_keys"
+      tags: "deploy_root_keys"
+        
+    - name: "deploy ssh template to the customer for oracle and corpus user"
+      lineinfile:
+        line: "{{lookup('pipe', 'cat ~/tmp/tmp_ssh_*.key')}}"
+        path: "{{item.stdout.split(':')[5]}}/.ssh/authorized_keys"
+        backup: "yes"
+        mode: "0600"
+      with_items: 
+        - "{{user_home.results}}"
+      when:
+        - "item.stdout is defined"
+        - "item.stdout != ''"
+        - "create_ssh_key_template|success"
+      register: "deploy_corpusoracle_keys"
+      tags: "deploy_corpusoracle_keys"

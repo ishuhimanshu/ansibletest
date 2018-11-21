@@ -1,0 +1,63 @@
+---
+# tasks file for roles/censhare.user.env
+- name: "copy '.alias' file for censhare user"
+  copy: 
+    src: "{{git_itservices}}/environment/alias.corpus" 
+    dest: "~/.alias"
+    owner: "{{cen_uid}}"
+    group: "{{cen_gid}}"
+  tags: "censhare.alias corpus.alias"
+
+- name: "add some properties for censhare history"
+  blockinfile:
+    dest: "~/.bash_profile"
+    create: "yes"
+    backup: "yes"
+    group: "{{cen_gid}}"
+    owner: "{{cen_uid}}"
+    block: |
+      HISTTIMEFORMAT='%Y.%m.%d-%T :: '
+      HISTSIZE=5000
+      HISTFILESIZE=5000
+      test -f ~/.profile && . ~/.profile
+  tags: "censhare.user.env censhare.env"
+
+- name: "copy '.vimrc' to censhare user"
+  copy:
+    src: "{{git_itservices}}/environment/vimrc"
+    dest: "~/.vimrc"
+    owner: "{{cen_uid}}"
+    group: "{{cen_gid}}"
+  tags: "censhare.vimrc corpus.vimrc"
+
+- name: "create a symlink '$HOME/bin' to '$HOME/css/bin'"
+  file:
+    src: "~/css/bin"
+    dest: "~/bin"
+    owner: "{{cen_uid}}"
+    group: "{{cen_gid}}"
+    state: "link"
+    force: "yes"
+  tags: "censhare.bin.symlink"
+
+- name: "add '~/localbin' to PATH"
+  lineinfile:
+    path: "~/.bash_profile"
+    regexp: "^{{localbin}}"
+    line: "{{localbin}}"
+  tags: "censhare.env.localbin"
+
+- name: "add '/usr/local/bin' to PATH"
+  lineinfile:
+    path: "~/.bash_profile"
+    regexp: "^{{usrlocalbin}}"
+    line: "{{usrlocalbin}}"
+  tags: "censhare.env.usrlocalbin"  
+
+- name: "add '/usr/gnu/bin' to PATH"
+  lineinfile:
+    path: "~/.bash_profile"
+    regexp: "^{{usrgnu}}"
+    line: "{{usrgnu}}"
+  tags: "censhare.env.usrgnubin"  
+  when: "ansible_os_family == 'solaris'"

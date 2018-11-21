@@ -1,0 +1,42 @@
+---
+# tasks file for roles/ssh.key.deploy.SN2NS.migration
+- name: "deploy temp. ssh keys of the old SaaS - only for migration"
+  block:
+    - name: "deploy temp SN ssh keys in NS - root"
+      lineinfile: 
+        line: "{{item.value}}"
+        path: "/root/.ssh/authorized_keys"
+        backup: "yes"
+        mode: "0600"
+        owner: "root"
+        group: "root"
+        regexp: "{{item.value.split(' ')[2]}}"
+        state: "present"
+        create: "yes"
+      with_dict: "{{sshkeySN}}"
+
+#    - name: "get users HOME of all customer hosts"
+#      shell: "grep ^{{item}} /etc/passwd; true"
+#      args:
+#        executable: "/bin/bash"
+#      register: "user_home"
+#      tags: "user_home"
+#      with_items:
+#        - "oracle"
+#        - "corpus"
+#
+#    - name: "deploy temp SN ssh keys in NS - oracle/corpus"
+#      lineinfile: 
+#        line: "{{item.value}}"
+#        path: "{{user_home.stdout.split(':')[5]}}/.ssh/authorized_keys"
+#        backup: "yes"
+#        mode: "0600"
+#        owner: "{{user_home.stdout.split(':')[0]}}"
+#        group: "{{user_home.stdout.split(':')[0]|replace('oracle', 'oinstall')}}"
+#        regexp: "{{item.value.split(' ')[2]}}"
+#        state: "present"
+#      with_dict: "{{sshkeySN}}"
+#      when: 
+#        - "user_home.stdout is defined"
+#        - "user_home.stdout != ''"
+

@@ -1,0 +1,22 @@
+---
+# this role is to deploy the ssh keys from AD/LDAP to different hosts
+# the playbook is designed to 
+# - get the ssh-keys from AD/LDAP 
+# - check if there is a change from last deploy to current deploy
+# - if there is a change or no locally file for comparing ansible will deploy the new ssh-key file to the defined hosts
+# - in the vars file is a dict for users with identify patterns (only the first 2 letters will use to identify the purpose of an host)
+- name: change authorized_keys settings to default
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^AuthorizedKeysFile*'
+    replace: '#AuthorizedKeysFile'
+    backup: yes
+    validate: '/usr/sbin/sshd -T -f %s'
+  notify: restart sshd
+
+- name: get ssh keys
+  include: get-key.yml
+  vars:
+    user: '{{ item.key }}'
+    ident: "{{ item.value.ident | default('notset') }}"
+  loop: "{{ lookup('dict', users) }}"

@@ -1,0 +1,55 @@
+---
+- hosts: "localhost"
+  vars_prompt:
+    - name: "LDAP_user"
+      prompt: "Please enter you LDAP username"
+      private: no
+    - name: "LDAP_pass"
+      prompt: "Please enter you LDAP password"
+  tasks:
+   - name: "get valid values for customer identify"
+     shell: "ls -1 ~/roles/ns.ora.create.ngz/vars/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].yml|cut -d'/' -f 6|cut -d'.' -f 1"
+     register: "getvcust"
+
+   - name: "ask for the customer to delete"
+     pause:
+        prompt: "please enter the ID.CUSTOMER which you want do delete.\nvalid entries are:\n{{getvcust.stdout}}\n(you can\'t see your imput)"
+     register: "todelcust"
+
+   - name: "check if lock file exists and is older as 24h"
+     find:
+       path: "/root/tmp/"
+       patterns: "ns-ora-{{todelcust.user_input.split('.')[0]}}-01.lock"
+     register: "lockfile"
+
+   - name: "check if lock file exists"
+     find:
+       path: "/root/tmp/"
+       patterns: "ns-ora-{{todelcust.user_input.split('.')[0]}}-01.lock"
+       age: "24h"
+       age_stamp: "mtime"
+     register: "lockfile_older_as_24h"
+
+   - fail: 
+       msg: "customer not found to delete... you entry was \"{{todelcust.user_input}}\" - please check manually"
+     when: "todelcust.user_input not in getvcust.stdout"
+
+   - fail:
+       msg: "sorry, but you haven't thought long enough about system deletion"
+     when:
+       - "lockfile.matched > 0"
+       - "lockfile_older_as_24h.matched < 1"
+
+   - name: "exec locking part"
+     include_role: 
+       name: "ns.lock.cust"
+     vars:
+       customer: "{{todelcust.user_input}}"
+     when: "lockfile.matched == 0"
+
+   - name: "exec archive part"
+     include_role: 
+       name: "ns.archive.cust"
+     vars:
+       customer: "{{todelcust.user_input}}"
+     when: "lockfile_older_as_24h.matched > 0"

@@ -1,0 +1,36 @@
+ns-gw-07550975		3600	A	10.130.6.161
+ns-ora-07550975-01	3600	A	10.130.6.162
+ns-ora-07550975-02	3600	A	10.130.6.163
+ns-cen-07550975-01	3600	A	10.130.6.164
+ns-cen-07550975-02	3600	A	10.130.6.165
+ns-rnd-07550975-01	3600	A	10.130.6.166
+ns-rnd-07550975-02	3600	A	10.130.6.167
+ns-svc-07550975-01	3600	A	10.130.6.168
+ns-svc-07550975-02	3600	A	10.130.6.169
+ns-bc-07550975		3600	A	10.130.6.191
+ns-ora-07550975-01-sto	3600	A	10.131.6.162
+ns-ora-07550975-02-sto	3600	A	10.131.6.163
+ns-cen-07550975-01-sto	3600	A	10.131.6.164
+ns-cen-07550975-02-sto	3600	A	10.131.6.165
+ns-sto-07550975-assets	3600	A	10.131.6.166
+ns-sto-07550975-rman	3600	A	10.131.6.167
+ns-css-07550975-01	3600	A	213.95.85.91
+ns-css-07550975-02	3600	A	213.95.85.92
+ns-web-07550975-01	3600	A	213.95.85.229
+ns-web-07550975-02	3600	A	213.95.85.230
+dokat-prodns-css01		CNAME	ns-cen-07550975-01
+dokat-testns-css01		CNAME	ns-cen-07550975-02
+dokat-prodns-db			CNAME	ns-ora-07550975-01
+dokat-testns-db			CNAME	ns-ora-07550975-02
+dokat-prodns-rnd01		CNAME	ns-rnd-07550975-01
+dokat-prodns-rnd02		CNAME	ns-rnd-07550975-02
+dokat-testns-rnd01		CNAME	ns-rnd-07550975-01
+dokat-testns-rnd02		CNAME	ns-rnd-07550975-02
+dokat-prodns-img01		CNAME	ns-svc-07550975-01
+dokat-prodns-img02		CNAME	ns-svc-07550975-02
+dokat-testns-img01		CNAME	ns-svc-07550975-01
+dokat-testns-img02		CNAME	ns-svc-07550975-02
+dokat-css			CNAME	ns-css-07550975-01
+dokat				CNAME	ns-web-07550975-01
+dokat-test-css			CNAME	ns-css-07550975-02
+dokat-test			CNAME	ns-web-07550975-02

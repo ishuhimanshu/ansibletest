@@ -1,0 +1,7 @@
+---
+- hosts: test_group
+#  connection: ssh
+  tasks:
+  - name: "create a new file"
+    file: path=/root/test.txt state=touch
+

@@ -1,0 +1,6 @@
+---
+# handlers file for role/solaris.zfs.backup.zfssnapbak
+- name: "zfssnapbak"
+  command: "/usr/local/bin/zfssnapbak.sh"
+  register: "zfssnapbakexec"
+  failed_when: "false"

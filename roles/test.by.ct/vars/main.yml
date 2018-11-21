@@ -1,0 +1,9 @@
+---
+# vars file for roles/test.by.ct
+
+network_srv: "10.130.2.1/27"
+1:	1
+2:	7
+3:	13
+4:	19
+5:	25

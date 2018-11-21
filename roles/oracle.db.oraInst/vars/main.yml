@@ -1,0 +1,7 @@
+---
+# vars file for roles/oracle.db.oraInst
+oracle:
+  inventory_loc: 
+    line: "inventory_loc=/u01/app/oracle/oraInventory"
+  inst_group: 
+    line: "inst_group=oinstall"

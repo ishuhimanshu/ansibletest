@@ -1,0 +1,16 @@
+---
+# vars file for roles/oracle.db.install
+UGN:        "oinstall" 
+FROMLOC:    "/var/tmp/database/stage/products.xml"
+FROMDIR:    "../source/db/Disk1/stage/products.xml"
+BASE:       "/u01/app/oracle"
+ORAHOME:    "/u01/app/oracle/product/11.2.0.4/db_1"
+HOMENAME:   "OUIHome" 
+INTYPE:     "SEONE"
+INOPT:      "INSTALL_DB_SWONLY"
+DBAGRP:     "dba"
+
+
+GDBNAME:    "corpus.censhare" 
+SID:        "corpus" 
+SYSPW:      "{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{ansible_hostname}} sqlplus system') }}"

@@ -1,0 +1,62 @@
+---
+# tasks file for roles/oracle.user.env
+- name: "copy alias file for oracle user"
+  copy: 
+    src: "{{git_itservices}}/environment/alias.oracle" 
+    dest: "~/.alias"
+    owner: "{{oracle_db_uid}}"
+    group: "{{dba_db_gid}}"
+
+- name: "create oracle environment"
+  blockinfile:
+    dest: "~/.alias"
+    create: "no"
+    backup: "yes"
+    group: "{{dba_db_gid}}"
+    owner: "{{oracle_db_uid}}"
+    block: |
+      alias s2s="echo -e '########################################\n\ns2s is not available on this system, please use following commands to control censhare Services:\n\nsvcs \"censhare/*\"                       # list status of configurated censhare Services\nsvcs -l \"censhare/*\"                    # list extended status of configurated censhare Service (check logfile for errors)\nsvcadm disable censhare/<servicename>   # shutdown Service\nsvcadm enable censhare/<servicename>    # startup Service\nsvcadm restart censhare/<servicename>   # restart Service\n\n# Examples:\nsvcadm disable censhare/server          # shutdown censhare server\nsvcadm enable censhare/server           # startup censhare server\nsvcadm restart censhare/server          # restarts censhare server\n\n##########################################'"
+      alias rccss="echo -e '########################################\n\nrccss is not available on this system, please use following commands to control censhare Services:\n\nsvcs \"censhare/*\"                       # list status of configurated censhare Services\nsvcs -l \"censhare/*\"                    # list extended status of configurated censhare Service (check logfile for errors)\nsvcadm disable censhare/<servicename>   # shutdown Service\nsvcadm enable censhare/<servicename>    # startup Service\nsvcadm restart censhare/<servicename>   # restart Service\n\n# Examples:\nsvcadm disable censhare/server          # shutdown censhare server\nsvcadm enable censhare/server           # startup censhare server\nsvcadm restart censhare/server          # restarts censhare server\n\n##########################################'"
+
+- name: "add some properties for oracle history"
+  blockinfile:
+    dest: "~/.bash_profile"
+    create: "yes"
+    backup: "yes"
+    group: "{{dba_db_gid}}"
+    owner: "{{oracle_db_uid}}"
+    block: |
+      HISTTIMEFORMAT='%Y.%m.%d-%T :: '
+      HISTSIZE=5000
+      HISTFILESIZE=5000
+      test -f ~/.profile && . ~/.profile
+  tags: user oracleENV
+
+- name: "bash environment - .profile for for oracle and source '.alias'"
+  blockinfile:
+    dest: "~/.profile"
+    create: "yes"
+    backup: "yes"
+    group: "{{dba_db_gid}}"
+    owner: "{{oracle_db_uid}}"
+    block: |
+      ORACLE_SID=corpus; export ORACLE_SID
+      ORACLE_BASE=/u01/app/oracle; export ORACLE_BASE
+      ORACLE_HOME=$ORACLE_BASE/product/11.2.0.4/db_1; export ORACLE_HOME
+      TNS_ADMIN=$ORACLE_HOME/network/admin; export TNS_ADMIN
+      NLS_LANG=AMERICAN_AMERICA.AL32UTF8 ; export NLS_LANG
+      PATH=/usr/ccs/bin:$PATH:$ORACLE_HOME/bin:/usr/local/bin:$ORACLE_HOME/OPatch
+      EDITOR=vi; export EDITOR
+      #LD_LIBRARY_PATH=\$ORACLE_HOME/lib:\$ORACLE_HOME/ctx/lib:/usr/td/lib:/usr/ucblib:/usr/local/lib; export LD_LIBRARY_PATH
+      AWT_TOOLKIT=XToolkit; export AWT_TOOLKIT
+      test -f ~/.alias && . ~/.alias
+  tags: user oracleENV
+
+- name: "insert something in .bashrc"
+  lineinfile:
+    line: "test -f ~/.profile && source ~/.profile"
+    path: "~/.bashrc"
+    create: "yes"
+  register: "copy_source_profile"
+  tags: "copy_source_profile"
+  become_user: "oracle"

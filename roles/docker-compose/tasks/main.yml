@@ -1,0 +1,14 @@
+---
+
+- name: "download the docker-compose binary (unless it is already here in correct version)"
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ version }}/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+    checksum: "sha256:{{ checksum_sha256 }}"
+    dest: "{{ destpath }}"
+
+- name: Apply executable permission
+  file:
+    path: "{{ destpath }}"
+    mode: "a+x"
+
+# vim:ts=4:sw=4:expandtab:

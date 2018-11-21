@@ -1,0 +1,42 @@
+---
+# tasks file for roles/oracle.user.create
+- shell: "/usr/bin/date +%s|/usr/bin/md5sum|/usr/bin/cut -b -10"
+  register: "oracle_pw"
+- set_fact: 
+    pw: "{{lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{ansible_hostname}} ssh oracle', 'create=True', 'project_id={{tpm_project_id}}', 'password={{oracle_pw.stdout}}', 'username=root', 'access_info=ssh://oracle@{{ansible_hostname}}', 'tags=svc:ssh,usr:oracle,site:ns', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}')}}"
+- name: "create group oinstall"
+  group: 
+    name: "oinstall"
+    gid: "{{oinstall_db_gid}}"
+  register: "createGROUPoinstall"
+  tags: "user oracleENV"
+
+- name: "create group dba"
+  group:
+    name: "dba"
+    gid: "{{dba_db_gid}}"
+  when: "createGROUPoinstall|success"
+  register: "createGROUPdba"
+  tags: "user oracleENV"
+
+- name: "create user oracle" 
+  user: 
+    name: "oracle"
+    comment: "oracle user for censhare"
+    uid: "{{oracle_db_uid}}"
+    group: "oinstall"
+    groups: "oinstall,dba"
+    shell: "{{oracle_user_shell}}"
+    generate_ssh_key: "yes"
+    ssh_key_bits: "4096"
+    ssh_key_file: ".ssh/id_rsa"
+    password: "{{pw}}"
+  when: "createGROUPdba|success"
+  register: "oracleUser"
+  tags: "user oracleENV"
+
+- name: "deploy pub ssh keys of ansible@censhare to NGZ user oracle"
+  authorized_key:
+    user: "oracle"
+    state: "present"
+    key: "{{ssh_key_root_ansible}}"

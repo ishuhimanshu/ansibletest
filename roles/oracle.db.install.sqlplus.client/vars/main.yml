@@ -1,0 +1,3 @@
+---
+# vars file for roles/oracle.db.install.sqlplus.client
+sqlplus: "oracle-instantclient12.1-sqlplus.x86_64"

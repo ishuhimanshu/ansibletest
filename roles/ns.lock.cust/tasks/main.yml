@@ -1,0 +1,61 @@
+---
+# tasks file for roles/ns.lock.cust
+- name: "stop Oracle DB and create an lock on ansible host"
+  block:
+    - name: "stop DB and lsnr on live system (instance 01)"
+      service:
+        name: "{{item}}"
+        state: "stopped"
+      with_items:
+        - "censhare/ora_lsnr"
+        - "censhare/ora_censhare"
+      register: "stop_ora_services_01"
+      tags: "stop_ora_services_01"
+      delegate_to: "ns-ora-{{customer.split('.')[0]}}-01"
+
+    - name: "stop DB and lsnr on test system (instance 02)"
+      service:
+        name: "{{item}}"
+        state: "stopped"
+      with_items:
+        - "svc:/censhare/ora_lsnr:default"
+        - "svc:/censhare/ora_censhare:default"
+      register: "stop_ora_services_02"
+      tags: "stop_ora_services_02"
+      delegate_to: "ns-ora-{{customer.split('.')[0]}}-02"
+
+    - name: "get lock file informations for live system (instance 01)"
+      shell: "md5sum /var/svc/log/censhare-ora_censhare*"
+      register: "md5_of_01"
+      tags: "md5_of_01"
+      when: "stop_ora_services_01|success"
+      delegate_to: "ns-ora-{{customer.split('.')[0]}}-01"
+
+    - name: "get lock file informations for live system (instance 02)"
+      shell: "md5sum /var/svc/log/censhare-ora_censhare*"
+      register: "md5_of_02"
+      tags: "md5_of_02"
+      when: "stop_ora_services_02|success"
+      delegate_to: "ns-ora-{{customer.split('.')[0]}}-02"
+
+    - name: "write an lock file for live system (instance 01)"
+      lineinfile:
+        path: "~/tmp/ns-ora-{{customer.split('.')[0]}}-01.lock"
+        create: "yes"
+        mode: "0400"
+        line: "{{md5_of_01.stdout.split(' ')[0]}}"
+      register: "wr_lock_file_01"
+      tags: "wr_lock_file_01"
+      when: "md5_of_01|success"
+
+    - name: "write an lock file for live system (instance 02)"
+      lineinfile:
+        path: "~/tmp/ns-ora-{{customer.split('.')[0]}}-02.lock"
+        create: "yes"
+        mode: "0400"
+        line: "{{md5_of_02.stdout.split(' ')[0]}}"
+      register: "wr_lock_file_02"
+      tags: "wr_lock_file_02"
+      when: "md5_of_02|success"
+
+    - meta: "end_play"

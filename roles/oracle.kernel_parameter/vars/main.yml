@@ -1,0 +1,4 @@
+---
+# vars file for roles/oracle.kernel_parameter
+marker:                         "# added by ansible@censhare -> roles/oracle.kernel_parameter"
+user_oracle:                    "user.oracle:100:Oracle:oracle::process.max-file-descriptor=(privileged,65536,deny);process.max-sem-nsems=(privileged,4096,deny);process.max-stack-size=(basic,180536000,deny),(privileged,180536000,deny);project.max-sem-ids=(privileged,500,deny);project.max-shm-ids=(privileged,500,deny);project.max-shm-memory=(privileged,17179869184,deny)"

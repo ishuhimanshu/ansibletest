@@ -1,0 +1,69 @@
+---
+# tasks file for roles/ns.colour.bash.prompt.testsystems
+# in the feature we can improve the role, and assert between test and prod system automatically 
+# so the role has so much less code
+- name: "change bash prompt colour for test and prod systems"
+  block:
+    - name: "colour the prompt for test systems (only) - #3431627"
+      lineinfile:
+        line: "export PS1='\\u{{'@'}}\\[\\e[1;34m\\]\\h:\\[\\e[0m\\]`pwd|${SED__PROG-sed} \"s,/[^/][^/]*.*\\\\(/[^/][^/]*/[^/][^/]*/[^/][^/]*\\\\)\\\\$,...\\\\1,;s,^$HOME,~,\"`\\$ '"
+        path: "~/.bash_profile"
+        regexp: "^export PS1="
+      when: "ansible_hostname.split('-')[1] == 'testns'"
+      tags: "colour_bash_prompt_root"
+      register: "colour_bash_prompt_root"
+    
+    - name: "colour bash prompt for oracle/censhare users"
+      block:
+        - name: "get users '$HOME'"
+          shell: "grep {{item}} /etc/passwd; true"
+          when: "colour_bash_prompt_root|success"
+          register: "get_user_HOME"
+          tags: "get_user_HOME"
+          with_items:
+            - "corpus"
+            - "oracle"
+    
+        - name: "colour the prompt for test systems for non-root user (only) - #3431627"
+          lineinfile:
+            line: "export PS1='\\u{{'@'}}\\[\\e[1;34m\\]\\h:\\[\\e[0m\\]`pwd|${SED__PROG-sed} \"s,/[^/][^/]*.*\\\\(/[^/][^/]*/[^/][^/]*/[^/][^/]*\\\\)\\\\$,...\\\\1,;s,^$HOME,~,\"`\\$ '"
+            regexp: "^export PS1="
+            path: "{{item.stdout.split(':')[5]}}/.bash_profile"
+          when: 
+            - "ansible_hostname.split('-')[1] == 'testns'"
+            - "item.stdout|default('') != ''"
+          tags: "colour_bash_prompt_corpus"
+          register: "colour_bash_prompt_non_root"
+          with_items: "{{get_user_HOME.results}}"
+
+    - name: "colour the prompt for prod systems (only) - #3431627"
+      lineinfile:
+        line: "export PS1='\\u{{'@'}}\\[\\e[1;31m\\]\\h:\\[\\e[0m\\]`pwd|${SED__PROG-sed} \"s,/[^/][^/]*.*\\\\(/[^/][^/]*/[^/][^/]*/[^/][^/]*\\\\)\\\\$,...\\\\1,;s,^$HOME,~,\"`\\$ '"
+        path: "~/.bash_profile"
+        regexp: "^export PS1="
+      when: "ansible_hostname.split('-')[1] == 'prodns'"
+      tags: "colour_bash_prompt_root"
+      register: "colour_bash_prompt_root"
+    
+    - name: "colour bash prompt for oracle/censhare users"
+      block:
+        - name: "get users '$HOME'"
+          shell: "grep {{item}} /etc/passwd; true"
+          when: "colour_bash_prompt_root|success"
+          register: "get_user_HOME"
+          tags: "get_user_HOME"
+          with_items:
+            - "corpus"
+            - "oracle"
+    
+        - name: "colour the prompt for test systems for non-root user (only) - #3431627"
+          lineinfile:
+            line: "export PS1='\\u{{'@'}}\\[\\e[1;31m\\]\\h:\\[\\e[0m\\]`pwd|${SED__PROG-sed} \"s,/[^/][^/]*.*\\\\(/[^/][^/]*/[^/][^/]*/[^/][^/]*\\\\)\\\\$,...\\\\1,;s,^$HOME,~,\"`\\$ '"
+            regexp: "^export PS1="
+            path: "{{item.stdout.split(':')[5]}}/.bash_profile"
+          when: 
+            - "ansible_hostname.split('-')[1] == 'prodns'"
+            - "item.stdout|default('') != ''"
+          tags: "colour_bash_prompt_corpus"
+          register: "colour_bash_prompt_non_root"
+          with_items: "{{get_user_HOME.results}}"

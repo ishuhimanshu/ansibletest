@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "ansible"
+network_srv:          "10.130.2.65/27"
+network_sto:          "10.131.2.65/27"
+srv_vlan:             "720"
+sto_vlan:             "940"
+SaaS_ID:              "07200940"
+tpm_project_id:       "4"
+Install_Ticket:       ""
+CustomerName:         "just a test to test the ansible playbooks"
+ngz:
+  ansible-01-prod:
+    name:             "ansible"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.2.66/27"
+    ip_sto:           "10.131.2.66/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+  ansible-02-test:
+    name:             "ansible"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.2.67/27"
+    ip_sto:           "10.131.2.67/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+# first and second instance, assume that is prod and test system

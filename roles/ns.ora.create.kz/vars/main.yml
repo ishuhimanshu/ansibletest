@@ -1,0 +1,27 @@
+---
+kz:
+  min:
+    name: "min"
+    srv_vlan: "717"
+    sto_vlan: "937"
+    network_srv: "10.130.1.225/27"
+    network_sto: "10.131.1.225/27"
+    rootzpool_prod: 50
+    rootzpool_test: 50
+    sys_mem_prod: 6
+    sys_mem_test: 4
+    sys_cpu_prod: 2
+    sys_cpu_test: 1
+  max:
+    name: "max"
+    srv_vlan: "718"
+    sto_vlan: "938"
+    network_srv: "10.130.2.1/27"
+    network_sto: "10.131.2.1/27"
+    rootzpool_prod: 50
+    rootzpool_test: 50
+    sys_mem_prod: 60
+    sys_mem_test: 4
+    sys_cpu_prod: 20
+    sys_cpu_test: 1
+kzp: ns-0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}-{{item.key}}-ora-

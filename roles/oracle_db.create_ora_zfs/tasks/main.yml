@@ -1,0 +1,14 @@
+---
+# tasks file for roles/oracle_db.create_ora_zfs
+- name: "set mountpoint for Oracle ZFS (create if not exits)"
+  zfs: 
+    name: "rpool/u01"
+    mountpoint: "/u01"
+    state: "present"
+  when: "ansible_system == 'SunOS'"
+
+- name: "set permission for oracle user"
+  file:
+    path: "/u01"
+    owner: "{{oracle_db_uid}}"
+    group: "{{dba_db_gid}}"

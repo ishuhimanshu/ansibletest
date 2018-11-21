@@ -1,0 +1,19 @@
+---
+# vars file for roles/ns.ora.ssh.deploy.key
+HOME:   "/root/"
+
+# put restricted hosts in the next variable !!! that must be the same record as in '~/bind2inventory.rc' in section 'INVENTORY_KEY' defined - at the moment 'A' record of the host !!!
+restricted_hosts:
+   - "erp-app1-srv"
+   - "erp-app2-srv"
+   - "erp-app3-srv"
+   - "int-0005-mail"
+   - "fileserver.censhare.de"
+   - "nagios-staging sn-nagios"
+   - "nagios"
+   - "de-nue-ns"
+   - "monitoring-01"
+   - "monitoring-02"
+   - "de-nue-monitoring-staging"
+   - "de-nue-legal-prod-db01"
+   - "de-nue-ansible"

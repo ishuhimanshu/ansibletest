@@ -1,0 +1,44 @@
+---
+# tasks file for roles/ssh.key.remove_perl_script
+
+- name: "remove 'getSshPublicKeys.pl' cronjobs for different users"
+  cron:
+    name: "getSshPublicKeys_for_{{item}}"
+    state: "absent"
+  with_items:
+   - "root"
+   - "corpus"
+   - "oracle"
+   - "nagios"
+   - "git"
+   - "postgres"
+  register: "removecron"
+  tags: "removeansibledcron"
+
+- name: "remove 'getSshPublicKeys.pl' cronjobs not deployed by ansible"
+  lineinfile:
+    path: "/var/spool/cron/{{item}}root"
+    regexp: "getSshPublicKeys"
+    state: "absent"
+  with_items:
+    - ""
+    - "crontabs/"
+  register: "removeunansibledcron"
+  
+- name: "remove comments of 'getSshPublicKeys.pl' script"
+  lineinfile:
+    path: "/var/spool/cron/{{item}}root"
+    regexp: "# Pull ssh keys for"
+    state: "absent"
+  with_items:
+    - ""
+    - "crontabs/"
+  register: "removeunansibledcroncomment"
+  when: "removeunansibledcron|success"
+  
+- name: "remove 'getSshPublicKeys.pl' script from host"
+  file:
+    path: "/usr/local/bin/getSshPublicKeys.pl"
+    state: "absent"
+  when: "removeunansibledcron|success or removeansibledcron|success"
+  tags: "removescript"

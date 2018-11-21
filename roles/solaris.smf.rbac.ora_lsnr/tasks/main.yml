@@ -1,0 +1,22 @@
+---
+# tasks file for roles/solaris.smf.rbac.ora_lsnr
+- name: "add RBAC auth string in Security file"
+  lineinfile: 
+    dest: "/etc/security/auth_attr"
+    line: "{{auth_attr}}{{auth_attr_desc}}"
+    regexp: "{{auth_attr}}"
+  register: "addRBAC4cen"
+  tags: "SMF RBAC"
+
+- name: "add RBAC settings to SMF services for censhare/ora_lsnr"
+  command: "svccfg -s censhare/ora_{{item.service}} setprop general/{{item.smf}}_authorization=astring: {{auth_attr}}"
+  with_items:
+  - { service: 'lsnr', smf: 'action' }
+  - { service: 'lsnr', smf: 'value' }
+  when: "addRBAC4cen|success"
+  tags: "SMF RBAC"
+
+- name: "RBAC add privileges to user oracle"
+  command: "usermod -A {{auth_attr}} {{oracle_user_name}}"
+  when: "addRBAC4cen|success"
+  tags: "SMF RBAC"

@@ -1,0 +1,25 @@
+---
+# tasks file for roles/censhare.serviceclient.install
+- name: "install censhare serviceclient"
+  block:
+    - name: "install censhare Service-Client"
+      yum:
+        name: "censhare-Service-Client.x86_64"
+        state: "latest"
+        update_cache: "yes"
+      register: "instSC"
+      tags: "instSC"
+ 
+# So Jonas und DK. Weil das mit dem Tif ist anscheinend irgendwie special wurscht mal gewesen
+# Gut möglich das irgendwann mal kommt, bitte tif cron einrichten :slightly_smiling_face:
+#    - name: "setup cronjob to clean '/tmp' dir from SC temp files"
+#      cron:
+#        name: "SC clean temp files"
+#        job: "/usr/bin/find /tmp/ -user corpus -name '*.tif' -mtime +1 -exec rm {} +;"
+#        hour: "{{3| random}}"
+#        minute: "{{59|random}}"
+#        backup: "yes"
+#        user: "corpus"
+#      register: "cleanupcron"
+#      tags: "cleanupcron"
+#      when: "instSC|success"

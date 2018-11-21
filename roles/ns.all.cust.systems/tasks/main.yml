@@ -1,0 +1,43 @@
+---
+# tasks file for roles/ns.all.cust.systems
+# this role is just to create an inmemory inventory, because of the installation is also 
+# inmemory and maybe we need to run some roles for all NS hosts...
+- include_vars: "{{role}}" 
+- set_fact:
+    ongzp: "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+    cngzp: "ns-cen-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+  with_dict: "{{ngz}}"
+- add_host:
+    name: "{{cngzp}}"
+    groups: "ns_css,ns_any"
+    custname: "{{custname}}"
+    network_srv: "{{network_srv}}"
+    network_sto: "{{network_sto}}"
+    srv_vlan: "{{srv_vlan}}"
+    sto_vlan: "{{sto_vlan}}"
+    Install_Ticket: "{{Install_Ticket}}"
+    CustomerName: "{{CustomerName}}"
+    instance_type: "{{item.value.instance_type}}"
+    instance: "{{item.value.instance}}"
+    ip_srv: "{{item.value.ip_srv}}"
+    ip_sto: "{{item.value.ip_sto}}"
+    sys_mem: "{{item.value.sys_mem}}"
+    sys_cpu: "{{item.value.sys_cpu}}"
+  with_dict: "{{ngz}}"
+- add_host:
+    name: "{{ongzp}}"
+    groups: "ns_db,ns_any"
+    custname: "{{custname}}"
+    network_srv: "{{network_srv}}"
+    network_sto: "{{network_sto}}"
+    srv_vlan: "{{srv_vlan}}"
+    sto_vlan: "{{sto_vlan}}"
+    Install_Ticket: "{{Install_Ticket}}"
+    CustomerName: "{{CustomerName}}"
+    instance_type: "{{item.value.instance_type}}"
+    instance: "{{item.value.instance}}"
+    ip_srv: "{{item.value.ip_srv}}"
+    ip_sto: "{{item.value.ip_sto}}"
+    sys_mem: "{{item.value.sys_mem}}"
+    sys_cpu: "{{item.value.sys_cpu}}"
+  with_dict: "{{ngz}}" 

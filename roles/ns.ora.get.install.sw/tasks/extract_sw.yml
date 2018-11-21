@@ -1,0 +1,12 @@
+---
+- name: "extract software"
+  unarchive:
+    src: "/data/install/oracle_sw/{{item}}"
+    dest: "/zones/{{ngzp}}/root/var/tmp/"
+    creates: "yes"
+    remote_src: "yes"
+    group: "{{oinstall_db_gid}}"
+    owner: "{{oracle_db_uid}}"
+  register: "unarchive_ora_sw"
+  tags: "unarchive_ora_sw"
+  with_dict: "{{ngz}}"

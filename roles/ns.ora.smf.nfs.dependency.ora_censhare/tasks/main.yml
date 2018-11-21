@@ -1,0 +1,14 @@
+---
+# tasks file for roles/ns.ora.smf.nfs.dependency.ora_censhare
+- name: "add 'nfs/client' as dependency for 'censhare/ora_censhare' because oracle DB is stored on an NFS share"
+  blockinfile:
+    path: "/var/svc/manifest/censhare/ora_censhare.xml"
+    marker: "<!-- {mark} add 'nfs/client' as dependency for 'censhare/ora_censhare' because oracle DB is stored on an NFS share -->"
+    insertafter: "<single_instance />"
+    block: |
+         <dependency name='censhare'
+                 grouping='require_all'
+                 restart_on='none'
+                 type='service'>
+                 <service_fmri value='svc:/network/nfs/client:default' />
+         </dependency>

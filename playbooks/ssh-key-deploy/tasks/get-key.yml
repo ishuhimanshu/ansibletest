@@ -1,0 +1,49 @@
+---
+- name: get Checksum of previous key file
+  local_action:
+    module: stat
+    path: '{{ tmp_dir }}ssh_{{ user }}.keys'
+  run_once: true
+  register: LastKeyChecksum
+
+- name: 'get ssh keys from de-nue-dc for user {{ user }}'
+  local_action:
+    module: 'script /tmp/getSshPublicKeys-ansible.pl {{ user }}'
+#  until: get_ssh_keys.rc == 0
+  run_once: true
+  register: get_ssh_keys
+
+- name: 'create ssh key files for user {{ user }}'
+  local_action:
+    module:  'raw { echo {{ ansible_root_ssh_key }}; cat {{ tmp_dir }}keys/{{ user }}/*; } > {{ tmp_dir }}ssh_{{ user }}.keys'
+  run_once: true
+
+- name: create root demigod ssh key file only for user root
+  local_action:
+    module: 'raw cat {{ tmp_dir }}keys/demigods/* /tmp/ssh_root.keys > {{ tmp_dir }}ssh_root_demigod.keys'
+  run_once: true
+  when: user == 'root'
+
+- name: get Checksum of updated key file
+  local_action:
+    module: stat
+    path: '{{ tmp_dir }}ssh_{{ user }}.keys'
+  run_once: true
+  register: CurrKeyChecksum
+
+- name: 'deploy ssh-key file for user {{ user }}'
+  copy:
+    src: '{{ tmp_dir }}ssh_{{ user }}.keys'
+    dest: ~/.ssh/authorized_keys2
+    owner: '{{ user }}'
+    group: "{{ user|replace('oracle', 'oinstall') }}"
+    mode: 0600
+  when: 
+    - "LastKeyChecksum.stat.checksum | default('0') != CurrKeyChecksum.stat.checksum"
+    - "(user == 'root') or (identofuser[:2] == inventory_hostname.split('-')[2][:2])"
+  become: yes
+  become_user: '{{ user }}'
+  loop: "{{ ident | default('notset') }}"
+  loop_control:
+    loop_var: identofuser
+- meta: clear_host_errors

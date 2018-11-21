@@ -1,0 +1,3 @@
+---
+# vars file for roles/solaris.set.zfs_arc_max
+user_reserve_hint_pct:      "80"

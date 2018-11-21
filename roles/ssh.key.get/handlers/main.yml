@@ -1,0 +1,16 @@
+---
+# handlers file for roles/ssh.key.get
+- name: "create an env to deplay the ssh keys"
+  block:
+    - name: "cleanup bli's env"
+      file:
+        path: "/root/tmp/keys"
+        state: "absent"
+      delegate_to: "localhost"
+      run_once: "true"
+      register: "cleanup_blis_env"
+      tags: "cleanup_blis_env"
+      notify: "test"
+
+    - name: "test"
+      debug: msg=test

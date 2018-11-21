@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "pwcde"
+network_srv:          "10.130.2.161/27"
+network_sto:          "10.131.2.161/27"
+srv_vlan:             "723"
+sto_vlan:             "943"
+SaaS_ID:              "07230943"
+tpm_project_id:       "67"
+Install_Ticket:       "3420726"
+CustomerName:         "PricewaterhouseCoopers AG"
+ngz:
+  pwcde-01-prod:
+    name:             "pwcde"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.2.162/27"
+    ip_sto:           "10.131.2.162/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare54"
+  pwcde-02-test:
+    name:             "pwcde"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.2.163/27"
+    ip_sto:           "10.131.2.163/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare54"
+# first and second instance, assume that is prod and test system

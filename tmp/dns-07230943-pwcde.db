@@ -1,0 +1,36 @@
+ns-gw-07230943		3600	A	10.130.2.161
+ns-ora-07230943-01	3600	A	10.130.2.162
+ns-ora-07230943-02	3600	A	10.130.2.163
+ns-cen-07230943-01	3600	A	10.130.2.164
+ns-cen-07230943-02	3600	A	10.130.2.165
+ns-rnd-07230943-01	3600	A	10.130.2.166
+ns-rnd-07230943-02	3600	A	10.130.2.167
+ns-svc-07230943-01	3600	A	10.130.2.168
+ns-svc-07230943-02	3600	A	10.130.2.169
+ns-bc-07230943		3600	A	10.130.2.191
+ns-ora-07230943-01-sto	3600	A	10.131.2.162
+ns-ora-07230943-02-sto	3600	A	10.131.2.163
+ns-cen-07230943-01-sto	3600	A	10.131.2.164
+ns-cen-07230943-02-sto	3600	A	10.131.2.165
+ns-sto-07230943-assets	3600	A	10.131.2.166
+ns-sto-07230943-rman	3600	A	10.131.2.167
+ns-css-07230943-01	3600	A	213.95.85.27
+ns-css-07230943-02	3600	A	213.95.85.28
+ns-web-07230943-01	3600	A	213.95.85.165
+ns-web-07230943-02	3600	A	213.95.85.166
+pwcde-prodns-css01		CNAME	ns-cen-07230943-01
+pwcde-testns-css01		CNAME	ns-cen-07230943-02
+pwcde-prodns-db			CNAME	ns-ora-07230943-01
+pwcde-testns-db			CNAME	ns-ora-07230943-02
+pwcde-prodns-rnd01		CNAME	ns-rnd-07230943-01
+pwcde-prodns-rnd02		CNAME	ns-rnd-07230943-02
+pwcde-testns-rnd01		CNAME	ns-rnd-07230943-01
+pwcde-testns-rnd02		CNAME	ns-rnd-07230943-02
+pwcde-prodns-img01		CNAME	ns-svc-07230943-01
+pwcde-prodns-img02		CNAME	ns-svc-07230943-02
+pwcde-testns-img01		CNAME	ns-svc-07230943-01
+pwcde-testns-img02		CNAME	ns-svc-07230943-02
+pwcde-css			CNAME	ns-css-07230943-01
+pwcde				CNAME	ns-web-07230943-01
+pwcde-test-css			CNAME	ns-css-07230943-02
+pwcde-test			CNAME	ns-web-07230943-02

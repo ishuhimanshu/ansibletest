@@ -1,0 +1,32 @@
+ns-gw-07380958		3600	A	10.130.4.129
+ns-ora-07380958-01	3600	A	10.130.4.130
+ns-ora-07380958-02	3600	A	10.130.4.131
+ns-cen-07380958-01	3600	A	10.130.4.132
+ns-cen-07380958-02	3600	A	10.130.4.133
+ns-rnd-07380958-01	3600	A	10.130.4.134
+ns-rnd-07380958-02	3600	A	10.130.4.135
+ns-svc-07380958-01	3600	A	10.130.4.136
+ns-svc-07380958-02	3600	A	10.130.4.137
+ns-bc-07380958		3600	A	10.130.4.159
+ns-ora-07380958-01-sto	3600	A	10.131.4.130
+ns-ora-07380958-02-sto	3600	A	10.131.4.131
+ns-cen-07380958-01-sto	3600	A	10.131.4.132
+ns-cen-07380958-02-sto	3600	A	10.131.4.133
+ns-sto-07380958-assets	3600	A	10.131.4.134
+ns-sto-07380958-rman	3600	A	10.131.4.135
+ns-css-07380958-01	3600	A	213.95.85.57
+ns-css-07380958-02	3600	A	213.95.85.58
+ns-web-07380958-01	3600	A	213.95.85.195
+ns-web-07380958-02	3600	A	213.95.85.196
+pent-prodns-css01		CNAME	ns-cen-07380958-01
+pent-testns-css01		CNAME	ns-cen-07380958-02
+pent-prodns-db			CNAME	ns-ora-07380958-01
+pent-testns-db			CNAME	ns-ora-07380958-02
+pent-prodns-rnd01		CNAME	ns-rnd-07380958-01
+pent-prodns-rnd02		CNAME	ns-rnd-07380958-02
+pent-testns-rnd01		CNAME	ns-rnd-07380958-01
+pent-testns-rnd02		CNAME	ns-rnd-07380958-02
+pent-css			CNAME	ns-css-07380958-01
+pent				CNAME	ns-web-07380958-01
+pent-test-css			CNAME	ns-css-07380958-02
+pent-test			CNAME	ns-web-07380958-02

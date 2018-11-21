@@ -1,0 +1,21 @@
+---
+- hosts: "oracle censhare"
+  user: "root"
+  vars:
+    netdb: "/root/roles/ns.new.cust.preapre.vars/vars/network.db"
+  pre_tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/roles/ns.ora.create.ngz/vars/{{SaaS_ID}}.yml"
+     tags: "always"
+   - meta: "clear_host_errors"
+  roles:
+    - { role: "ns.cust.ssh.key.exchange", tags: "ns.cust.ssh.key.exchange" }
+    - { role: "deploy.monitoring.plugins", tags: "deploy.monitoring.plugins" }
+    - { role: "ns.monitoring.default", tags: "ns.monitoring.default" }
+    - { role: "ns.colour.bash.prompt.testsystems", tags: "ns.colour.bash.prompt.testsystems" }
+  post_tasks:
+    - debug:
+        msg: "Installation done !"
+      delegate_to: "localhost"
+      run_once: "true"

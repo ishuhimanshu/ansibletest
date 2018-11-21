@@ -1,0 +1,53 @@
+---
+# tasks file for roles/solaris.helpfull.aliasses
+- name: set marker to .profile
+  lineinfile: 
+    dest: /root/.profile 
+    backup: yes
+    state: present
+    group: 0
+    owner: 0
+    mode: 0644
+    insertafter: EOF
+    regexp: "{{marker}}"
+    line: "{{marker}}"
+  when: "ansible_system == 'SunOS'"  
+  
+- name: add alias 'zl' to system
+  lineinfile: 
+    dest: /root/.profile 
+    backup: yes
+    state: present
+    group: 0
+    owner: 0
+    mode: 0644
+    insertafter: "^{{marker}}"
+    regexp: "{{zl}}"
+    line: "{{zl}}"
+  when: "ansible_system == 'SunOS'"  
+
+- name: add alias 'zll' to system
+  lineinfile: 
+    dest: /root/.profile 
+    backup: yes
+    state: present
+    group: 0
+    owner: 0
+    mode: 0644
+    insertafter: "^{{marker}}"
+    regexp: "{{zll}}"
+    line: "{{zll}}"
+  when: "ansible_system == 'SunOS'"   
+
+- name: add alias 'lastboot' to system
+  lineinfile: 
+    dest: /root/.profile 
+    backup: yes
+    state: present
+    group: 0
+    owner: 0
+    mode: 0644
+    insertafter: "^{{marker}}"
+    regexp: "{{lastboot}}"
+    line: "{{lastboot}}"
+  when: "ansible_system == 'SunOS'"  

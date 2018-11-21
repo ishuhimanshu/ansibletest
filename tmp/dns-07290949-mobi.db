@@ -1,0 +1,36 @@
+ns-gw-07290949		3600	A	10.130.3.97
+ns-ora-07290949-01	3600	A	10.130.3.98
+ns-ora-07290949-02	3600	A	10.130.3.99
+ns-cen-07290949-01	3600	A	10.130.3.100
+ns-cen-07290949-02	3600	A	10.130.3.101
+ns-rnd-07290949-01	3600	A	10.130.3.102
+ns-rnd-07290949-02	3600	A	10.130.3.103
+ns-svc-07290949-01	3600	A	10.130.3.104
+ns-svc-07290949-02	3600	A	10.130.3.105
+ns-bc-07290949		3600	A	10.130.3.127
+ns-ora-07290949-01-sto	3600	A	10.131.3.98
+ns-ora-07290949-02-sto	3600	A	10.131.3.99
+ns-cen-07290949-01-sto	3600	A	10.131.3.100
+ns-cen-07290949-02-sto	3600	A	10.131.3.101
+ns-sto-07290949-assets	3600	A	10.131.3.102
+ns-sto-07290949-rman	3600	A	10.131.3.103
+ns-css-07290949-01	3600	A	213.95.85.39
+ns-css-07290949-02	3600	A	213.95.85.40
+ns-web-07290949-01	3600	A	213.95.85.177
+ns-web-07290949-02	3600	A	213.95.85.178
+mobi-prodns-css01		CNAME	ns-cen-07290949-01
+mobi-testns-css01		CNAME	ns-cen-07290949-02
+mobi-prodns-db			CNAME	ns-ora-07290949-01
+mobi-testns-db			CNAME	ns-ora-07290949-02
+mobi-prodns-rnd01		CNAME	ns-rnd-07290949-01
+mobi-prodns-rnd02		CNAME	ns-rnd-07290949-02
+mobi-testns-rnd01		CNAME	ns-ora-07290949-01
+mobi-testns-rnd02		CNAME	ns-ora-07290949-02
+mobi-prodns-img01		CNAME	ns-svc-07290949-01
+mobi-prodns-img02		CNAME	ns-svc-07290949-02
+mobi-testns-img01		CNAME	ns-ora-07290949-01
+mobi-testns-img02		CNAME	ns-svc-07290949-02
+mobi-css			CNAME	ns-css-07290949-01
+mobi				CNAME	ns-web-07290949-01
+mobi-test-css			CNAME	ns-css-07290949-02
+mobi-test			CNAME	ns-web-07290949-02

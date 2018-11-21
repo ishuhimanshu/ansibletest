@@ -1,0 +1,48 @@
+---
+# tasks file for roles/ns.cen.install.server.rpm
+- name: "install censhare server"
+  block:
+    - name: "import rpm key of censhare repository"
+      rpm_key:
+        state: "present"
+        key: "https://repos.censhare.com/6CAE093C.pub"
+      register: "rpm_key_import"
+      tags: "rpm_key_import"
+
+    - name: "setup censhare repo"
+      get_url:
+        url: "https://repos.censhare.com/{{item.value.censhare_version}}.repo"
+        dest: "/etc/yum.repos.d/censhare.repo"
+      tags: "getcensharerepopt"
+      when: "rpm_key_import|success"
+      register: "getcensharerepopt"
+      with_dict: "{{ngz}}"
+    - name: "setup censhare 3rd-party repo"
+      get_url:
+        url: "https://repos.censhare.com/stable/censhare-3rdparty.repo"
+        dest: "/etc/yum.repos.d/censhare-3rdparty.repo"
+      tags: "get3rdpartyrepo"
+      register: "get3rdpartyrepo"
+      when: "getcensharerepopt|success"
+
+    - name: "set user/pw for censhare repo"
+      replace:
+        dest: "/etc/yum.repos.d//{{item}}"
+        regexp: "baseurl=https://user:password@"
+        replace: "baseurl=https://ns:{{lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name=de-nue-repos https ns')}}"
+        backup: "yes"
+      with_items:
+      - "censhare.repo"
+      - "censhare-3rdparty.repo"
+      when: "get3rdpartyrepo|success"
+      register: "setpw4repo"
+      tags: "setpw4repo"
+
+    - name: "install censhare Server"
+      yum:
+        name: "censhare-Server.x86_64"
+        state: "present"
+        update_cache: "yes"
+      register: "instcenshare"
+      tags: "instcenshare"
+      when: "setpw4repo|success"

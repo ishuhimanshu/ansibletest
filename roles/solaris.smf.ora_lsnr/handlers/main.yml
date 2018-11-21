@@ -1,0 +1,8 @@
+---
+# handlers file for roles/solaris.smf.ora_lsnr
+- name: "start lsnrctl"
+  service:
+    name: "censhare/ora_lsnr:default"
+    state: "started"
+    enabled: "yes"
+  tags: "startlsnr"

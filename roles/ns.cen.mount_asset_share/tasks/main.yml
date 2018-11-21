@@ -1,0 +1,48 @@
+---
+# tasks file for ns.cen.mount_asset_share
+- name: "mount assets share persistent"
+  block:
+    - name: "check if nfs utils are installed"
+      yum:
+        name: "nfs-utils.x86_64"
+      register: "inst_nfs_utils"
+      tags: "inst_nfs_utils"
+    - name: "persisten mount of assets share"
+      mount:
+        path: "/opt/corpus/work/assets"
+        src: "{{network_sto|ipaddr('6')|ipaddr('address')}}:/vol_censhare_saas_data_nfs_assets_0{{srv_vlan}}0{{sto_vlan}}_{{inventory_hostname.split('-')[-1]}}"
+        fstype: "nfs"
+        state: "mounted"
+      register: "mntassets"
+      tags: "mntassets"
+      when: "inst_nfs_utils|success"
+      ignore_errors: "true"
+    - name: "set permission to user corpus"
+      file:
+        path: "/opt/corpus/work/assets"
+        mode: "0777"
+      when: "mntassets|success"
+      tags: "perm2cshare"
+      register: "perm2cshare"
+    - name: "create censhare assets temp folder"
+      file:
+        path: "/opt/corpus/work/assets/assets-temp"
+        mode: "0777"
+        state: "directory"
+      when: "perm2cshare|success"
+      register: "create_assets_tmp"
+      tags: "create_assets_tmp"
+    - name: "remove existing 'assets-temp' dir"
+      file:
+        path: "/opt/corpus/work/assets-temp"
+        state: "absent"
+      register: "delete_assets_temp_dir"
+      tags: "delete_assets_temp_dir"
+      when: "create_assets_tmp"
+    - name: "create link for censhare assets temp folder"
+      file:
+        src: "/opt/corpus/work/assets/assets-temp"
+        dest: "/opt/corpus/work/assets-temp"
+        state: "link"
+      when: "delete_assets_temp_dir|success"
+      tags: "link_assets_tmp"

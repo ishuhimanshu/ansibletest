@@ -1,0 +1,13 @@
+---
+# tasks file for roles/ns.ora.mount_rman_share
+- name: "mount rman share persistent"
+  mount:
+    path: "/rmanbackup"
+    src: "
+    boot: "yes"
+    fstype: iso9660
+    opts: ro
+    state: present
+
+#   action: mount name={{nfsmount}} src={{nfsserver}}:{{nfspath}} fstype=nfs opts={{_nfsopts.stdout}} state=mounted
+

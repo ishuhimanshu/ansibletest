@@ -1,0 +1,36 @@
+ns-gw-07310951		3600	A	10.130.3.161
+ns-ora-07310951-01	3600	A	10.130.3.162
+ns-ora-07310951-02	3600	A	10.130.3.163
+ns-cen-07310951-01	3600	A	10.130.3.164
+ns-cen-07310951-02	3600	A	10.130.3.165
+ns-rnd-07310951-01	3600	A	10.130.3.166
+ns-rnd-07310951-02	3600	A	10.130.3.167
+ns-svc-07310951-01	3600	A	10.130.3.168
+ns-svc-07310951-02	3600	A	10.130.3.169
+ns-bc-07310951		3600	A	10.130.3.191
+ns-ora-07310951-01-sto	3600	A	10.131.3.162
+ns-ora-07310951-02-sto	3600	A	10.131.3.163
+ns-cen-07310951-01-sto	3600	A	10.131.3.164
+ns-cen-07310951-02-sto	3600	A	10.131.3.165
+ns-sto-07310951-assets	3600	A	10.131.3.166
+ns-sto-07310951-rman	3600	A	10.131.3.167
+ns-css-07310951-01	3600	A	213.95.85.43
+ns-css-07310951-02	3600	A	213.95.85.44
+ns-web-07310951-01	3600	A	213.95.85.181
+ns-web-07310951-02	3600	A	213.95.85.182
+nussli-prodns-css01		CNAME	ns-cen-07310951-01
+nussli-testns-css01		CNAME	ns-cen-07310951-02
+nussli-prodns-db			CNAME	ns-ora-07310951-01
+nussli-testns-db			CNAME	ns-ora-07310951-02
+nussli-prodns-rnd01		CNAME	ns-rnd-07310951-01
+nussli-prodns-rnd02		CNAME	ns-rnd-07310951-02
+nussli-testns-rnd01		CNAME	ns-rnd-07310951-01
+nussli-testns-rnd02		CNAME	ns-rnd-07310951-02
+nussli-prodns-img01		CNAME	ns-svc-07310951-01
+nussli-prodns-img02		CNAME	ns-svc-07310951-02
+nussli-testns-img01		CNAME	ns-svc-07310951-01
+nussli-testns-img02		CNAME	ns-svc-07310951-02
+nussli-css			CNAME	ns-css-07310951-01
+nussli				CNAME	ns-web-07310951-01
+nussli-test-css			CNAME	ns-css-07310951-02
+nussli-test			CNAME	ns-web-07310951-02

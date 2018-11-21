@@ -1,0 +1,62 @@
+---
+# tasks file for roles/censhare.configure.server.initial
+- shell: "/usr/bin/date +%s|/usr/bin/md5sum|/usr/bin/cut -b -10"
+  register: "corpus_pw"
+- name: "check censhare server"
+  block:
+    - name: "get 'corpus' home dir"
+      shell: "grep ^corpus /etc/passwd; true"
+      register: "get_corpus_HOME_dir"
+      tags: "get_corpus_HOME_dir"
+
+    - name: "check if db config exists"
+      stat:
+        path: "{{get_corpus_HOME_dir.stdout.split(':')[5]}}/cscs/app/service/database/config.xml"
+      register: "ck_db_conf"
+      tags: "ck_db_conf"
+      when: "get_corpus_HOME_dir|default('') != ''"
+
+    - name: "create db config dir"
+      file:
+        path: "{{get_corpus_HOME_dir.stdout.split(':')[5]}}/cscs/app/services/database"
+        state: "directory"
+        owner: "corpus"
+        group: "corpus"
+      register: "create_db_conf_dir"
+      tags: "create_db_conf_dir"
+      when: "ck_db_conf.stat.exists is defined"
+    
+    - name: "copy db config to custom censhare area"
+      copy:
+        src: "{{get_corpus_HOME_dir.stdout.split(':')[5]}}/css/app/services/database/config.xml"
+        dest: "{{get_corpus_HOME_dir.stdout.split(':')[5]}}/cscs/app/services/database/config.xml"
+        remote_src: "yes"
+      delegate_to: "{{inventory_hostname}}"
+      register: "cp_db_conf"
+      tags: "cp_db_conf"
+      when: 
+        - "create_db_conf_dir|success"
+        - "ck_db_conf.stat.exists is defined"
+    
+    - name: "set db host in config file"
+      replace:
+        path: "{{get_corpus_HOME_dir.stdout.split(':')[5]}}/cscs/app/services/database/config.xml"
+        replace: "jdbc:oracle:thin:@{{inventory_hostname|replace('cen', 'ora')}}:1521:corpus"
+        regexp: "jdbc:oracle:thin:@localhost:1521:corpus"
+      register: "adjust_db_config"
+      tags: "adjust_db_config"
+      when: "cp_db_conf|success"
+
+    - name: "Quick and dirty - get hostname to get the right password"
+      shell: "hostname"
+      register: "hostname"
+      
+    - name: "set db password in config file"
+      replace:
+        path: "{{get_corpus_HOME_dir.stdout.split(':')[5]}}/cscs/app/services/database/config.xml"
+        replace: "user-password=\"{{lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{hostname.stdout}} sqlplus corpus', 'create=True', 'project_id={{tpm_project_id}}', 'password={{corpus_pw.stdout}}', 'username=corpus', 'access_info=sqlplus://corpus@{{ansible_hostname}}', 'tags=usr:corpus,svc:sqlplus,site:ns', 'notes=Ansible created by: {{LDAP_user}}, install/migration ticket: {{Install_Ticket}}, SaaS-ID: {{SaaS_ID}}')}}\""
+        regexp: "user-password=\"corpus\""
+      with_dict: "{{ngz}}"
+      register: "set_db_pass"
+      tags: "set_db_pass"
+      when: "adjust_db_config|success"

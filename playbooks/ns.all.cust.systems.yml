@@ -1,0 +1,27 @@
+---
+# this playbook in combination with the role 'ns.all.cust.systems' creates an inmemory
+# inventory for all our NS customer systems (which are installed trough ansible)
+- hosts: "localhost"
+  pre_tasks:
+    - include_role:
+       name: "ns.all.cust.systems"
+      with_fileglob: 
+        - "~/roles/ns.ora.create.ngz/vars/*"
+      loop_control: 
+        loop_var: "role"
+      tags: "always"
+      register: "source_vars"
+# this task section is just to get an overview about the groups and hosts, you can comment 
+# to the end of the debug module to get a cleaner output and save time 
+  tasks:
+    - name: "list hosts"
+      debug:
+        msg: |
+          ANSIBLE_GROUP 'ns_css' has following hosts: {{groups.ns_css}}
+          ANSIBLE_GROUP  'ns_db' has following hosts: {{groups.ns_db}}
+          ANSIBLE_GROUP 'ns_any' has following hosts: {{groups.ns_any}}
+# here you can start with your tasks or roles - enjoy 
+- hosts: ns_any
+  tasks:
+    - name: "test"
+      shell: "true"

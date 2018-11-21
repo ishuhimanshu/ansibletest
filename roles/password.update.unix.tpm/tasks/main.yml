@@ -1,0 +1,20 @@
+---
+# tasks file for roles/password.update.unix.tpm
+- name: "investigate users"
+  shell: "grep ^{{item}} /etc/passwd; true"
+  register: "users"
+  with_items: "{{users}}"
+
+- name: "generate passwords"
+  shell: "/bin/date +%s|/usr/bin/md5sum|/usr/bin/cut -b -{{pw_lengh}}"
+  when: "item.stdout|default('') != ''"
+  register: "pw"
+  with_items: "{{users.results}}"
+
+- name: "set new password"
+  debug:
+    msg: "{{item.item.stdout.split(':')[0]}} {{item.stdout}}"
+  with_items: "{{pw.results}}"
+  when: "item.stdout|default('') != ''"
+
+

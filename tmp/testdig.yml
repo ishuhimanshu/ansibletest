@@ -1,0 +1,21 @@
+---
+- hosts: "localhost"
+  vars:
+    netdb:      "~/roles/ns.new.cust.preapre.vars/vars/network.db"
+    SaaS_ID: "07250945"
+  pre_tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/roles/ns.ora.create.ngz/vars/07290949.yml"
+     tags: "always"
+  tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/roles/ns.ora.create.ngz/vars/{{SaaS_ID}}.yml"
+     tags: "always"
+#  tasks:
+#    - debug:
+#        msg: "just to check DNS - dig of the gateway {{lookup('dig', '{{item}}', 'qtype=A')}}"
+#      with_items: "ns-gw-07250945"
+  roles:
+    - ns.monitoring.default

@@ -1,0 +1,39 @@
+---
+- hosts: "ns_vm"
+  tasks:
+   - name: "get the current hostname"
+     shell: "hostname"
+     register: "hostname"
+
+   - name: "change the hostname"
+     lineinfile:
+       line: "HOSTNAME={{hostname.stdout|replace('99', '02')}}"
+       path: "/etc/sysconfig/network"
+       backup: "yes"
+     when: "hostname.stdout.split('-')[3] == '99'"
+     register: "sysconfig_hostname"
+
+   - name: "change the hostname"
+     lineinfile:
+       line: "{{hostname.stdout|replace('99', '02')}}"
+       regexp: "{{hostname.stdout}}"
+       path: "/etc/hostname"
+       backup: "yes"
+     when: 
+       - "hostname.stdout.split('-')[3] == '99'"
+       - "sysconfig_hostname|success"
+     register: "hostname_hostname"
+
+   - name: "reboot system"
+     shell: "sleep 2 && reboot"
+     async: "45"
+     ignore_errors: "true"
+     when: "hostname.stdout.split('-')[3] == '99'"
+
+   - name: "check hostname"
+     shell: "hostname"
+     register: "new_hostname"
+   
+   - fail: 
+      msg: "hostname has not changed"
+     when: "inventory_hostname != new_hostname.stdout"

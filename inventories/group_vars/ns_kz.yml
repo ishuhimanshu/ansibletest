@@ -1,0 +1,14 @@
+oracle_db_uid:        		"54321"
+oinstall_db_gid:        	"54321"
+dba_db_gid:			"54322"
+oracle_user_shell:      	"/bin/bash"
+oracle_user_name:		"oracle"
+dns1_de-nue:
+dns2_de-nue:
+dns3_de-nue:
+ntp1_de-nue:    		"de-nue-dc"
+ntp2_de-nue:    		"de-muc-dc"
+ntp3_de-nue:
+git:				"/root/git"
+git_itservices:			"/root/git/itservices"
+ssh_key_root_ansible:		"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDCo+DKswZMuYlxznQfct2VC4Ic7oX45t3YIVL30OHSMMtn96uCq7CJdwXwcMSb6zfqqC8zrbbJc8PxOhRJmgYBsmsvQEcE1XPvGxp6+N8/HgnosNitBvytipyxXQoDqBTbjxfTwMWpKv8QfywslM8Fl1ItLEnLLB6+rccks64SoYUB0+onsobt4+d69+RE07t+ZnKDPEqXiYze2HArycS16f05Cr+pHSUo9Uii5uht/EJPineiQpLVAq00WlIi6ZoUAjTWZwQXEZEmHDC+l0tMNAJV5NXohlwIWBQrln3x+lJfqVJ9TtzFJJnjutzyg0NVvW7ZLilR3lO3yAY/W3nHAGkI8em0ko0+4BhxMaAEPwsuy/xeHOkosL0iG5pN8g/oEUWMyIUwamnWWXVl8o6EO5P5D/TRTSZkZlyosZX3FbWOc+jxSm0muOW9y1sfmC6e2No1HKwbldLN9O8mv45qpN6e2zfPg22bBfTRRd6UViXJbahjNJXFY7f55230KhUMlFGILh0MJvlLrk00uk8hT7v/4fNJFFK8D/AaGagmWS1wivmdWqC2Eh4S1AW+ROLcXYIQS6pETiUpTF9LqzKpKlC6nrA96v0/OMGtMnigLxFCjyI595CK8ryysMip13KxWOFbNHWoKJORQIhE8IUd8/D7im0gPmDzHZ9XLAkcpw== root@ansible.censhare.com"

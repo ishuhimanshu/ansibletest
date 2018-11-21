@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - roles/ns.cen.uninstall_img_tools-fix_ahus_shit

@@ -1,0 +1,36 @@
+ns-gw-07140934		3600	A	10.130.1.129
+ns-ora-07140934-01	3600	A	10.130.1.130
+ns-ora-07140934-02	3600	A	10.130.1.131
+ns-cen-07140934-01	3600	A	10.130.1.132
+ns-cen-07140934-02	3600	A	10.130.1.133
+ns-rnd-07140934-01	3600	A	10.130.1.134
+ns-rnd-07140934-02	3600	A	10.130.1.135
+ns-svc-07140934-01	3600	A	10.130.1.136
+ns-svc-07140934-02	3600	A	10.130.1.137
+ns-bc-07140934		3600	A	10.130.1.159
+ns-ora-07140934-01-sto	3600	A	10.131.1.130
+ns-ora-07140934-02-sto	3600	A	10.131.1.131
+ns-cen-07140934-01-sto	3600	A	10.131.1.132
+ns-cen-07140934-02-sto	3600	A	10.131.1.133
+ns-sto-07140934-assets	3600	A	10.131.1.134
+ns-sto-07140934-rman	3600	A	10.131.1.135
+ns-css-07140934-01	3600	A	213.95.85.9
+ns-css-07140934-02	3600	A	213.95.85.10
+ns-web-07140934-01	3600	A	213.95.85.147
+ns-web-07140934-02	3600	A	213.95.85.148
+chbeck-prodns-css01		CNAME	ns-cen-07140934-01
+chbeck-testns-css01		CNAME	ns-cen-07140934-02
+chbeck-prodns-db			CNAME	ns-ora-07140934-01
+chbeck-testns-db			CNAME	ns-ora-07140934-02
+chbeck-prodns-rnd01		CNAME	ns-rnd-07140934-01
+chbeck-prodns-rnd02		CNAME	ns-rnd-07140934-02
+chbeck-testns-rnd01		CNAME	ns-ora-07140934-01
+chbeck-testns-rnd02		CNAME	ns-ora-07140934-02
+chbeck-prodns-img01		CNAME	ns-svc-07140934-01
+chbeck-prodns-img02		CNAME	ns-svc-07140934-02
+chbeck-testns-img01		CNAME	ns-ora-07140934-01
+chbeck-testns-img02		CNAME	ns-svc-07140934-02
+chbeck-css			CNAME	ns-css-07140934-01
+chbeck				CNAME	ns-web-07140934-01
+chbeck-test-css			CNAME	ns-css-07140934-02
+chbeck-test			CNAME	ns-web-07140934-02

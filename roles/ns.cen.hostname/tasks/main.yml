@@ -1,0 +1,47 @@
+---
+# tasks file for roles/ns.cen.hostname
+- name: "set human readable hostname - tmp"
+  shell: "hostname {{custname}}-{{item.value.instance_type}}ns-css01"
+  delegate_to: "ns-cen-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+  with_dict: "{{ngz}}"
+  run_once: "true"
+  register: "set_hostname_css_tmp"
+  tags: "set_hostname_css_tmp"
+  when: 
+    - "ansible_distribution == 'CentOS'"
+    - "ansible_hostname == inventory_hostname"
+  
+- name: "replace hostname - in '/etc/hosts'"
+  replace:
+    path: "/etc/hosts"
+    regexp: "{{inventory_hostname}}"
+    replace: "{{custname}}-{{item.value.instance_type}}ns-css01"
+    backup: "yes"
+  with_dict: "{{ngz}}"
+  run_once: "true"
+  register: "replace_hostname_etc_hosts"
+  tags: "replace_hostname_etc_hosts"
+  when: "set_hostname_css_tmp.changed"
+
+- name: "replace hostname - in '/etc/hostname'"
+  replace:
+    path: "/etc/hostname"
+    regexp: "{{inventory_hostname}}"
+    replace: "{{custname}}-{{item.value.instance_type}}ns-css01"
+    backup: "yes"
+  with_dict: "{{ngz}}"
+  run_once: "true"
+  register: "replace_hostname_etc_hostname"
+  tags: "replace_hostname_etc_hostname"
+  when: "set_hostname_css_tmp.changed"
+
+- name: "set human readable hostname - in '/etc/sysconfig/network'"
+  lineinfile:
+    path: "/etc/sysconfig/network"
+    regexp: "HOSTNAME=*"
+    line: "HOSTNAME={{custname}}-{{item.value.instance_type}}ns-css01"
+  with_dict: "{{ngz}}"
+  run_once: "true"
+  register: "set_hostname_in_sysconfig"
+  tags: "set_hostname_in_sysconfig"
+  when: "set_hostname_css_tmp.changed"

@@ -1,0 +1,36 @@
+ns-gw-07320952		3600	A	10.130.3.193
+ns-ora-07320952-01	3600	A	10.130.3.194
+ns-ora-07320952-02	3600	A	10.130.3.195
+ns-cen-07320952-01	3600	A	10.130.3.196
+ns-cen-07320952-02	3600	A	10.130.3.197
+ns-rnd-07320952-01	3600	A	10.130.3.198
+ns-rnd-07320952-02	3600	A	10.130.3.199
+ns-svc-07320952-01	3600	A	10.130.3.200
+ns-svc-07320952-02	3600	A	10.130.3.201
+ns-bc-07320952		3600	A	10.130.3.223
+ns-ora-07320952-01-sto	3600	A	10.131.3.194
+ns-ora-07320952-02-sto	3600	A	10.131.3.195
+ns-cen-07320952-01-sto	3600	A	10.131.3.196
+ns-cen-07320952-02-sto	3600	A	10.131.3.197
+ns-sto-07320952-assets	3600	A	10.131.3.198
+ns-sto-07320952-rman	3600	A	10.131.3.199
+ns-css-07320952-01	3600	A	213.95.85.45
+ns-css-07320952-02	3600	A	213.95.85.46
+ns-web-07320952-01	3600	A	213.95.85.183
+ns-web-07320952-02	3600	A	213.95.85.184
+wirz-prodns-css01		CNAME	ns-cen-07320952-01
+wirz-testns-css01		CNAME	ns-cen-07320952-02
+wirz-prodns-db			CNAME	ns-ora-07320952-01
+wirz-testns-db			CNAME	ns-ora-07320952-02
+wirz-prodns-rnd01		CNAME	ns-rnd-07320952-01
+wirz-prodns-rnd02		CNAME	ns-rnd-07320952-02
+wirz-testns-rnd01		CNAME	ns-rnd-07320952-01
+wirz-testns-rnd02		CNAME	ns-rnd-07320952-02
+wirz-prodns-img01		CNAME	ns-svc-07320952-01
+wirz-prodns-img02		CNAME	ns-svc-07320952-02
+wirz-testns-img01		CNAME	ns-svc-07320952-01
+wirz-testns-img02		CNAME	ns-svc-07320952-02
+wirz-css			CNAME	ns-css-07320952-01
+wirz				CNAME	ns-web-07320952-01
+wirz-test-css			CNAME	ns-css-07320952-02
+wirz-test			CNAME	ns-web-07320952-02

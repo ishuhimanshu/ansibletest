@@ -1,0 +1,18 @@
+---
+# tasks file for roles/solaris.set.support.publisher
+- name: "copy support repository certifys"
+  template:
+    src: "{{item}}"
+    dest: "/var/pkg/ssl/"
+    backup: "no"
+    group: "root"
+    owner: "root"
+    mode: "0666"
+  with_items:
+   - "pkg.oracle.com.certificate.pem"
+   - "pkg.oracle.com.key.pem"
+  register: "copypem"
+
+- name: "set support publisher of oracle"
+  command: "pkg set-publisher -G'*' -k /var/pkg/ssl/pkg.oracle.com.key.pem -c /var/pkg/ssl/pkg.oracle.com.certificate.pem -g https://pkg.oracle.com/solaris/support/ solaris"
+  when: "copypem|success"

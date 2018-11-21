@@ -1,0 +1,186 @@
+---
+# tasks file for roles/ns.new.cust.generate.DNS
+- name: "build DNS entries"
+  block:
+    - name: "remove old DNS file if exists"
+      file:
+        path: "~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db"
+        state: "absent"
+      register: "remove_tmp_dns_file"
+      tags: "remove_tmp_dns_file"
+      
+    - name: "create an tmp file with DNS entries"
+      lineinfile:
+        path: "~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db"
+        create: "yes"
+        backup: "no"
+        line: "{{item.name}}\t{{item.livetime}}\t{{item.record}}\t{{item.ipv4}}"
+      with_items:
+        - { name: "ns-gw-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}\t", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('1')|ipaddr('address')}}" }
+        - { name: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('2')|ipaddr('address')}}" }
+        - { name: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('3')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('4')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('5')|ipaddr('address')}}" }
+        - { name: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('6')|ipaddr('address')}}" }
+        - { name: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('7')|ipaddr('address')}}" }
+        - { name: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('8')|ipaddr('address')}}" }
+        - { name: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('9')|ipaddr('address')}}" }
+        - { name: "ns-bc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}\t", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('31')|ipaddr('address')}}" }
+        - { name: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01-sto", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('2')|ipaddr('address')}}" }
+        - { name: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02-sto", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('3')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01-sto", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('4')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02-sto", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('5')|ipaddr('address')}}" }
+        - { name: "ns-sto-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-assets", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('6')|ipaddr('address')}}" }
+        - { name: "ns-sto-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-rman", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('7')|ipaddr('address')}}" }
+        - { name: "ns-css-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[4]|ipaddr('address')}}" }
+        - { name: "ns-css-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[6]|ipaddr('address')}}" }
+        - { name: "ns-web-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[5]|ipaddr('address')}}" }
+        - { name: "ns-web-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[7]|ipaddr('address')}}" }
+        - { name: "{{custname}}-prodns-css01", livetime: "", record: "CNAME", ipv4: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-testns-css01", livetime: "", record: "CNAME", ipv4: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-prodns-db", livetime: "\t", record: "CNAME", ipv4: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-testns-db", livetime: "\t", record: "CNAME", ipv4: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-prodns-rnd01", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-prodns-rnd02", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-testns-rnd01", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-testns-rnd02", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        # - { name: "{{custname}}-prodns-img01", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        # - { name: "{{custname}}-prodns-img02", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        # - { name: "{{custname}}-testns-img01", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        # - { name: "{{custname}}-testns-img02", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-css", livetime: "\t", record: "CNAME", ipv4: "ns-css-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}", livetime: "\t\t", record: "CNAME", ipv4: "ns-web-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-test-css", livetime: "\t", record: "CNAME", ipv4: "ns-css-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-test", livetime: "\t", record: "CNAME", ipv4: "ns-web-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+      when: "NETdb|success"
+      register: "dns_file"
+      tags: "dns_file"
+
+    - name: "add the third instance to the tmp DNS file"
+      lineinfile:
+        path: "~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db"
+        create: "yes"
+        backup: "no"
+        line: "{{item.name}}\t{{item.livetime}}\t{{item.record}}\t{{item.ipv4}}"
+      with_items:
+        - { name: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('11')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('12')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03-sto", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('8')|ipaddr('address')}}" }
+        - { name: "{{custname}}-{{inst3name}}ns-css03", livetime: "", record: "CNAME", ipv4: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03" }
+        - { name: "{{custname}}-{{inst3name}}ns-db03", livetime: "", record: "CNAME", ipv4: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-03" }
+        - { name: "{{custname}}-{{inst3name}}ns-rnd01", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-{{inst3name}}ns-rnd02", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-{{inst3name}}ns-svc01", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-{{inst3name}}ns-svc02", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+      when: 
+        - "inst3name|default('0') != '0'"
+        - "dns_file|success"
+      register: "dns_file_3"
+      tags: "dns_file_3"
+
+    - name: "add the fourth instance to the tmp DNS file"
+      lineinfile:
+        path: "~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db"
+        create: "yes"
+        backup: "no"
+        line: "{{item.name}}\t{{item.livetime}}\t{{item.record}}\t{{item.ipv4}}"
+      with_items:
+        - { name: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('13')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[1]|ipaddr('14')|ipaddr('address')}}" }
+        - { name: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04-sto", livetime: "3600", record: "A", ipv4: "{{NETdb.stdout.split('|')[3]|ipaddr('9')|ipaddr('address')}}" }
+        - { name: "{{custname}}-{{inst4name}}ns-css04", livetime: "", record: "CNAME", ipv4: "ns-cen-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04" }
+        - { name: "{{custname}}-{{inst4name}}ns-db04", livetime: "", record: "CNAME", ipv4: "ns-ora-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-04" }
+        - { name: "{{custname}}-{{inst4name}}ns-rnd01", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-{{inst4name}}ns-rnd02", livetime: "", record: "CNAME", ipv4: "ns-rnd-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+        - { name: "{{custname}}-{{inst4name}}ns-svc01", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-01" }
+        - { name: "{{custname}}-{{inst4name}}ns-svc02", livetime: "", record: "CNAME", ipv4: "ns-svc-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-02" }
+      when: 
+        - "inst4name|default('0') != '0'"
+        - "dns_file|success"
+      register: "dns_file_4"
+      tags: "dns_file_4"
+
+    - name: "get dns entries from just created file"
+      shell: "cat ~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db"
+      register: "dns_tmp_entries"
+      tags: "dns_tmp_entries"
+      when: "dns_file|success"
+
+    - pause:
+        prompt: "Please check he DNS entries here, you can add or change the entries in the file:\n'vi ~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db'\n\n{{dns_tmp_entries.stdout}}\n\nIf you are done with checking or changing press enter and ansible create those entries"
+      register: "wait_4_dns_changes"
+
+    - name: "get dns entries from just created file"
+      shell: "cat ~/tmp/dns-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}-{{custname}}.db"
+      register: "dns_tmp_entries"
+      tags: "dns_tmp_entries"
+      when: "wait_4_dns_changes|success"
+
+    - name: "refresh git repo of censhare.io domain"
+      git:
+        repo: "git@carna:/srv/git/censhare.io.git"
+        dest: "~/git/dns-censhare.io"
+        refspec: "+refs/pull/*:refs/heads/*"
+        accept_hostkey: "yes"
+        force: "yes"
+      register: "refresh_censhareIO_repo"
+      tags: "refresh_censhareIO_repo"
+
+    - name: "set the git commit values (LDAP name)"
+      git_config:
+        name: "{{item.name}}"
+        repo: "~"
+        value: "{{item.value}}"
+        scope: "global"
+      with_items:
+        - { name: "user.name", value: "{{LDAP_user}}" }
+        - { name: "user.email", value: "{{LDAP_user}}@censhare.com" }
+      when: "refresh_censhareIO_repo|success"
+      tags: "set_git_config"
+      register: "set_git_config"
+
+    - name: "add DNS entries"
+      blockinfile:
+        path: "~/git/dns-censhare.io/hosts"
+        backup: "no"
+        marker: ";# {mark} Ansible created entry for customer: {{custname}}; VLANs: {{NETdb.stdout.split('|')[0]}}, {{NETdb.stdout.split('|')[2]}}"
+        block: "{{dns_tmp_entries.stdout}}"
+      register: "add_dns_entries"
+      tags: "add_dns_entries"
+      when:
+        - "refresh_censhareIO_repo|success"
+        - "set_git_config|success"
+        - "dns_file|success"
+
+    - name: "checkin the DNS changes"
+      shell: "cd ~/git/dns-censhare.io && git commit -m 'ansible - create new customer: {{custname}}; SaaS-ID: 0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}; ecosphere-ID: {{ticketID}}' hosts && git push"
+      register: "checkin_new_DNS_entries"
+      tags: "checkin_new_DNS_entries"
+      when: "set_git_config|success"
+      failed_when: "checkin_new_DNS_entries.rc >= 2"
+
+    - name: "unset the git commit values (LDAP name)"
+      git_config:
+        name: "{{item.name}}"
+        repo: ""
+        value: "{{item.value}}"
+        scope: "global"
+      with_items:
+        - { name: "user.name", value: "ansible" }
+        - { name: "user.email", value: "do-not-reply@censhare.com" }
+      tags: "set_git_config_2_default"
+      register: "set_git_config_2_default"
+
+    - name: "debug message if CLI53 fails (post action of git push)"
+      debug:
+        msg: "{{checkin_new_DNS_entries.stdout}}\n{{checkin_new_DNS_entries.stderr}}"
+      when: "checkin_new_DNS_entries.stdout.find('remote: Error') != -1"
+
+    - name: "failing if CLI53 CMD is gives any error"
+      fail:
+        msg: "please check DNS config of censhare.io domain, the output oh checkin shows any remote error (please repair the ansible crap manually)"
+      when: "checkin_new_DNS_entries.stdout.find('remote: Error') != -1"
+    
+    - debug:
+        msg: "just to check DNS - dig of the gateway {{lookup('dig', '{{item}}', 'qtype=A')}}"
+      with_items: "ns-gw-0{{NETdb.stdout.split('|')[0]}}0{{NETdb.stdout.split('|')[2]}}"

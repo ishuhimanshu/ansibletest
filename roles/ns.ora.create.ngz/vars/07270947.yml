@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "csweb"
+network_srv:          "10.130.3.33/27"
+network_sto:          "10.131.3.33/27"
+srv_vlan:             "727"
+sto_vlan:             "947"
+SaaS_ID:              "07270947"
+tpm_project_id:       "4"
+Install_Ticket:       "3390308"
+CustomerName:         "censhare Web"
+ngz:
+  csweb-01-prod:
+    name:             "csweb"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.3.34/27"
+    ip_sto:           "10.131.3.34/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+  csweb-02-test:
+    name:             "csweb"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.3.35/27"
+    ip_sto:           "10.131.3.35/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+# first and second instance, assume that is prod and test system

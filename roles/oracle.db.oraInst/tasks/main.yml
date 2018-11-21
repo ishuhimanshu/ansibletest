@@ -1,0 +1,24 @@
+---
+# tasks file for roles/oracle.db.oraInst
+- name: "setup oracle env - oraInst.loc"
+  block:
+    - name: "create directory"
+      file:
+        path: "/var/opt/oracle"
+        state: "directory"
+        owner: "oracle"
+        group: "dba"
+      register: "create_oraInst_dir"
+      
+    - name: "add content into file: '/var/opt/oracle/oraInst.loc'"
+      blockinfile:
+        path: "/var/opt/oracle/oraInst.loc"
+        create: "yes"
+        backup: "yes"
+        group: "dba"
+        owner: "oracle"
+        state: "present"
+        block: |
+          inventory_loc=/u01/app/oracle/oraInventory
+          inst_group=oinstall
+      when: "create_oraInst_dir|success"

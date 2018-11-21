@@ -1,0 +1,110 @@
+# it works
+---
+# tasks file for roles/ns-create-cust-kz-prod
+- name: "check if KZ already exists"
+  command: "zoneadm -z {{kzp}}prod list"
+  with_dict: "{{kz}}"
+  register: "kzlist"
+  ignore_errors: "true"
+  when: "ansible_system == 'SunOS'"
+
+- name: "check for ressource changes"
+  include: "kz_ressourcen.yml"
+  when: "kzlist|success"
+
+- name: "copy KZ template to GZ"
+  template: 
+    src: "kz-template.xml" 
+    dest: "/etc/zones/kz-template.xml"
+    backup: "no"
+    group: "root"
+    owner: "root"
+    mode: "0666"
+  register: "tempcopy"
+  when: "kzlist|failed"
+
+- name: "copy KZ template to GZ"
+  template:
+    src: "sc_profile.xml"
+    dest: "/var/tmp/sc_profile.xml"
+    backup: "no"
+    group: "root"
+    owner: "root"
+    mode: "0666"
+  register: "sccopy"
+  when: "(tempcopy|success and kzlist|failed)"
+
+- name: "create Oracle Solaris KZ"
+  command: "zonecfg -z {{kzp}}prod 'create -t kz-template; exit'"
+  with_dict: "{{kz}}"
+  when: "(sccopy|success and kzlist|failed)"
+  register: "create_kz"
+
+- name: "add server network for KZ"
+  shell: "zonecfg -z {{kzp}}prod 'add anet; set vlan-id={{item.value.srv_vlan}}; set lower-link=aggr0; set defrouter=\"{{item.value.network_srv|ipaddr('1')|ipaddr('address')}}\"; set allowed-address=\"{{ item.value.network_srv | ipaddr('2') }}\"; set id=0; end; exit'"
+  with_dict: "{{kz}}"
+  when: "(create_kz|success and kzlist|failed)"
+  register: "create_srv_net"
+
+- name: "add storage network for KZ"
+  shell: "zonecfg -z {{kzp}}prod 'add anet; set vlan-id={{item.value.sto_vlan}}; set lower-link=aggr0; set allowed-address=\"{{ item.value.network_sto | ipaddr('2') }}\"; set id=1; end; exit'"
+  with_dict: "{{kz}}"
+  when: "(create_srv_net|success and kzlist|failed)"
+  register: "create_sto_net"
+
+- name: "set boot device for KZ"
+  command: "zonecfg -z {{kzp}}prod 'select device id=0; set storage=nfs://0:0@10.131.0.5/vol_censhare_saas_data_nfs_kz_0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}_prod/ns-0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}-{{item.key}}-ora-prod_rpool; set create-size={{item.value.rootzpool_prod}}g; set bootpri=0; end; exit'"
+  with_dict: "{{kz}}"
+  when: "(create_sto_net|success and kzlist|failed)"
+  register: "create_sto_dev"
+
+- name: "set memory settings for KZ"
+  command: "zonecfg -z {{kzp}}prod 'select capped-memory; set physical={{item.value.sys_mem_prod}}G; end'"
+  with_dict: "{{kz}}"
+  when: "(create_sto_dev|success and kzlist|failed)"
+  register: "set_mem_kz"
+
+- name: "set CPU settings for KZ"
+  command: "zonecfg -z {{kzp}}prod 'select virtual-cpu; set ncpus=5; end'"
+  with_dict: "{{kz}}"
+  when: "(set_mem_kz|success and kzlist|failed)"
+  register: "set_cpu_kz"
+
+- name: "install Oracle Solaris KZ"
+  command: "zoneadm -z {{kzp}}prod install -x storage-create-missing -c /var/tmp/sc_profile.xml"
+  with_dict: "{{kz}}"
+  when: "(set_cpu_kz|success and kzlist|failed)"
+  register: "install_kz"
+
+- name: "boot Oracle Solaris KZ"
+  command: "zoneadm -z {{kzp}}prod boot"
+  with_dict: "{{kz}}"
+  when: "(install_kz|success and kzlist|failed)"
+  notify: "KZmig_2_ns-zone-02"
+  register: "boot_kz"
+  ignore_errors: "yes"
+
+- pause:
+    seconds: "180"
+    promt: "make 3min pause to get the KZ changs to boot up (first boot time the KZ will crash - looks like normal bahavier)"
+  when: "kzlist|failed"
+      
+- name: "generate an ssh key into the KZ"
+  command: "zlogin {{kzp}}prod \"test ! -f /root/.ssh/id_rsa && { ssh-keygen -b 4096 -t rsa -N '' -f /root/.ssh/id_rsa &>/dev/null; cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys; cat /root/.ssh/id_rsa.pub; }\""
+  with_dict: "{{kz}}"
+  when: "(boot_kz|success and kzlist|failed)"
+  register: "gensshkey"
+
+- name: "deploy pub ssh keys of ansible@censhare to KZ"
+  command: "zlogin {{kzp}}prod \"echo {{ssh_key_root_ansible}} >> /root/.ssh/authorized_keys\""
+  with_dict: "{{kz}}"
+  when: "(gensshkey|success and kzlist|failed)"
+  register: "deploy_ansible_ssh_key"
+  
+- name: "allow ssh login without-password for root"
+  shell: "zlogin {{kzp}}prod 'mv /etc/ssh/sshd_config{,.org} && sed \"s/PermitRootLogin no/PermitRootLogin without-password/g\" /etc/ssh/sshd_config.org > /etc/ssh/sshd_config && svcadm refresh ssh'"
+  with_dict: "{{kz}}"
+  when: "(deploy_ansible_ssh_key|success and kzlist|failed)"
+  register: "kzsshkey"
+  tags: "kzsshkey"
+

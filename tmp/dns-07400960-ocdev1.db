@@ -1,0 +1,32 @@
+ns-gw-07400960		3600	A	10.130.4.193
+ns-ora-07400960-01	3600	A	10.130.4.194
+ns-ora-07400960-02	3600	A	10.130.4.195
+ns-cen-07400960-01	3600	A	10.130.4.196
+ns-cen-07400960-02	3600	A	10.130.4.197
+ns-rnd-07400960-01	3600	A	10.130.4.198
+ns-rnd-07400960-02	3600	A	10.130.4.199
+ns-svc-07400960-01	3600	A	10.130.4.200
+ns-svc-07400960-02	3600	A	10.130.4.201
+ns-bc-07400960		3600	A	10.130.4.223
+ns-ora-07400960-01-sto	3600	A	10.131.4.194
+ns-ora-07400960-02-sto	3600	A	10.131.4.195
+ns-cen-07400960-01-sto	3600	A	10.131.4.196
+ns-cen-07400960-02-sto	3600	A	10.131.4.197
+ns-sto-07400960-assets	3600	A	10.131.4.198
+ns-sto-07400960-rman	3600	A	10.131.4.199
+ns-css-07400960-01	3600	A	213.95.85.61
+ns-css-07400960-02	3600	A	213.95.85.62
+ns-web-07400960-01	3600	A	213.95.85.199
+ns-web-07400960-02	3600	A	213.95.85.200
+ocdev1-prodns-css01		CNAME	ns-cen-07400960-01
+ocdev1-testns-css01		CNAME	ns-cen-07400960-02
+ocdev1-prodns-db			CNAME	ns-ora-07400960-01
+ocdev1-testns-db			CNAME	ns-ora-07400960-02
+ocdev1-prodns-rnd01		CNAME	ns-rnd-07400960-01
+ocdev1-prodns-rnd02		CNAME	ns-rnd-07400960-02
+ocdev1-testns-rnd01		CNAME	ns-rnd-07400960-01
+ocdev1-testns-rnd02		CNAME	ns-rnd-07400960-02
+ocdev1-css			CNAME	ns-css-07400960-01
+ocdev1				CNAME	ns-web-07400960-01
+ocdev1-test-css			CNAME	ns-css-07400960-02
+ocdev1-test			CNAME	ns-web-07400960-02

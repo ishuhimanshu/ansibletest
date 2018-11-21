@@ -1,0 +1,13 @@
+---
+# tasks file for roles/ns.ora.start.services
+- name: "start oracle db"
+  service:
+    name: "censhare/ora_censhare:default"
+    state: "started"
+    enabled: "yes"
+- name: "start lsnrctl"
+  service:
+    name: "censhare/ora_lsnr:default"
+    state: "started"
+    enabled: "yes"
+  tags: "startlsnr"

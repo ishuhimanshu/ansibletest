@@ -1,0 +1,47 @@
+---
+# tasks file for roles/censhare.remove.rccss.service
+- name: "disable 'rccss'"
+  systemd:
+    name: "systemctl disable rccss"
+    state: "stopped"
+    enabled: "no"
+    daemon_reload: "yes"
+  ignore_errors: "true"
+  register: "disable_rccss"
+  tags: "disable_rccss"
+  
+- name: "remove systemd service of rccss"
+  file:
+    path: "/etc/systemd/system/rccss.service"
+    state: "absent"
+  register: "remove_rccss_service_file"
+  tags: "remove_rccss_service_file"
+  when: "disable_rccss|success"
+
+- name: "releod systemd daemone"
+  systemd:
+    daemon_reload: "yes"
+  when: "remove_rccss_service_file|success"
+  tags: "systemd_daemon_reload"
+  register: "systemd_daemon_reload"
+
+- name: "add an alias for 'rccss'"
+  blockinfile:
+    path: "/etc/bashrc"
+    block: |
+      rccss () { echo -e 'censhare Services are managed via systemctl
+      ########################################################################
+      
+      Please use following commands to manage the Services:
+      
+      systemctl  status censhare serviceclient office        # list status of all censhare Services
+      
+      systemctl  status censhare|serviceclient|office        # list status of Service
+      systemctl    stop censhare|serviceclient|office        # shutdown Service
+      systemctl   start censhare|serviceclient|office        # start Service
+      systemctl restart censhare|serviceclient|office        # restart Service
+      
+      ########################################################################'; }
+  tags: "add_alias4dk"
+  register: "add_alias4dk"
+  when: "ansible_system == 'Linux'"

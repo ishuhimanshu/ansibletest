@@ -1,0 +1,4 @@
+---
+# vars file for roles/censhare.server.ulimits
+corpus_hard:		"corpus    hard    nofile          65535"
+corpus_soft:		"corpus   soft    nofile          16384"

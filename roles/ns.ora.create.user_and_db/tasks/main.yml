@@ -1,0 +1,42 @@
+---
+# tasks file for roles/ns.ora.create.user_and_db
+# this role has to run as user corpus
+- set_fact:
+    db: "{{ansible_hostname|replace('css01', 'db')}}"
+  tags: "change_db_user_pw"
+- name: "prepare DB to use for censhare"
+  block:
+    - name: "check for sqlplus"
+      stat:
+        path: "/bin/sqlplus64"
+      register: "cksqlplus"
+      tags: "cksqlplus"
+    
+    - name: "Quick and dirty - get hostname to get the right password"
+      shell: "hostname"
+      register: "hostname"
+      
+    - name: "oracle sqlplus - create user"
+      shell: "export LD_LIBRARY_PATH=/usr/lib/oracle/12.1/client64/lib; echo @css/database/create-user.sql | /bin/sqlplus64 system/{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{db}} sqlplus system')}}@{{db}}/CORPUS.CENSHARE"
+      register: "dbcreateuser"
+      tags: "dbcreateuser"
+      when: "cksqlplus.stat.executable is defined"
+
+    - name: "oracle sqlplus - create DB"
+      shell: "export LD_LIBRARY_PATH=/usr/lib/oracle/12.1/client64/lib; echo @css/database/create-db.sql | /bin/sqlplus64 corpus/corpus@{{db}}/CORPUS.CENSHARE"
+      register: "dbcreatedb"
+      tags: "dbcreatedb"
+      when: "dbcreateuser|success"
+      
+    - name: "set password for censhare/corpus sqlplus user"
+      shell: "export LD_LIBRARY_PATH=/usr/lib/oracle/12.1/client64/lib; echo \'alter user \"CORPUS\" identified by \"{{ lookup('tpmstore', TPM_url, LDAP_user, LDAP_pass, 'name={{ansible_hostname}} sqlplus corpus')}}\";\' | /bin/sqlplus64 corpus/corpus@{{db}}/CORPUS.CENSHARE"
+      register: "change_db_user_pw"
+      tags: "change_db_user_pw"
+      when: "dbcreateuser|success"
+      
+    - name: "source 'CSS_ID'"
+      lineinfile:
+        line: "export CSS_ID=master"
+        path: "/opt/corpus/.bashrc"
+      tags: "start_censhare"
+

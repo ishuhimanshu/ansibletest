@@ -1,0 +1,4 @@
+alias zll="zoneadm list -icv"
+alias zl="zoneadm list -iv"
+alias clear-faults='fmadm faulty|awk '\''{if($1~/Affects/)print"fmadm repaired "$3}'\''|bash'
+alias lastboot="zfs list -rd1 -oname,com.oracle.libbe:last-boot-time rpool/ROOT"

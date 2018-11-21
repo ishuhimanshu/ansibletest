@@ -1,0 +1,105 @@
+### generel variables
+## BIND DNS DB files (space separated)
+# example:
+#BIND_DB_FILES="$HOME/git/dns/db.internal $HOME/git/dns/db.external"
+ BIND_DB_FILES="$HOME/git/dns-censhare.com/db.internal.censhare $HOME/git/dns-censhare.com/db.customer $HOME/git/dns-censhare.com/db.public.censhare /root/git/dns-censhare.io/hosts"
+
+
+## inventory file location
+INVENTORY_OUTPUT="/root/inventories/inventory"
+
+
+## Which DNS recordes should added to the inventory file (space separated)
+# example:
+#INVENTORY_KEY="A AAAA CNAME"
+ INVENTORY_KEY="A AAAA"
+
+
+## Which entries should be excluded from inventory file (grep pattern space separated)
+# example (exclude 'empty lines' 'comments' 'lines starting with "$"'):
+#GLOBAL_EXCLUDE_PATTERN="^$ ^; ^\\$"
+ GLOBAL_EXCLUDE_PATTERN="^$ ^; ^\$ ^@ -bc -gw"
+
+
+## special variables from bind file - like user, port
+# rewrites -> please do not forgot the ending "="
+# allowed rewrite sources are "port" and "user"
+# allowed rewrite targets are "ansible_user=", "ansible_port=", "ansible_ssh_user=" and "ansible_ssh_port="
+ port="ansible_port="
+ user="ansible_user="
+
+## following all used commands for this script
+# commands
+ GREP=/bin/grep
+ FIND=/usr/bin/find
+
+
+
+### Groups in Groups -> GinG
+## build from vertical matching pattern children groups -> GinG.vmp
+# example:
+# inventory file:
+# [group_1_test]
+# host1
+# [group_2_test]
+# will create children group:
+# [group_*_test]
+# on/off:
+#GinG_vmp=0
+ GinG_vmp=0
+
+## GinG pattern space holder
+# see last example - the space holder will replace the leading "*"
+# default is '*'
+ pattern_space_holder_GinG=
+
+# 
+ pattern_sepatater="_"
+
+## prefix for children groups
+# Children Group name: GinG_$CHILDREN_GROUP
+# example (unset is default is "GinG_"):
+#prefix_GinG="GinG_vmp_" 
+ prefix_GinG=
+
+
+## build pattern match group
+## match_from_top_GinG -> mfp
+# example:
+
+## match_from_back_GinG -> mbp
+# example:
+
+
+
+
+
+## Dynamic Groups -> dg
+# example:
+
+
+
+
+### inventory group variables
+##  Every inventory group must defined in this file and must have one variable with prefix
+##  "in_", can have a variable with prefix "rm_". Those variables are to define the group, 
+##  the "in_" prefix is to add hosts from bind file and the "rm_" prefix is to remove them.
+# example:
+# - bind file:
+# ho-st1			A	10.0.0.1
+# ho-st2			A	10.0.0.2
+# ho-rst3			A	10.0.0.3
+# ho-rst4			A	10.0.0.4
+# ho-st-spc			A	10.0.0.5
+#
+# - config file
+# in_ho_st="*-st*"
+# rm_ho_st="*spc"
+in_ns_gz="ns-zone"
+rm_ns_gz="-ilom -sto -mgt"
+in_get_ssh_keys="ns-zone- de-muc cs-test de-nue-git-project lenny-int ns-cen ns-ora migros-qual-css01 migros-qual-css02 migros-dev-css01 migros-prod-av migros-prod-css01 migros-prod-css02 migros-prod-img01 migros-prod-img02 migros-prod-img03 migros-prod-img04 migros-prod-img05 migros-prod-img06 migros-prod-img07 migros-prod-img08 migros-prod-db migros-qual-db migros-dev2-css01 migros-dev2-css02 mim-prod-css01 mim-qual-css01 mim-prod-img01 mim-prod-img02 mim-prod-oc01 mim-prod-oc02 mim-prod-oc03 mim-prod-oc04 prodns- testns- ns-cen-07480968-01 ns-cen-07480968-02 cs-tests3-css01 ns-cen-07120932-02 mim-dev-css01 csdev- jubach"
+rm_get_ssh_keys="bshde-prodsn-css01 bshde-prodsn-db bshde-testsn-db cs-testassetdel-oracle-css01 cs-trackersn-img03 exc-testsn-db newmarket-prodsn-css01 newmarket-prodsn-db newmarket-testsn-db pwcde-prodsn-css01 pwcde-prodsn-db pwcde-prodsn-img01 pwcde-testsn-css01 pwcde-testsn-db pwcde-testsn-img01 typod-prodsn-css01 typod-prodsn-db typod-prodsn-img01 typod-testsn-css01 typod-testsn-db typod-testsn-img01 esxi cs-trackerdevtestsn-css01 cs-trackerdevsn-db sn-cen-0115-template toych- ocdev[1-2]-prodsn  de-muc-bsh-epos -bc- -gw- -rnd0 -00 -99 -0115-template-test bshde-testsn-css01 cs-trackersn-db cs-trackersn-svc0 cs-trackertestsn-db de-nue-sn-tmbak exc-testsn-css01 halba-testsn- linkg-testsn- newmarket-testsn-css01 ocdev2-prodsn-svc0 dbk-prodsn-img02 wirz-prodsn-svc0 wirz-testsn-db wirz-testsn-css01 sn-ora-0130-ocdev1-test sn-cen-0130-ocdev1-test exc-testsn-img01 bem- dbk-prodsn-img02 sn-symantec sn-svc- sn-esxi- sn-vCenter sn-dimstat sn-service-template sn-speedtest de-muc-centv- de-muc-osx-srv-0 de-muc-tm-02 wifi training- dc-phone hp-X576dw printer-hp-200 -ocr dc-dhcp -sw- -barney-sto -fw -cam-srv -unifi-0 -dc-mgt de-muc-dc de-muc-cs-guest-nat -rnd mgt -sto -ilom testtemplate cs-test-debian cs-test-winbind cs-testdemo-css01 cs-test58-remote cs-test55-css02 cs-test58-kal eh-testsn-db01 mig2-prodsn-img01 migration-testsn-db sn-ora-0111-tracker-dev-test jide-testsn- jide-prodsn- migration mig1 postch-prodsn- postch-testsn- sn-0103-98 sn-0108-01-test sn-0111-01 sn-0112-01 sn-0112-98-test sn-0116-01 sn-0116-98-test sn-0119-01 sn-0119-02 sn-0119-03 sn-0119-96 sn-0119-97 sn-0119-98 sn-0123-01 sn-0123-02 sn-0123-97-test sn-0123-98-test sn-0133-01-test sn-0133-96 sn-0133-97 sn-0135-01 sn-0135-02 sn-0135-03 sn-0135-04 sn-0136-01 sn-0136-98 sn-0136-98-test sn-0142-03 sn-0147-01 sn-0147-98-test mim-prod-oc0 sn-v4-0142-02 sn-v4-0142-01 redinde-testsn-css01 linkg-prodsn 07310951 aduno-prodsn-css01 aduno-prodsn-db aduno-prodsn-img01 aduno-testsn-css01 aduno-testsn-db aduno-testsn-img01 bshde-prodsn-img01 bueg-prodsn-css01 bueg-prodsn-db bueg-prodsn-img01 bueg-testsn-img01 buegch-testsn-css01 buegch-testsn-db chbeck-prodsn-css01 chbeck-prodsn-db chbeck-prodsn-db chbeck-prodsn-db chbeck-testsn-db chbeck-testsn-img01 chbeck-testsn-img01 ns-cen-07220942-01 ns-cen-07220942-02 ns-cen-07360956-01 ns-cen-07360956-02 ns-ora-07180938-01 ns-ora-07180938-02 ns-ora-07180938-03 ns-ora-07180938-04 ns-ora-07220942-01 ns-ora-07220942-02 ns-ora-07360956-01 ns-ora-07360956-02 ns-cen-07460966-01 ns-cen-07460966-02 ns-ora-07460966-01 ns-ora-07460966-02 cs-test40-css01 cs-test41-css01 cs-test41-css02 cs-test43-css01 cs-test47-css02 cs-test-3549736 cs-test-3549736-AD cs-test-q2a cs-test-snipit cs-test20175elk-client01 cs-test20175elk-css01 cs-test20175elk-css02 cs-test20175gra-css01 cs-test20175lb-elk cs-test20175mes-boot cs-test20175mes-node01 cs-test20175mes-node02 cs-test20175mes-node03 cs-test20175mes-node04 cs-test20175mes-node05 cs-test20175mes-node06 cs-test20175nms-css01 cs-test20175ops-node01 cs-test20175ops-node02 cs-test20175ops-nod"
+in_ansible="de-nue-ansible"
+
+in_dns="de-nue- de-muc-"
+rm_dns="-sw-"

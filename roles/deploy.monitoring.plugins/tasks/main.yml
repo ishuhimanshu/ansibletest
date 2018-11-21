@@ -1,0 +1,34 @@
+---
+# tasks file for deploy.monitoring.plugins
+- name: "update monitoring git repo"
+  git:
+    repo: "git@git:departments/itservices/monitoring-plugins"
+    dest: "~/git/monitoring-plugins"
+    refspec: "+refs/pull/*:refs/heads/*"
+    force: "yes"
+  delegate_to: "localhost"
+  run_once: "yes"
+  register: "updated_git_repo"
+  tags: "updated_git_repo"
+
+- name: "check if monitoring plugin dir exists"
+  file:
+    path: "{{item}}"
+    state: "directory"
+  with_items:
+    - "/usr/local/nagios/bin/plugins/"
+    - "/usr/lib64/nagios/plugins/"
+  when: "updated_git_repo|success"
+  register: "check_moni_plugin_dir"
+  tags: "check_moni_plugin_dir"
+
+- name: "copy Monitoring plugins on Linux"
+  synchronize:
+    src: "~/git/monitoring-plugins/"
+    dest: "{{item}}"
+  with_items:
+    - "/usr/local/nagios/bin/plugins/"
+    - "/usr/lib64/nagios/plugins/"
+  when: "check_moni_plugin_dir|success"
+  tags: "cp_moni_plugin_dir"
+  register: "cp_moni_plugin_dir"

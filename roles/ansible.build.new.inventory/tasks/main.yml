@@ -1,0 +1,32 @@
+---
+# tasks file for roles/ansible.build.new.inventory
+- name: "refresh git DNS repos"
+  git:
+    repo: "{{item.repo}}"
+    dest: "{{item.dest}}"
+    refspec: "+refs/pull/*:refs/heads/*"
+    accept_hostkey: "yes"
+    force: "yes"
+  register: "refresh_dns_repo"
+  tags: "refresh_dns_repo"
+  with_items:
+    - { repo: "git@carna:/srv/git/censhare.io.git", dest: "~/git/dns-censhare.io" }
+    - { repo: "git@carna.censhare.com:/srv/git/bind.git", dest: "~/git/dns-censhare.com" }
+
+- name: "create and source a new inventory from 'bind2inventory.sh'"
+  block:
+    - name: "build a new inventory"
+      shell: "~/roles/ssh.key.get/files/bind2inventory.sh"
+      args:
+        executable: "/bin/bash"
+      run_once: "yes"
+      delegate_to: "localhost"
+      register: "build_new_inventory"
+      tags: "build_new_inventory"
+      
+    - name: "reload inventory"
+      meta: "refresh_inventory"
+      delegate_to: "localhost"
+      run_once: "yes"
+      when: "build_new_inventory|success"
+      tags: "refresh_inventory"

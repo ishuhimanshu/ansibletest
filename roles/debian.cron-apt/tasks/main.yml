@@ -1,0 +1,61 @@
+---
+# tasks file for roles/debian.cron-apt
+- name: "configure auto updates"
+  block:
+    - name: "install pkg cron-apt"
+      apt:
+        name: "cron-apt"
+        update_cache: "yes"
+        install_recommends: "yes"
+      register: "install_cron_apt"
+      tags: "install_cron_apt"
+      when: "ansible_os_family =='Debian'"
+    
+    - name: "create a apt 'source.list' file only for those upgrades"
+      blockinfile:
+        path: "/etc/apt/sources-cron.list"
+        create: "yes"
+        backup: "yes"
+        block: "{{sources}}"
+      register: "apt_source_file"
+      tags: "apt_source_file"
+      when: "install_cron_apt|success"
+    
+    - name: "add some 'known-good' options in the config file"
+      blockinfile:
+        path: "/etc/cron-apt/config"
+        backup: "yes"
+        block: "{{config}}"
+      register: "config_file"
+      tags: "config_file"
+      when: "apt_source_file|success"
+
+- name: "configure security upgrades - update and download are in the default config"
+  block:
+    - name: "create a configuration"
+      lineinfile:
+        path: "/etc/cron-apt/action.d/5-security"
+        create: "yes"
+        line: "{{security_upgrade}}"
+      register: "security_upgrade_config"
+      tags: "security_upgrade_config"
+      when: "config_file|success"
+
+- name: "test the configuration"
+  command: "/usr/sbin/cron-apt"
+  register: "test_cron_apt"
+  tags: "test_cron_apt"
+  when: "apt_source_file|success"
+
+- name: "add daily random running cron"
+  cron:
+    name: "cron-apt"
+    hour: "{{23|random}}"
+    minute: "{{59|random}}"
+    user: "root"
+    backup: "yes"
+    job: "test -x /usr/sbin/cron-apt && /usr/sbin/cron-apt"
+    state: "present"
+  register: "add_cron"
+  tags: "add_cron"
+  when: "test_cron_apt|success"

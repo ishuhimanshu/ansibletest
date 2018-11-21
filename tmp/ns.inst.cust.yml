@@ -1,0 +1,62 @@
+---
+- hosts: "ns_gz"
+  vars_prompt:
+  - name: "LDAP_user"
+    prompt: "Please enter your LDAP username"
+    private: no
+  - name: "LDAP_pass"
+    prompt: "Please enter your LDAP password"
+    private: yes
+  vars:
+    TPM_url:        "https://de-nue-pass.int.censhare.com"
+    netdb:          "/root/roles/ns.new.cust.preapre.vars/vars/network.db"
+  user: "root"
+  roles:
+    - { role: "solaris.helpfull.aliasses", tags: "solaris.helpfull.aliasses" }
+  tags: "ns_ngz"
+
+- hosts: "10.156.0.114"
+  gather_facts: "yes"
+  vars_prompt:
+  - name: "LDAP_user"
+    prompt: "Please enter your LDAP username"
+    private: no
+  - name: "LDAP_pass"
+    prompt: "Please enter your LDAP password"
+    private: yes
+  vars:
+    TPM_url:        "https://de-nue-pass.int.censhare.com"
+    netdb:          "/root/roles/ns.new.cust.preapre.vars/vars/network.db"
+  user: "root"
+  pre_tasks:
+   - name: "source the right vars file"
+     include_vars:
+       file: "~/tmp/hig.yml"
+     tags: "always"
+  roles:
+    - { role: "ns.ora.adjust.hosts.file", tags: "ns.ora.adjust.hosts.file", become: "yes", become_user: "root" }
+    - { role: "root.user.env", tags: "root.user.env", become: "yes", become_user: "root" }
+    - { role: "oracle.user.create", tags: "oracle.user.create", become: "yes", become_user: "root" }
+    - { role: "ns.ora.mount_db_share", tags: "ns.ora.mount_db_share", become: "yes", become_user: "root" }
+    - { role: "oracle.db.rman.backup", tags: "oracle.db.rman.backup", become: "yes", become_user: "root" }
+    - { role: "ns.ora.backup_rman.prepare", tags: "ns.ora.backup_rman.prepare", become: "yes", become_user: "root" }
+    - { role: "oracle.db.dependencies", tags: "oracle.db.dependencies", become: "yes", become_user: "root" }
+    - { role: "oracle.kernel_parameter", tags: "oracle.kernel_parameter", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.ora_censhare", tags: "solaris.smf.ora_censhare", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.rbac.ora_censhare", tags: "solaris.smf.rbac.ora_censhare", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.ora_lsnr", tags: "solaris.smf.ora_lsnr", become: "yes", become_user: "root" }
+    - { role: "solaris.smf.rbac.ora_lsnr", tags: "solaris.smf.rbac.ora_lsnr", become: "yes", become_user: "root" }
+    - { role: "oracle.db.cron.cleanup", tags: "oracle.db.cron.cleanup", become: "yes", become_user: "root" }
+    - { role: "oracle.db.oraInst", tags: "oracle.db.oraInst", become: "yes", become_user: "root" }
+    - { role: "ssh.key.get", tags: "ssh.key.get", become: "yes", become_user: "root" }
+    - { role: "ssh.key.deploy", tags: "ssh.key.deploy", become: "yes", become_user: "root" }
+    - { role: "ssh.key.deploy.SN2NS.migration", tags: "ssh.key.deploy.SN2NS.migration", become: "yes", become_user: "root" }
+    - { role: "oracle.user.env", tags: "oracle.user.env", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install", tags: "oracle.db.install", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install.opatch", tags: "oracle.db.install.opatch", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install.root.sh", tags: "oracle.db.install.root.sh", become: "yes", become_user: "root" }
+    - { role: "oracle.db.install.dbca", tags: "oracle.db.install.dbca", become: "yes", become_user: "oracle" }
+    - { role: "oracle.db.install.postconfiguration", tags: "oracle.db.install.postconfiguration", become: "yes", become_user: "oracle" }
+    - { role: "ns.ora.start.services", tags: "ns.ora.start.services", become: "yes", become_user: "root" }
+  tags: "oracle"
+

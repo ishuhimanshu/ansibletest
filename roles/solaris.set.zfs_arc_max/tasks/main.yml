@@ -1,0 +1,33 @@
+---
+# tasks file for roles/solaris.set.zfs_arc_max
+- name: "set zfs_arc_max"
+  block:
+   - name: "create 'system.d' file for zfs_max_arc"
+     lineinfile:
+       path: "/etc/system.d/user_reserve_hint_pct"
+       regexp: "user_reserve_hint_pct"
+       line: "set user_reserve_hint_pct={{user_reserve_hint_pct}}"
+       state: "present"
+       owner: "0"
+       group: "0"
+       mode: "0600"
+       create: "yes"
+       backup: "yes"
+     register: "set_user_reserve_hint_pct"
+
+   - name: "copy Oracle script 'set_user_reserve.sh' to kz"
+     template:
+       src: "set_user_reserve.sh"
+       dest: "/usr/bin/"
+       owner: "root"
+       group: "root"
+       mode: "0555"
+       force: "yes"
+       backup: "yes"
+     register: "copy_set_user_reserve"
+     
+   - name: "set set_user_reserve space without reboot"
+     command: "/usr/bin/set_user_reserve.sh -f {{user_reserve_hint_pct}}"
+     when: "copy_set_user_reserve|success"
+     register: "set_user_reserve"
+  when: "ansible_system == 'SunOS'"

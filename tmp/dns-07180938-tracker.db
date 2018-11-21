@@ -1,0 +1,54 @@
+ns-gw-07180938		3600	A	10.130.2.1
+ns-ora-07180938-01	3600	A	10.130.2.2
+ns-ora-07180938-02	3600	A	10.130.2.3
+ns-cen-07180938-01	3600	A	10.130.2.4
+ns-cen-07180938-02	3600	A	10.130.2.5
+ns-rnd-07180938-01	3600	A	10.130.2.6
+ns-rnd-07180938-02	3600	A	10.130.2.7
+ns-svc-07180938-01	3600	A	10.130.2.8
+ns-svc-07180938-02	3600	A	10.130.2.9
+ns-bc-07180938		3600	A	10.130.2.31
+ns-ora-07180938-01-sto	3600	A	10.131.2.2
+ns-ora-07180938-02-sto	3600	A	10.131.2.3
+ns-cen-07180938-01-sto	3600	A	10.131.2.4
+ns-cen-07180938-02-sto	3600	A	10.131.2.5
+ns-sto-07180938-assets	3600	A	10.131.2.6
+ns-sto-07180938-rman	3600	A	10.131.2.7
+ns-css-07180938-01	3600	A	213.95.85.17
+ns-css-07180938-02	3600	A	213.95.85.18
+ns-web-07180938-01	3600	A	213.95.85.155
+ns-web-07180938-02	3600	A	213.95.85.156
+tracker-prodns-css01		CNAME	ns-cen-07180938-01
+tracker-testns-css01		CNAME	ns-cen-07180938-02
+tracker-prodns-db			CNAME	ns-ora-07180938-01
+tracker-testns-db			CNAME	ns-ora-07180938-02
+tracker-prodns-rnd01		CNAME	ns-rnd-07180938-01
+tracker-prodns-rnd02		CNAME	ns-rnd-07180938-02
+tracker-testns-rnd01		CNAME	ns-rnd-07180938-01
+tracker-testns-rnd02		CNAME	ns-rnd-07180938-02
+tracker-prodns-img01		CNAME	ns-svc-07180938-01
+tracker-prodns-img02		CNAME	ns-svc-07180938-02
+tracker-testns-img01		CNAME	ns-svc-07180938-01
+tracker-testns-img02		CNAME	ns-svc-07180938-02
+tracker-css			CNAME	ns-css-07180938-01
+tracker				CNAME	ns-web-07180938-01
+tracker-test-css			CNAME	ns-css-07180938-02
+tracker-test			CNAME	ns-web-07180938-02
+ns-ora-07180938-03	3600	A	10.130.2.11
+ns-cen-07180938-03	3600	A	10.130.2.12
+ns-cen-07180938-03-sto	3600	A	10.131.2.8
+tracker-devns-css03		CNAME	ns-cen-07180938-03
+tracker-devns-db03		CNAME	ns-ora-07180938-03
+tracker-devns-rnd01		CNAME	ns-rnd-07180938-01
+tracker-devns-rnd02		CNAME	ns-rnd-07180938-02
+tracker-devns-svc01		CNAME	ns-svc-07180938-01
+tracker-devns-svc02		CNAME	ns-svc-07180938-02
+ns-ora-07180938-04	3600	A	10.130.2.13
+ns-cen-07180938-04	3600	A	10.130.2.14
+ns-cen-07180938-04-sto	3600	A	10.131.2.9
+tracker-avns-css04		CNAME	ns-cen-07180938-04
+tracker-avns-db04		CNAME	ns-ora-07180938-04
+tracker-avns-rnd01		CNAME	ns-rnd-07180938-01
+tracker-avns-rnd02		CNAME	ns-rnd-07180938-02
+tracker-avns-svc01		CNAME	ns-svc-07180938-01
+tracker-avns-svc02		CNAME	ns-svc-07180938-02

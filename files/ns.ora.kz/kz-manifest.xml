@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright (c) 2008, 2014, Oracle and/or its affiliates. All rights reserved.
+
+-->
+<!DOCTYPE auto_install SYSTEM "file:///usr/share/install/ai.dtd.1">
+<auto_install>
+  <ai_instance name="default">
+    <target>
+      <logical>
+        <zpool name="rpool" is_root="true">
+          <!--
+            Subsequent <filesystem> entries instruct an installer to create
+            following ZFS datasets:
+
+                <root_pool>/export         (mounted on /export)
+                <root_pool>/export/home    (mounted on /export/home)
+
+            Those datasets are part of the standard environment and should
+            always be created.
+
+            In rare cases, if there is a need to deploy an installed system
+            without these datasets, either comment out or remove <filesystem>
+            entries. In such scenario, it has to be also assured that
+            in case of non-interactive post-install configuration, creation
+            of initial user account is disabled in related system
+            configuration profile. Otherwise the installed system would fail
+            to boot.
+          -->
+          <filesystem name="export" mountpoint="/export"/>
+          <filesystem name="export/home"/>
+	  <filesystem name="oracle"/>
+	  <filesystem name="oracle/u1" mountpoint="/u1"/>
+          <filesystem name="oracle/u2" mountpoint="/u2"/>
+          <be name="initial"/>
+        </zpool>
+      </logical>
+    </target>
+    <software type="IPS">
+      <destination>
+        <image>
+          <!-- Specify locales to install -->
+          <facet set="false">facet.locale.*</facet>
+          <facet set="true">facet.locale.en</facet>
+          <facet set="true">facet.locale.en_US</facet>
+        </image>
+      </destination>
+      <source>
+        <!--
+          By default, IPS packages will be installed from publisher
+          "solaris" located at the URI specified by the origin name below.
+          You may specify a different IPS repository to install from by
+          changing the origin name and/or publisher name. You may also
+          specify multiple publishers.
+        -->
+	<!--
+        <publisher name="solaris">
+          <origin name="http://pkg.oracle.com/solaris/release"/>
+        </publisher>
+      </source>
+	-->
+	<publisher name="solaris">
+        <origin name="https://pkg.oracle.com/solaris/support/"/>
+        <credentials>
+            <key>-----BEGIN RSA PRIVATE KEY-----
+MIIEpQIBAAKCAQEAptCMX3zEi5KSO1si+yEoMO7lYTb/qGPAdlI3Ae5BlYDaqTx0
+QyPCbavXs9l+Grpk4yqXZtkzT5NQd0fC6NMjKSKj1PhoXvQG3Qddu9Btd5nJZ2/2
+zqrpmOHVL9uW9gOku2NcsaI29v7pWfbDqNecxDCFHm7wqa3hFDrH7Qit1wehq07z
+g/RF8En5wqRIM6FrXDaqgdNY2UExgun+AcCwDPHpB5e+WobgCu6owqnVKjjfKFoN
+cLdO+6t5t2KE2r8Owbm6VYvMpE/bRAuKtNuGer539pjn8EshBFKIxMCuZBhUGtQK
+VYLizvJHwnNIqI4n6yf2k9FfmB7aEDGOpMgWfQIDAQABAoIBAQCNi13g1CSN7cOp
+G87V2i+ZPcxireFGx8WSYHaOa9U4f0qK2WIpahlbJ7nywHSRR2G9o/Et8tToC672
+V2zaU/V8vQjY+CLPly6Ps+VkLRoFpvdPjqCUgk+OSumzHxe8DiFkY45Op78N3ASz
+MoCZLsK1choyVZ5dy821dZ8Y0Ql474BE7UhipVdDuy/TSugLeGHAfrpXT5n3ubaB
+nkCdYiUhcx/vVwwC90DAokyi9AyfIviszozQGw/yNvP9I6dFQlr9jNY1d0OJhi3T
+/LlpeCM1tgSw5w3mEaOb6F03tn3rKiMUi5u5ftcaeqpTh8IiVrTrKrMJD/ctyhcX
+YupN5n0BAoGBAN1ubbwg2Agz4vWxQ5Vth+FfDb/3HlRSEkVMSKkTk5of+eQLCw+s
+m96AZT/7KPHN+F6xY5faUAcEepqz8hcOwzxGa6uBgrLIy2lYDYKqPdp7jBRWv/P2
+SUknj5HQX3Ep69SBXCTphtoepeE3cOwSXLon/pjcXmPTwCD1hvGTGwrBAoGBAMDb
+WJAAamV6bl/bNW/gqj33Uf6eKXycV8Au7fY0UTZMwj5O3Inzt1PfOB5BaqxZ90KG
+UIoGO+WWA7tw81kUxcCJkUx94KY/vQj7kEtTjWeBcKVgqPdgyLgO8M1GBVqESVWG
+OOUiy1kxx5C+OA3+e623Oxt46N2ymoT3bkHu2Ka9AoGBAM0wmWttnALt4fD+1LvR
+hcroRFuQ6YAFlXy11dcnlu2JmA0j1potvzqODEUfvq9jyDYndzyuRt5Z3isheMK5
+IV3ne7qwBqcZvrTdrZdZnnupZQMr6DBwFzU8/aOHTgoVaL3BKdvist3I7Loon/GC
+in7OtPR9sNIc1Ls2Clgtky+BAoGBAIc9CaSpdfLFYQL9EELs89TSSwBW3tbQN8S/
+5ATjeROvzgKtgH+IlUVOYebtjqVfzUEsOOwhJP2BLgrSUQNlyqqSjX5rQw6x4Zib
+9/qqk51CqsB9wN8AUqCncXsxH+3ymA5OOjWMKbbZbo10ppBBpW8S73L7XaihZzPY
+4st/dxOtAoGAV6fjlR6R7DWCvX84L9vM2fdDCxud8IACQqQfV+xNPR1UxAHKO12+
+E8SwnkF45+B0mAfxtyvpCCn34Ez80KBMcPNIKPTOUrXY0M0Be3RzFs302gP8omFD
+tFZbMMCXcAWBWFteORNV7qkRH3ABq3CpZe7fcdAvu4rtxw9Z6fLEqbI=
+-----END RSA PRIVATE KEY-----</key>
+            <cert>-----BEGIN CERTIFICATE-----
+MIIC/TCCAeUCAgLRMA0GCSqGSIb3DQEBCwUAMGIxCzAJBgNVBAYTAlVTMSgwJgYJ
+KoZIhvcNAQkBFhlQS0ctSU5RVUlSWV9XV0BPUkFDTEUuQ09NMSkwJwYDVQQDDCBP
+cmFjbGUgU29mdHdhcmUgRGVsaXZlcnkgU0hBLTI1NjAeFw0xNzAxMTIxMTE2MzBa
+Fw0xOTAxMjAxMTE2MzBaMCYxCzAJBgNVBAYTAlVTMRcwFQYDVQQDDA5jdEBjZW5z
+aGFyZS5kZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKbQjF98xIuS
+kjtbIvshKDDu5WE2/6hjwHZSNwHuQZWA2qk8dEMjwm2r17PZfhq6ZOMql2bZM0+T
+UHdHwujTIykio9T4aF70Bt0HXbvQbXeZyWdv9s6q6Zjh1S/blvYDpLtjXLGiNvb+
+6Vn2w6jXnMQwhR5u8Kmt4RQ6x+0IrdcHoatO84P0RfBJ+cKkSDOha1w2qoHTWNlB
+MYLp/gHAsAzx6QeXvlqG4AruqMKp1So43yhaDXC3TvurebdihNq/DsG5ulWLzKRP
+20QLirTbhnq+d/aY5/BLIQRSiMTArmQYVBrUClWC4s7yR8JzSKiOJ+sn9pPRX5ge
+2hAxjqTIFn0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEACbvNku/0z16ymBDjCUrB
+nK4cwbwFU68hjv4L20heSZC+xwgZjY4JIrQKyP0oHVOavuxbYmsDDxNoeUA38zDN
+u0TNXc965huNoy5zSA/DKddpS5ZqF67go54YxzeYcNfGNXiazWYxrvmE4Yp47wIE
+tl/XLGdSbNKUnZyhrw1VWNYgIRa19YmukSzuJ4oB1rND+7MXwQxzGSyFbxT/tbmw
+WNO1NFFZjZ5za+xSAjbMO82pnH9n6D3bdQACPOVLUnX94uWraV939o//fNS2NUm3
+DfkGtVHF8KqHP6jzimOEcNRpUr8M1uolzDaQJL4pq8E5TC9fw6+isQSZqy7+zRhY
+Bw==
+-----END CERTIFICATE-----</cert>
+        </credentials>
+    </publisher> 
+      <!--
+        The version specified by the "entire" package below, is
+        installed from the specified IPS repository.  If another version
+        is required, the 'entire' package should be specified in the
+        following form:
+
+            <name>pkg:/entire@0.5.11,5.11-0.175.update.sru.platform.build.rev</name>
+
+        For instance, to specify a particular build of S11.3, the
+        following should be used:
+
+            <name>pkg:/entire@0.5.11,5.11-0.175.3.0.0.build</name>
+      -->
+      <software_data action="install">
+        <name>pkg:/entire@0.5.11-0.175.3</name>
+        <name>pkg:/group/system/solaris-large-server</name>
+        <name>pkg:/editor/vim/vim-core</name>
+        <name>pkg:/file/gnu-findutils</name>
+        <name>pkg:/system/library/openmp</name>
+        <name>pkg:/developer/assembler</name>
+        <name>pkg:/service/network/ntp</name>
+        <name>pkg:/terminal/screen</name>
+        <name>pkg://solaris/network/telnet</name>
+        <name>pkg:/file/gnu-coreutils</name>
+        <name>pkg:/text/gnu-sed</name>
+        <name>pkg:/text/gawk</name>
+        <name>pkg:/system/management/snmp/net-snmp</name>
+        <name>pkg:/system/fault-management/snmp-notify</name>
+        <name>pkg:/service/network/ntp</name>
+        <name>pkg:/developer/build/automake</name>
+        <name>pkg:/developer/gcc-45</name>
+        <name>pkg:/developer/build/gnu-make</name>
+        <name>pkg:/developer/build/make</name>
+        <name>pkg:/text/gnu-grep</name>
+        <name>pkg:/network/netcat</name>
+      </software_data>
+    </software>
+  </ai_instance>
+</auto_install>

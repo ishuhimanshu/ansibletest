@@ -1,0 +1,24 @@
+---
+- name: change authorized_keys settings to default
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^AuthorizedKeysFile*'
+    replace: '#AuthorizedKeysFile'
+    backup: yes
+    validate: '/usr/sbin/sshd -T -f %s'
+  notify: restart sshd
+
+#- name: change sudo requiredtty
+#  lineinfile:
+#    path: /etc/sudoers
+#    state: present
+#    regexp: '^Defaults    requiretty'
+#    line: '#Defaults    requiretty'
+#    backup: yes
+ 
+- name: "get ssh keys"
+  include: get-key.yml
+  vars:
+    - user: '{{ item.key }}'
+    - ident: "{{ item.value.ident | default('notset') }}"
+  loop: "{{ lookup('dict', users) }}"

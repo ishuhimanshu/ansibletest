@@ -1,0 +1,3 @@
+---
+# vars file for roles/ns.ora.adjust.swap.size
+swap_size:      "12G"

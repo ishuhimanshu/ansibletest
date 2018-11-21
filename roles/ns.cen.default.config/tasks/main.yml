@@ -1,0 +1,73 @@
+---
+# tasks file for roles/ns.cen.default.config
+# execute as corpus user
+- name: "make default changes for every new customer in NS - Noris SaaS"
+  block:
+    - name: "change the image mode to exclusive SC (mode=2) #3380861"
+      block:
+        - name: "create config dir's"
+          file:
+            path: "/opt/corpus/cscs/app/{{item}}"
+            state: "directory"
+            owner: "corpus"
+            group: "corpus"
+          register: "create_conf_dir"
+          tags: "create_conf_dir"
+          with_items:
+            - "services/image"
+            - "services/rmiconnection"
+
+    - name: "configure censhare for NS"
+      block:
+        - name: "copy the initial config to custom area (service/image)"
+          copy:
+            src: "~/css/app/services/image/config.xml"
+            dest: "~/cscs/app/services/image/config.xml"
+            remote_src: "yes"
+          register: "image_only_SC_cp"
+          tags: "image_only_SC_cp"
+          when: "create_conf_dir|success"
+          
+        - name: "change the value of image mode"
+          replace:
+            regexp: "  mode=\"1\""
+            replace: "  mode=\"2\""
+            path: "~/cscs/app/services/image/config.xml"
+          register: "image_only_SC_replace"
+          tags: "image_only_SC_replace"
+          when: "image_only_SC_cp|success"
+
+    - name: "change rmi ssl connection 443 <-> 20546 MapSSL #3382199"
+      block:
+        - name: "copy the initial config to custome area (service/rmiconnection)"
+          copy:
+            src: "~/css/app/services/rmiconnection/config.xml"
+            dest: "~/cscs/app/services/rmiconnection/config.xml"
+            remote_src: "yes"
+          register: "rmiconnection_cp"
+          tags: "rmiconnection_cp"
+          when: "create_conf_dir|success"
+          
+        - name: "add connection for 443 <-> 20546 MapSSL"
+          blockinfile:
+            path: "~/cscs/app/services/rmiconnection/config.xml"
+            marker: "<!-- {mark} ANSIBLE - SaaS 3.0: Ansible - map ssl config #3382199 -->"
+            insertbefore: "</rmiconnection>"
+            block: |2
+                <connection 
+                rmiport="20546" 
+                bindname="corpus.RMIServerMapSSL" 
+                type="ssl" 
+                server-port-range-from="20546" 
+                client-map-port-to="443" 
+                client-map-port-from="20546" 
+                server-port-range-to="20546" 
+                socket-connect-timeout="15000" 
+                socket-read-timeout="130000" 
+                socket-accept-timeout="0" 
+                receive-buffer-size="0" 
+                send-buffer-size="0" 
+                />
+          register: "rmiconnection"
+          tags: "rmiconnection"
+          when: "rmiconnection_cp|success"

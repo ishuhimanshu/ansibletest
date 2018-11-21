@@ -1,0 +1,26 @@
+---
+# tasks file for roles/oracle.preinstall.oracle
+- name: "oracle preinstall of db"
+  block:
+    - name: "create a Directory for oracle software"
+      file:
+        dest: "/u01/app/oracle/software/"
+        state: "directory"
+      register: "oswdir"
+      tags: "oswdir"
+      
+    - name: "unarchive the oracle software"
+      unarchive:
+        src: "/var/tmp/{{item}}"
+        dest: "/u01/app/oracle/software/"
+        creates: "yes"
+        remote_src: "yes"
+      with_items:
+      - "p13390677_112040_SunOS_1of6.zip"
+      - "p13390677_112040_SunOS_2of6.zip"
+      - "p25351440_81517314_Solaris86-64.zip"
+      - "p24006111_112040_Solaris86-64.zip"
+      when: "oswdir|success"
+      register: "extractosw"
+      tags: "extractosw"
+      

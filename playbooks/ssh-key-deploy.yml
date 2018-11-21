@@ -1,0 +1,5 @@
+---
+- hosts: ssh_key
+  gather_facts: false
+  roles:
+    - ssh-key-deploy

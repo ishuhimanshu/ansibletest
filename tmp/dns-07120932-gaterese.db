@@ -1,0 +1,36 @@
+ns-gw-07120932		3600	A	10.130.1.65
+ns-ora-07120932-01	3600	A	10.130.1.66
+ns-ora-07120932-02	3600	A	10.130.1.67
+ns-cen-07120932-01	3600	A	10.130.1.68
+ns-cen-07120932-02	3600	A	10.130.1.69
+ns-rnd-07120932-01	3600	A	10.130.1.70
+ns-rnd-07120932-02	3600	A	10.130.1.71
+ns-svc-07120932-01	3600	A	10.130.1.72
+ns-svc-07120932-02	3600	A	10.130.1.73
+ns-bc-07120932		3600	A	10.130.1.95
+ns-ora-07120932-01-sto	3600	A	10.131.1.66
+ns-ora-07120932-02-sto	3600	A	10.131.1.67
+ns-cen-07120932-01-sto	3600	A	10.131.1.68
+ns-cen-07120932-02-sto	3600	A	10.131.1.69
+ns-sto-07120932-assets	3600	A	10.131.1.70
+ns-sto-07120932-rman	3600	A	10.131.1.71
+ns-css-07120932-01	3600	A	213.95.85.5
+ns-css-07120932-02	3600	A	213.95.85.6
+ns-web-07120932-01	3600	A	213.95.85.143
+ns-web-07120932-02	3600	A	213.95.85.144
+gaterese-prodns-css01		CNAME	ns-cen-07120932-01
+gaterese-testns-css01		CNAME	ns-cen-07120932-02
+gaterese-prodns-db			CNAME	ns-ora-07120932-01
+gaterese-testns-db			CNAME	ns-ora-07120932-02
+gaterese-prodns-rnd01		CNAME	ns-rnd-07120932-01
+gaterese-prodns-rnd02		CNAME	ns-rnd-07120932-02
+gaterese-testns-rnd01		CNAME	ns-rnd-07120932-01
+gaterese-testns-rnd02		CNAME	ns-rnd-07120932-02
+gaterese-prodns-img01		CNAME	ns-svc-07120932-01
+gaterese-prodns-img02		CNAME	ns-svc-07120932-02
+gaterese-testns-img01		CNAME	ns-svc-07120932-01
+gaterese-testns-img02		CNAME	ns-svc-07120932-02
+gaterese-css			CNAME	ns-css-07120932-01
+gaterese				CNAME	ns-web-07120932-01
+gaterese-test-css			CNAME	ns-css-07120932-02
+gaterese-test			CNAME	ns-web-07120932-02

@@ -1,0 +1,6 @@
+---
+# handlers file for roles/ssh-key-deploy
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted

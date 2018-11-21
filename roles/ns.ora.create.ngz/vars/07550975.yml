@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "dokat"
+network_srv:          "10.130.6.161/27"
+network_sto:          "10.131.6.161/27"
+srv_vlan:             "755"
+sto_vlan:             "975"
+SaaS_ID:              "07550975"
+tpm_project_id:       "261"
+Install_Ticket:       "3421466"
+CustomerName:         "Doka GmbH"
+ngz:
+  dokat-01-prod:
+    name:             "dokat"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.6.162/27"
+    ip_sto:           "10.131.6.162/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare56"
+  dokat-02-test:
+    name:             "dokat"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.6.163/27"
+    ip_sto:           "10.131.6.163/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/censhare56"
+# first and second instance, assume that is prod and test system

@@ -1,0 +1,7 @@
+---
+# handlers file for roles/ns.ora.ssh.deploy.key
+- name: "clear '~/tmp/keys' dir"
+  file:
+    path: "tmp/keys"
+    state: "absent"
+  when: "get_ssh_keys|success"

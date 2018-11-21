@@ -1,0 +1,20 @@
+---
+# tasks file for roles/oracle.db.dependencies
+- name: "install Oracle DB dependencies - Solaris"
+  pkg5:
+   name: 
+     - "group/prerequisite/oracle/oracle-rdbms-server-12-1-preinstall"
+     - "/compatibility/packages/SUNWxwplt"
+     - "/SUNWmfrun"
+     - "/SUNWarc"
+     - "/SUNWhea"
+     - "/SUNWlibm"
+     - "/SUNWsprot"
+     - "pkg://solaris/developer/assembler"
+     - "pkg:/diagnostic/top"
+     - "pkg:/text/gnu-grep"
+  when: "ansible_os_family == 'Solaris' and ansible_distribution_version|int >= 11"
+  ignore_errors: "yes"
+  register: "pkg_install"
+  changed_when: "pkg_install.rc == 4"
+  tags: "dependencies"

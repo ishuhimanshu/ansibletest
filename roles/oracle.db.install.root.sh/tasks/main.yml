@@ -1,0 +1,25 @@
+---
+# tasks file for roles/oracle.db.install.root.sh
+- name: "check if the 'root.sh' script exists"
+  block:
+    - stat:
+        path: "{{ORAHOME}}/root.sh"
+      register: "orootshstat"
+      tags: "orootshstat"
+    
+  rescue:
+    - assert: 
+        that:
+          - "orootshstat.stat.mode == 0750"
+    - name: "set permission to the 'root.sh' if not have"
+      file: 
+        path: "{{ORAHOME}}/root.sh"
+        mode: "0750"
+        register: "correctpermissions"
+        tahs: "correctpermissions"
+
+  always:
+    - name: "execute the script"
+      shell: "{{ORAHOME}}/root.sh"
+      register: "execoroot.sh"
+      tags: "execoroot.sh"

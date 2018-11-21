@@ -1,0 +1,36 @@
+ns-gw-07510971		3600	A	10.130.6.33
+ns-ora-07510971-01	3600	A	10.130.6.34
+ns-ora-07510971-02	3600	A	10.130.6.35
+ns-cen-07510971-01	3600	A	10.130.6.36
+ns-cen-07510971-02	3600	A	10.130.6.37
+ns-rnd-07510971-01	3600	A	10.130.6.38
+ns-rnd-07510971-02	3600	A	10.130.6.39
+ns-svc-07510971-01	3600	A	10.130.6.40
+ns-svc-07510971-02	3600	A	10.130.6.41
+ns-bc-07510971		3600	A	10.130.6.63
+ns-ora-07510971-01-sto	3600	A	10.131.6.34
+ns-ora-07510971-02-sto	3600	A	10.131.6.35
+ns-cen-07510971-01-sto	3600	A	10.131.6.36
+ns-cen-07510971-02-sto	3600	A	10.131.6.37
+ns-sto-07510971-assets	3600	A	10.131.6.38
+ns-sto-07510971-rman	3600	A	10.131.6.39
+ns-css-07510971-01	3600	A	213.95.85.83
+ns-css-07510971-02	3600	A	213.95.85.84
+ns-web-07510971-01	3600	A	213.95.85.221
+ns-web-07510971-02	3600	A	213.95.85.222
+mcdde-prodns-css01		CNAME	ns-cen-07510971-01
+mcdde-testns-css01		CNAME	ns-cen-07510971-02
+mcdde-prodns-db			CNAME	ns-ora-07510971-01
+mcdde-testns-db			CNAME	ns-ora-07510971-02
+mcdde-prodns-rnd01		CNAME	ns-rnd-07510971-01
+mcdde-prodns-rnd02		CNAME	ns-rnd-07510971-02
+mcdde-testns-rnd01		CNAME	ns-rnd-07510971-01
+mcdde-testns-rnd02		CNAME	ns-rnd-07510971-02
+mcdde-prodns-img01		CNAME	ns-svc-07510971-01
+mcdde-prodns-img02		CNAME	ns-svc-07510971-02
+mcdde-testns-img01		CNAME	ns-svc-07510971-01
+mcdde-testns-img02		CNAME	ns-svc-07510971-02
+mcdde-css			CNAME	ns-css-07510971-01
+mcdde				CNAME	ns-web-07510971-01
+mcdde-test-css			CNAME	ns-css-07510971-02
+mcdde-test			CNAME	ns-web-07510971-02

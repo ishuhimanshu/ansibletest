@@ -1,0 +1,42 @@
+---
+# vars file for roles/ns.monitoring.default
+icinga_template: |
+    object Host "ns-gw-{{SaaS_ID}}" {
+      import "generic-gw"
+    
+      address = "{{network_srv|ipaddr('1')|ipaddr('address')}}"
+    }
+    
+    object Host "{{custname}}-prodns-css01" {
+      import "ns-app-host"
+    
+      vars.parent = "ns-gw-{{SaaS_ID}}"
+    
+      address = "{{network_srv|ipaddr('4')|ipaddr('address')}}"
+    }
+    
+    object Host "{{custname}}-prodns-db" {
+      import "ns-db-host"
+    
+      vars.parent = "ns-gw-{{SaaS_ID}}"
+    
+      address = "{{network_srv|ipaddr('2')|ipaddr('address')}}"
+    }
+    
+    object Host "{{custname}}-css" {
+      import "generic-webserver"
+      import "rest-host"
+    
+      vars.parent = "{{custname}}-prodns-css01"
+      vars.rmi["RMIS"] = {
+        tcp_port = 30546
+      }
+    
+      address = "{{NETdb.stdout.split('|')[4]}}"
+    }
+    
+    apply Dependency "host-ns-gw-{{SaaS_ID}}-{{custname}}" to Host {
+      parent_host_name = host.vars.parent
+    
+      assign where match ("*{{custname}}*", host.name) && host.vars.parent
+    }

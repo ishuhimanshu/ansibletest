@@ -1,0 +1,27 @@
+---
+# tasks file for roles/oracle.kernel_parameter
+- name: "set marker to '/etc/project'"
+  lineinfile:
+    dest: "/etc/project"
+    backup: "yes"
+    state: "present"
+    group: "0"
+    owner: "0"
+    mode: "0644"
+    insertafter: "EOF"
+    regexp: "{{marker}}"
+    line: "{{marker}}"
+  when: "ansible_system == 'SunOS'"
+
+- name: "add project 'user_oracle' to system"
+  lineinfile:
+    dest: "/etc/project"
+    backup: "yes"
+    state: "present"
+    group: "root"
+    owner: "sys"
+    mode: "0644"
+    insertafter: "^{{marker}}"
+    regexp: "{{user_oracle}}"
+    line: "{{user_oracle}}"
+  when: "ansible_system == 'SunOS'"

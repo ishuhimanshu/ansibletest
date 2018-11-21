@@ -1,0 +1,75 @@
+---
+# tasks file for roles/ns.ora.backup_rman.prepare
+- name: "backup_rman share"
+  block:
+    - name: "create mnt dir for rman"
+      file:
+        path: "/rmanbackup"
+        state: "directory"
+        owner: "oracle"
+        group: "oinstall"
+      register: "rmandir"
+      tags: "rmandir"
+
+    - name: "add rman share in '/etc/vfstab'"
+      lineinfile:
+        line: "{{network_sto|ipaddr('7')|ipaddr('address')}}:/vol_censhare_saas_data_nfs_rman_0{{srv_vlan}}0{{sto_vlan}}_{{inventory_hostname.split('-')[-1]}}   -       /rmanbackup  nfs     -       yes     rw,hard,rsize=32768,wsize=32768,actimeo=3,timeo=100"
+        regexp: "^{{network_sto|ipaddr('7')|ipaddr('address')}}:/vol_censhare_saas_data_nfs_rman"
+        backup: "yes"
+        path: "/etc/vfstab"
+      register: "addrmanmnt2fstab"
+      tags: "addrmanmnt2fstab"
+      when: "rmandir|success"
+
+    - name: "mount oracle rman-dir"
+      shell: "true; mount /rmanbackup"
+      register: "mntrmandir"
+      tags: "mntrmandir"
+      when: "addrmanmnt2fstab|success"
+      ignore_errors: "true"         # fuck noris!!!
+
+    - name: "set permission to user Oracle"
+      file:
+        path: "/rmanbackup"
+        mode: "0777"
+      when: "rmandir|success" # let change if we can remove the "# fuck noris!!!" part to 'when: "mntrmandir|success"'
+      register: "permission_to_rmandir"
+      tags: "permission_to_rmandir"
+
+    - name: "create dir for 'fast_recovery_area' #3390815"
+      file:
+        path: "{{item}}"
+        mode: "0777"
+        state: "directory"
+      when: "permission_to_rmandir|success"
+      register: "create_fast_recovery_area"
+      tags: "create_fast_recovery_area"
+      with_items:
+        - "/rmanbackup/fast_recovery_area"
+        - "/u01/app/oracle"
+
+    - name: "remove of original 'fast_recovery_area' #3390815"
+      file:
+        path: "/u01/app/oracle/fast_recovery_area"
+        state: "absent"
+      when: "permission_to_rmandir|success"
+      register: "rm_original_fast_recovery_area"
+      tags: "rm_original_fast_recovery_area"
+
+    - name: "link 'fast_recovery_area' #3390815"
+      file:
+        dest: "/u01/app/oracle/fast_recovery_area"
+        src: "/rmanbackup/fast_recovery_area"
+        state: "link"
+        force: "yes"
+      when: "permission_to_rmandir|success"
+      register: "link_fast_recovery_area"
+      tags: "link_fast_recovery_area"
+    
+    - name: "set backup from 7 to 14 days - #3434909"
+      replace:
+        path: "/export/home/oracle/bin/backup_rman.sh"
+        replace: "redundancy=2"
+        regexp: "redundancy=1"
+      tags: "set_rman_backup_retention"
+      register: "set_rman_backup_retention"

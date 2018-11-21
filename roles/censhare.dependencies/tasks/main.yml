@@ -1,0 +1,5 @@
+---
+# tasks file for roles/censhare.dependencies
+- name: "install censhare dependencies"
+  yum:
+    name: "libxslt.x86_64"

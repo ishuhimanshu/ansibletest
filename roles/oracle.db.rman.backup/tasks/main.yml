@@ -1,0 +1,76 @@
+---
+# tasks file for roles/oracle.db.rman.backup
+
+- name: "install backup_rman.sh"
+  block:
+    - name: "figure out ORACLE_HOME"
+      command: "grep ^oracle /etc/passwd"
+      register: "orahome"
+      tags: "orahome"
+
+    - name: "create '${ORACLE_HOME}/bin' dir if not exists"
+      file:
+        dest: "{{orahome.stdout.split(':')[5]}}/bin"
+        owner: "{{dba}}"
+        group: "{{oracle}}"
+        state: "directory"
+      register: "createbindir"
+      when: "(orahome|success)"      
+      tags: "createbindir"
+
+    - name: "copy 'backup_rman.sh' script"
+      template:
+        src: "backup_rman.sh"
+        dest: "{{orahome.stdout.split(':')[5]}}/bin/"
+        backup: "no"
+        group: "{{dba}}"
+        owner: "{{oracle}}"
+        mode: "0755"
+      register: "cpbakrman"
+      when: "(createbindir|success)"
+      tags: "cpbakrman"
+
+    - name: "figure out rman destination dir"
+      command: "grep ^bakdir= {{orahome.stdout.split(':')[5]}}/bin/backup_rman.sh"
+      register: "rmandest"
+      when: "cpbakrman|success"
+      tags: "rmandest"
+
+    - name: "create 'backup_rman' dir"
+      file:
+        path: "{{rmandest.stdout.split('=')[1]}}"
+        mode: "0777"
+        state: "directory"
+      register: "permrmandestdir"
+      when: "(rmandest|success)"
+      tags: "permrmandestdir"
+
+    - name: "figure out rman logfil(e) destination"
+      command: "grep ^logfil= {{orahome.stdout.split(':')[5]}}/bin/backup_rman.sh"
+      register: "rmanlogdest"
+      when: "permrmandestdir|success"
+      tags: "rmanlogdest"
+
+    - name: "create rman logfil(e)"
+      file:
+        dest: "{{rmanlogdest.stdout.split('=')[1]}}"
+        owner: "{{dba}}"
+        group: "{{oracle}}"
+        mode: "0644"
+        state: "touch"
+      register: "creatermanlog"
+      when: "(rmanlogdest|success)"      
+      tags: "creatermanlog"
+
+    - name: "cronjob for 'backup_rman'"
+      cron:
+        name: "backup_rman by censhare"
+        hour: "02"
+        minute: "{{59|random}}"
+        user: "oracle"
+        backup: "yes"
+        job: "test -x {{orahome.stdout.split(':')[5]}}/bin/backup_rman.sh && {{orahome.stdout.split(':')[5]}}/bin/backup_rman.sh"
+        state: "present"
+      register: "addrmancron"
+      when: "creatermanlog|success"
+      tags: "addrmancron"

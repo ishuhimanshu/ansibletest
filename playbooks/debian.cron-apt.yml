@@ -1,0 +1,18 @@
+---
+- hosts: "localhost"
+  tasks:
+    - add_host:
+        hostname: "{{item}}"
+        groups: "deb"
+      with_items: 
+        - "int-0006-speedtest"
+        - "monitoring-01"
+        - "de-nue-youtrack"
+        - "de-nue-nervepoint"
+        - "de-nue-git"
+        - "de-nue-erp-app-02"
+- hosts: "deb"
+  strategy: "free"
+  roles:
+    - "debian.cron-apt"
+

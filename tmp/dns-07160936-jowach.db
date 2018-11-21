@@ -1,0 +1,36 @@
+ns-gw-07160936		3600	A	10.130.1.193
+ns-ora-07160936-01	3600	A	10.130.1.194
+ns-ora-07160936-02	3600	A	10.130.1.195
+ns-cen-07160936-01	3600	A	10.130.1.196
+ns-cen-07160936-02	3600	A	10.130.1.197
+ns-rnd-07160936-01	3600	A	10.130.1.198
+ns-rnd-07160936-02	3600	A	10.130.1.199
+ns-svc-07160936-01	3600	A	10.130.1.200
+ns-svc-07160936-02	3600	A	10.130.1.201
+ns-bc-07160936		3600	A	10.130.1.223
+ns-ora-07160936-01-sto	3600	A	10.131.1.194
+ns-ora-07160936-02-sto	3600	A	10.131.1.195
+ns-cen-07160936-01-sto	3600	A	10.131.1.196
+ns-cen-07160936-02-sto	3600	A	10.131.1.197
+ns-sto-07160936-assets	3600	A	10.131.1.198
+ns-sto-07160936-rman	3600	A	10.131.1.199
+ns-css-07160936-01	3600	A	213.95.85.13
+ns-css-07160936-02	3600	A	213.95.85.14
+ns-web-07160936-01	3600	A	213.95.85.151
+ns-web-07160936-02	3600	A	213.95.85.152
+jowach-prodns-css01		CNAME	ns-cen-07160936-01
+jowach-testns-css01		CNAME	ns-cen-07160936-02
+jowach-prodns-db			CNAME	ns-ora-07160936-01
+jowach-testns-db			CNAME	ns-ora-07160936-02
+jowach-prodns-rnd01		CNAME	ns-rnd-07160936-01
+jowach-prodns-rnd02		CNAME	ns-rnd-07160936-02
+jowach-testns-rnd01		CNAME	ns-rnd-07160936-01
+jowach-testns-rnd02		CNAME	ns-rnd-07160936-02
+jowach-prodns-img01		CNAME	ns-svc-07160936-01
+jowach-prodns-img02		CNAME	ns-svc-07160936-02
+jowach-testns-img01		CNAME	ns-svc-07160936-01
+jowach-testns-img02		CNAME	ns-svc-07160936-02
+jowach-css			CNAME	ns-css-07160936-01
+jowach				CNAME	ns-web-07160936-01
+jowach-test-css			CNAME	ns-css-07160936-02
+jowach-test			CNAME	ns-web-07160936-02

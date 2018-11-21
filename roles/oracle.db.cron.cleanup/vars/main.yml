@@ -1,0 +1,17 @@
+---
+# vars file for roles/oracle.db.cron.cleanup
+cron:
+  trace:
+    name: "delete trace files"
+    hour: "5"
+    minute: "{{59|random}}"
+    user: "oracle"
+    backup: "yes"
+    job: "/usr/bin/find /u01/app/oracle/diag/rdbms/corpus/corpus/trace/ -type f -mtime +100 -exec /bin/rm -r {} +; >/dev/null 2>&1"
+  adump:
+    name: "delete adump files"
+    hour: "6"
+    minute: "{{59|random}}"
+    user: "oracle"
+    backup: "no"
+    job: "/usr/bin/find  /u01/app/oracle/ -type f -mtime +14 -exec /bin/rm -r {} +; >/dev/null 2>&1"

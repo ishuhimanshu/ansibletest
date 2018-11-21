@@ -1,0 +1,35 @@
+---
+# tasks file for role/solaris.zfs.backup.zfssnapbak
+
+- name: "install zfssnapbak script"
+  block:
+    - name: "create '/usr/local/bin' if not exist"
+      file:
+        path: "/usr/local/bin"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+        state: "directory"
+      register: "createulbdir"
+      when: "ansible_system == 'SunOS'"
+      tags: "zfssnapbak"
+      
+    - name: "copy zfssnapbak script"
+      copy:
+        src: "templates/zfssnapbak.sh" 
+        dest: "/usr/local/bin/zfssnapbak.sh"
+        backup: "yes"
+        group: "root"
+        owner: "root"
+        mode: "0744"
+      when: "createulbdir|success"
+      tags: "zfssnapbak"
+      notify: "zfssnapbak"
+
+    - name: "setup hourly cron"
+      cron:
+        name: "run 'zfssnapbak.sh' hourly"
+        backup: "yes"
+        job: "/usr/local/bin/zfssnapbak.sh"
+        minute: "{{59|random}}"
+

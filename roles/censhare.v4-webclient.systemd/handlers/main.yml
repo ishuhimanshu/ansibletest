@@ -1,0 +1,8 @@
+---
+# handlers file for roles/censhare.server.systemd
+# #3390680
+- name: "start censhare server"
+  systemd:
+    name: "css_jetty"
+    state: "started"
+    enabled: "yes"

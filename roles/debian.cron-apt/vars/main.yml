@@ -1,0 +1,17 @@
+---
+# vars file for roles/debian.cron-apt
+sources: |
+    deb http://httpredir.debian.org/debian/ {{ansible_distribution_release}} main contrib non-free
+    deb-src http://httpredir.debian.org/debian/ {{ansible_distribution_release}} main contrib non-free
+    deb http://security.debian.org/ {{ansible_distribution_release}}/updates main contrib non-free
+    deb-src http://security.debian.org/ {{ansible_distribution_release}}/updates main contrib non-free
+    deb http://httpredir.debian.org/debian/ {{ansible_distribution_release}}-updates main contrib non-free
+    deb-src http://httpredir.debian.org/debian/ {{ansible_distribution_release}}-updates main contrib non-free
+config: |
+    MAILON="changes"
+    SYSLOGON="always"
+    MAILTO="root"
+    HOSTNAME="{{inventory_hostname}}"
+    MINTMPDIRSIZE="1048576" # (kb) 1 GB disk space must be free, otherwise the update will not run
+    OPTIONS="-o Dir::Etc::SourceList=/etc/apt/sources-cron.list -o Dir::Etc::SourceParts=\"/dev/null\""
+security_upgrade: "upgrade -y -o APT::Get::Show-Upgraded=true"

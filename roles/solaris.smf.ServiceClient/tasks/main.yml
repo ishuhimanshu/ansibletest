@@ -1,0 +1,50 @@
+---
+# tasks file for roles/solaris.smf.ServiceClient
+- name: "PreAction: - extract start/stop scripts from GIT repo -> s2s installer"
+  shell: "cd ~/tmp && tar -zxf {{git_itservices}}/scripts/censhare/s2s-install-update.tar.gz s2s/init.tpl/css_serviceclient s2s/sysconfig.tpl/css_serviceclient.tpl"
+  delegate_to: "localhost"
+  tags: "localTASK"
+
+- name: "create dir for SMF manifests"
+  file:
+    path: "/var/svc/manifest/censhare"
+    state: "directory"
+  when: "ansible_system == 'SunOS'"
+  register: "createSMFdir"
+  tags: "SMF"
+
+- name: "copy SMF files"
+  copy:
+    src: "{{item.0}}"
+    dest: "{{item.1}}"
+    mode: "0755"
+  with_together:
+  - [ '{{git_itservices}}/scripts/censhare/solaris/smf/manifest/censhare/serviceclient.xml', '~/tmp/s2s/init.tpl/css_serviceclient', '~/tmp/s2s/sysconfig.tpl/css_serviceclient.tpl' ]
+  - [ '/var/svc/manifest/censhare/', '/etc/init.d/', '/etc/svc-css_serviceclient' ]
+  when: "createSMFdir|success"
+  register: "cpSMFfiles"
+  tags: "SMF"
+
+- name: "symlinks for St-art/op-Scripts of Oracle"
+  file:
+    src: "/etc/init.d/css_serviceclient"
+    dest: "/lib/svc/method/svc-css_serviceclient"
+    state: "link"
+  when: "cpSMFfiles|success"
+  register: "slinkORAsscript"
+  tags: "SMF"
+
+- name: "validate and import SMF services"
+  command: "svccfg {{item.0}} /var/svc/manifest/censhare/{{item.1}}.xml"
+  with_together:
+  - [ 'validate', 'import' ]
+  - [ 'serviceclient', 'serviceclient' ]
+  when: "slinkORAsscript|success"
+  register: "validateORAsmf"
+  tags: "SMF"
+
+- name: "cleanup locally"
+  file:
+    path: "~/tmp/s2s"
+    state: "absent"
+  delegate_to: "localhost"

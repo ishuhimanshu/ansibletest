@@ -1,0 +1,107 @@
+---
+# tasks file for roles/oracle.db.install.opatch
+- name: "install oracle patches"
+  block:
+    - name: "check if patches on expected loaction"
+      stat:
+        path: "{{item}}"
+      register: "patchexists"
+      tags: "patchexists"
+      with_items:
+       - "/var/tmp/p6880880_112000_Solaris86-64.zip"
+       - "/var/tmp/24006111"
+       - "{{ORAHOME}}"
+       
+    - name: "unarchive the 'patch-zip-files'"
+      unarchive: 
+        src: "/var/tmp/p6880880_112000_Solaris86-64.zip"
+        dest: "{{ORAHOME}}"
+        creates: "yes"
+        remote_src: "yes"
+        owner: "oracle"
+      when: "patchexists|success"
+      register: "unarchiveopatch"
+    
+    - name: "copy oracle response file to server(s)"
+      template:
+        src: "ocm.rsp"
+        dest: "/var/tmp/"
+        group: "dba"
+        owner: "oracle"
+      when: "unarchiveopatch|success"
+      register: "cpocmtemplate"
+      tags: "cpocmtemplate"
+      
+    - name: "opatch 'prereq' test"
+      shell: "cd /var/tmp/24006111/ && {{ORAHOME}}/OPatch/opatch prereq CheckConflictAgainstOHWithDetail -ph ./"
+      register: "opatchprereq"
+      when: "cpocmtemplate|success"
+      tags: "opatchprereq"
+      
+    - name: "opatch install"
+      shell: "cd /var/tmp/24006111/ && {{ORAHOME}}/OPatch/opatch apply -silent -ocmrf /var/tmp/ocm.rsp"
+      register: "opatchapply"
+      when: "opatchprereq|success"
+      tags: "opatchapply"
+      
+      
+      
+      
+      
+#
+# oracle@ns-ora-07180938-2:/u01/app/oracle/software/24006111$ cd /u01/app/oracle/software/24006111/ && opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+# Oracle Interim Patch Installer version 11.2.0.3.15
+# Copyright (c) 2017, Oracle Corporation.  All rights reserved.
+# 
+# PREREQ session
+# 
+# Oracle Home       : /u01/app/oracle/product/11.2.0.4/db_1
+# Central Inventory : /u01/app/oracle/oraInventory
+#    from           : /u01/app/oracle/product/11.2.0.4/db_1/oraInst.loc
+# OPatch version    : 11.2.0.3.15
+# OUI version       : 11.2.0.4.0
+# Log file location : /u01/app/oracle/product/11.2.0.4/db_1/cfgtoollogs/opatch/opatch2017-05-08_06-20-01AM_1.log
+# 
+# Invoking prereq "checkconflictagainstohwithdetail"
+# 
+# Prereq "checkConflictAgainstOHWithDetail" passed.
+# 
+# OPatch succeeded.
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# oracle@ns-ora-07180938-2:/u01/app/oracle/software/24006111$ /u01/app/oracle/product/11.2.0.4/db_1/OPatch/ocm/bin/emocmrsp
+# OCM Installation Response Generator 10.3.7.0.0 - Production
+# Copyright (c) 2005, 2012, Oracle and/or its affiliates.  All rights reserved.
+# 
+# Provide your email address to be informed of security issues, install and
+# initiate Oracle Configuration Manager. Easier for you if you use your My
+# Oracle Support Email address/User Name.
+# Visit http://www.oracle.com/support/policies.html for details.
+# Email address/User Name: technik@censhare.com
+# Provide your My Oracle Support password to receive security updates via your My Oracle Support account.
+# Password (optional):
+# An unrecoverable network configuration error was encountered.
+# peer not authenticated
+# 
+# Unable to establish a network connection to Oracle. Specify the URL for an
+# Oracle Support Hub in this format:
+#     http[s]://<OracleSupportHubHost>:<OracleSupportHubPort>
+# If you do not wish to configure OCM through an Oracle Support Hub, enter NONE
+# Oracle Support Hub URL: NONE
+# 
+# Unable to establish a network connection to Oracle. If your systems require a
+# proxy server for outbound Internet connections, enter the proxy server details
+# in this format:
+#     [<proxy-user>@]<proxy-host>[:<proxy-port>]
+# If you want to remain uninformed of critical security issues in your
+# configuration, enter NONE
+# Proxy specification: NONE
+# 
+# The OCM configuration response file (ocm.rsp) was successfully created.

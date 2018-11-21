@@ -1,0 +1,5 @@
+---
+# vars file for roles/censhare.user.env
+localbin:           "PATH=$PATH:~/localbin"
+usrlocalbin:        "PATH=$PATH:/usr/local/bin"
+usrgnu:             "PATH=$PATH:/usr/gnu/bin:$PATH"

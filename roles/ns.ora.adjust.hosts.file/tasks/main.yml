@@ -1,0 +1,25 @@
+---
+# tasks file for roles/ns.ora.adjust.hosts.file
+- name: "rewrite '/etc/inet/hosts' file"
+  block:
+    - name: "remove '/etc/inet/hosts' file"
+      file: 
+        path: "/etc/inet/hosts"
+        state: "absent"
+      register: "del_hosts"
+      tags: "del_hosts"
+       
+    - name: "write new '/etc/inet/hosts' file"
+      blockinfile:
+        dest: "/etc/inet/hosts"
+        create: "yes"
+        group: "0"
+        owner: "0"
+        mode: "0644"
+        block: |
+         ::1 localhost
+         127.0.0.1 localhost loghost
+         {{ansible_default_ipv4.address}} {{inventory_hostname}} {{ansible_hostname}} {{ansible_fqdn}}
+      when: "del_hosts|success"
+      register: "new_hosts"
+      tags: "new_hosts"

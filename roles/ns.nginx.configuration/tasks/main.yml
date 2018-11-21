@@ -1,0 +1,73 @@
+---
+# tasks file for roles/ns.nginx.configuration
+- name: "deploy certifies"
+  block:
+    - name: "refresh local certify it repo"
+      git:
+        repo: "git@git:certificates.git"
+        dest: "~/git/certificates"
+        refspec: "+refs/pull/*:refs/heads/*"
+        accept_hostkey: "yes"
+        force: "yes"
+      delegate_to: "localhost"
+      run_once: "yes"
+      register: "refresh_certificates_repo"
+      tags: "refresh_certificates_repo"
+    
+    - name: "create directory for ssh cretifies"
+      file:
+        path: "/etc/nginx/ssl"
+        state: "directory"
+      when: "refresh_certificates_repo|success"
+      register: "create_cert_dir"
+      tags: "create_cert_dir"
+    
+    - name: "deploy certifies to censhare systems"
+      synchronize:
+        src: "~/git/certificates/censhare.io/{{item}}"
+        dest: "/etc/nginx/ssl/{{item}}"
+      with_items:
+        - "star_censhare_io.pem"
+        - "star_censhare_io.key"
+      when: "create_cert_dir|success"
+      tags: "deploy_certs"
+      register: "deploy_certs"
+
+- name: "default configuration"
+  block:
+    - name: "change listen address"
+      replace:
+        path: "/etc/nginx/nginx.conf"
+        regexp: "<your public IP>"
+        replace: "{{ansible_ens160.ipv4.address}}"
+      with_dict: "{{ngz}}"
+      register: "listen_address"
+      tags: "listen_address"
+    
+    - name: "change fqdn"
+      replace:
+        path: "/etc/nginx/nginx.conf"
+        regexp: "<your fqdn>;"
+        replace: "{{ansible_hostname|replace('prodns-css01','')|replace('ns-css01','')}}.censhare.io;"
+      register: "set_fqdn"
+      tags: "set_fqdn"
+      when: "listen_address|success"
+    
+    - name: "set path of ssl cert"
+      replace:
+        path: "/etc/nginx/nginx.conf"
+        replace: "/etc/nginx/ssl/star_censhare_io.pem;"
+        regexp: "<your chained CRT>;"
+      register: "set_path_of_cert"
+      tags: "set_path_of_cert"
+      when: "set_fqdn|success"
+    
+    - name: "set path of ssl key"
+      replace:
+        path: "/etc/nginx/nginx.conf"
+        replace: "/etc/nginx/ssl/star_censhare_io.key;"
+        regexp: "<your certificate key>;"
+      register: "set_path_of_key"
+      tags: "set_path_of_key"
+      when: "set_fqdn|success"
+      notify: "start nginx"

@@ -1,0 +1,48 @@
+---
+# tasks file for roles/oracle.db.install.postconfiguration
+- name: "Oracle DB postconfiguration"
+  block:
+    - name: "configure 'tnsnames.ora'"
+      lineinfile:
+        line: "CORPUS=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=corpus.censhare)))"
+        path: "{{ORAHOME}}/network/admin/tnsnames.ora"
+        regexp: "CORPUS=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=127.0.0.1)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=corpus.censhare)))"
+        backup: "yes"
+        create: "yes"
+        group: "oinstall"
+        owner: "oracle"
+      register: "configuretnsnames"
+      tags: "configuretnsnames"
+    - name: "copy template to server"
+      template:
+        src: "postconfig.sql"
+        dest: "/var/tmp/"
+        group: "dba"
+        owner: "oracle"
+      register: "cptemplate4postc"
+      tags: "cptemplate4postc"
+      when: "configuretnsnames|success"
+    - name: "exec the postconfig sql file"
+      shell: ". ~/.profile && echo '@/var/tmp/postconfig.sql' | {{ORAHOME}}/bin/sqlplus / as sysdba"
+      register: "execpostconfigfile"
+      tags: "execpostconfigfile"
+
+    - name: "TMP!! set an link to create 'CORPUS.dbf'"
+      file:
+        src: "/u01/app/oracle/oradata"
+        dest: "/u01/app/oracle/product/11.2.0.4/db_1/oradata"
+        state: "link"
+        force: "yes"
+      tags: "createtmplinkoradata"
+
+    - name: "helpful links #3416103"
+      file:
+        dest: "/export/home/oracle/{{item}}"
+        src: "/u01/app/oracle/{{item}}"
+        state: "link"
+      with_items:
+        - "admin"
+        - "oradata"
+      when: "execpostconfigfile|success"
+      register: "oracle_links"
+      tags: "oracle_links"

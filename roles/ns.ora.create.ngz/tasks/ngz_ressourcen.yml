@@ -1,0 +1,63 @@
+---
+- name: "ressource check and adjust"
+  block:
+    - name: "backup ngz config" #this will backup the current configuration and solaris will delete they after 30 days automatically 
+      shell: "zonecfg -z {{ngzp}} info > /var/tmp/{{ngzp}}.{{ansible_date_time.epoch}}"
+      with_dict: "{{ngz}}"
+      register: "backup_ngz_config"
+    
+    - name: "check server network for ngz"
+      shell: "zonecfg -z {{ngzp}} 'select anet 0; set vlan-id=0; set vlan-id={{item.value.srv_vlan}}; set lower-link=aggr0; set defrouter=\"{{item.value.network_srv|ipaddr('1')|ipaddr('address')}}\"; set allowed-address=\"{{item.value.network_srv|ipaddr('2')}}\"; end; exit'"
+      with_dict: "{{ngz}}"
+      when: "(backup_ngz_config|success)"
+      register: "create_srv_net"
+        
+    - name: "check storage network for ngz"
+      shell: "zonecfg -z {{ngzp}} 'select anet 1; set vlan-id=0; set vlan-id={{item.value.sto_vlan}}; set lower-link=aggr0; set allowed-address=\"{{item.value.network_sto|ipaddr('2')}}\"; end; exit'"
+      with_dict: "{{ngz}}"
+      when: "(backup_ngz_config|success)"
+      register: "create_sto_net"
+      
+    - name: "check memory settings for ngz - bootfix"
+      command: "zonecfg -z {{ngzp}} 'select capped-memory; set physical={{item.value.sys_mem_prod}}G; set swap={{item.value.sys_mem_prod}}G; end'"
+      with_dict: "{{ngz}}"
+      when: "(backup_ngz_config|success)"
+      register: "set_boot_mem_ngz"
+        
+    - name: "check memory settings for ngz - live"
+      shell: "rcapadm -z {{ngzp}} -m {{item.value.sys_mem_prod}}G; prctl -n zone.max-swap -rv {{ item.value.sys_mem_prod }}G -i zone {{ngzp}}"
+      with_dict: "{{ngz}}"
+      when: "(set_boot_mem_ngz|success)"
+      register: "set_live_mem_ngz"
+  
+    - name: "check CPU settings for ngz"
+      command: "zonecfg -z {{ngzp}} 'set cpu-shares={{item.value.sys_cpu_prod}};'"
+      with_dict: "{{ngz}}"
+      when: "(backup_ngz_config|success)"
+      register: "set_boot_cpu_ngz"
+        
+    - name: "check CPU settings for ngz"
+      command: "prctl -n zone.cpu-shares -rv {{item.value.sys_cpu_prod}} -i zone {{ngzp}}"
+      with_dict: "{{ngz}}"
+      when: "(backup_ngz_config|success)"
+      register: "set_live_cpu_ngz"
+# transfare the ngz config to remote server
+   
+              
+#      - name: "backup ngz config"
+#        shell: "zonecfg -z {{ngzp}} info > /var/tmp/{{ngzp}}.new"
+#        with_dict: "{{ngz}}"
+#        register: "backup_ngz_config"
+#      
+#      - name: "check for config change"
+#        shell: "diff /var/tmp/{{ngzp}}.new /var/tmp/{{ngzp}}.curr"
+#        with_dict: "{{ngz}}"
+#        register: "diff_ngz_config"
+#        ignore_errors: "yes"
+#        when: "backup_ngz_config|success"
+#      
+#      - name: "ngz need reboot? yes/no"
+#        debug:
+#          msg: "ressources of ngz has changed, to apply this changes reboot the ngz - execute > zoneadm -z ngzpprod reboot < - you need a downtime"
+#        when: "item.rc != '0'"
+#        with_items: "{{diff_ngz_config.results}}"

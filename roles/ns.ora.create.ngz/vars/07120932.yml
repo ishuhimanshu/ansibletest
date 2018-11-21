@@ -1,0 +1,32 @@
+# first and second instance, assume that is prod and test system
+---
+ngzp:                 "ns-ora-0{{srv_vlan}}0{{sto_vlan}}-{{item.value.instance}}"
+custname:             "gaterese"
+network_srv:          "10.130.1.65/27"
+network_sto:          "10.131.1.65/27"
+srv_vlan:             "712"
+sto_vlan:             "932"
+SaaS_ID:              "07120932"
+tpm_project_id:       "471"
+Install_Ticket:       "3420646"
+CustomerName:         "Gate Retail"
+ngz:
+  gaterese-01-prod:
+    name:             "gaterese"
+    instance_type:    "prod"
+    instance:         "01"
+    ip_srv:           "10.130.1.66/27"
+    ip_sto:           "10.131.1.66/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+  gaterese-02-test:
+    name:             "gaterese"
+    instance_type:    "test"
+    instance:         "02"
+    ip_srv:           "10.130.1.67/27"
+    ip_sto:           "10.131.1.67/27"
+    sys_mem:          "5"
+    sys_cpu:          "100"
+    censhare_version: "stable/latest"
+# first and second instance, assume that is prod and test system

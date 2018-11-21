@@ -1,0 +1,105 @@
+# it works
+---
+# tasks file for roles/ns-create-cust-kz-prod
+- name: check if kz already exists
+  command: zoneadm -z {{test}}prod list
+  with_dict: "{{kz}}"
+  register: kzlist
+  ignore_errors: true
+  when: ansible_system == 'SunOS'
+
+- name: copy KZ template to GZ
+  template: 
+    src=kz-template.xml 
+    dest=/etc/zones/kz-template.xml 
+    backup=no 
+    group=root 
+    owner=root 
+    mode=0666
+  register: tempcopy
+  when: kzlist|failed
+
+- name: copy KZ template to GZ
+  template:
+    src=sc_profile.xml
+    dest=/var/tmp/sc_profile.xml
+    backup=no
+    group=root
+    owner=root
+    mode=0666
+  register: sccopy
+  when: tempcopy|success
+
+- name: create Oracle Solaris KZ 
+  command: "zonecfg -z {{test}}prod 'create -t kz-template; exit'"
+  with_dict: "{{kz}}"
+  when: sccopy|success
+  register: create_kz
+
+- name: add server network for KZ
+  shell: zonecfg -z {{test}}prod 'add anet; set vlan-id={{item.value.srv_vlan}}; set lower-link=aggr0; set defrouter="{{ item.value.network_srv | ipaddr('1') | ipaddr('address') }}"; set allowed-address="{{ item.value.network_srv | ipaddr('2') }}"; set id=0; end; exit'
+  with_dict: "{{kz}}"
+  when: create_kz|success
+  register: create_srv_net
+
+- name: add storage network for KZ
+  shell: zonecfg -z {{test}}prod 'add anet; set vlan-id={{item.value.sto_vlan}}; set lower-link=aggr0; set defrouter="{{ item.value.network_sto | ipaddr('1') | ipaddr('address') }}"; set allowed-address="{{ item.value.network_sto | ipaddr('2') }}"; set id=1; end; exit'
+  with_dict: "{{kz}}"
+  when: create_srv_net|success
+  register: create_sto_net
+
+- name: set boot device for KZ
+  command: "zonecfg -z {{test}}prod 'select device id=0; set storage=nfs://0:0@10.131.0.5/vol_censhare_saas_data_nfs_kz_0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}_prod/ns-0{{item.value.srv_vlan}}0{{item.value.sto_vlan}}-{{item.key}}-ora-prod_rpool; set create-size={{item.value.rootzpool_prod}}g; set bootpri=0; end; exit'"
+  with_dict: "{{kz}}"
+  when: create_sto_net|success
+  register: create_sto_dev
+
+- name: set memory settings for KZ
+  command: "zonecfg -z {{test}}prod 'select capped-memory; set physical={{item.value.sys_mem_prod}}G; end'"
+  with_dict: "{{kz}}"
+  when: create_sto_dev|success
+  register: set_mem_kz
+
+- name: set CPU settings for KZ
+  command: "zonecfg -z {{test}}prod 'select virtual-cpu; set ncpus=5; end'"
+  with_dict: "{{kz}}"
+  when: set_mem_kz|success
+  register: set_cpu_kz
+
+- name: install Oracle Solaris KZ for {{item.key}}
+  command: zoneadm -z {{test}}prod install -x storage-create-missing -c /var/tmp/sc_profile.xml
+  with_dict: "{{kz}}"
+  when: set_cpu_kz|success
+  register: install_kz
+
+- name: boot Oracle Solaris KZ
+  command: zoneadm -z {{test}}prod boot
+  with_dict: "{{kz}}"
+  when: install_kz|success
+  notify: KZmig
+  register: boot_kz
+  ignore_errors: yes
+
+- pause:
+    seconds: 180
+    promt: make 3min pause to get the KZ changs to boot up (first boot time the KZ will crash - looks like normal bahavier)
+  when: kzlist|success
+      
+- name: generate an ssh key
+  command: "zlogin {{test}}prod \"test ! -f /root/.ssh/id_rsa && { ssh-keygen -b 4096 -t rsa -N '' -f /root/.ssh/id_rsa &>/dev/null; cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys; cat /root/.ssh/id_rsa.pub; }\""
+  with_dict: "{{kz}}"
+  when: boot_kz|success
+  register: gensshkey
+
+- name: deploy pub ssh root keys to GZ
+  include: roles/ssh.key.deploy/tasks/main.yml
+  register: ssh.key.deploy
+  when: gensshkey|success
+  tags: gzsshkey
+ 
+- name: deploy pub ssh keys of root from GZ to KZ 
+  shell: "cat ~/.ssh/censhare_ansible_managed_ssh-keys | zlogin {{test}}prod 'cat - > /root/.ssh/authorized_keys2'"
+  with_dict: "{{kz}}"
+  #when: gzsshkey|success
+  register: kzsshkey
+  tags: kzsshkey

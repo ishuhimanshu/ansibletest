@@ -1,0 +1,7 @@
+---
+# handlers file for roles/solaris.smf.ora_censhare
+- name: "start oracle db"
+  service:
+    name: "censhare/ora_censhare:default"
+    state: "started"
+    enabled: "yes"

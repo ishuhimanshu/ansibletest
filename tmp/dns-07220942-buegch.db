@@ -1,0 +1,36 @@
+ns-gw-07220942		3600	A	10.130.2.129
+ns-ora-07220942-01	3600	A	10.130.2.130
+ns-ora-07220942-02	3600	A	10.130.2.131
+ns-cen-07220942-01	3600	A	10.130.2.132
+ns-cen-07220942-02	3600	A	10.130.2.133
+ns-rnd-07220942-01	3600	A	10.130.2.134
+ns-rnd-07220942-02	3600	A	10.130.2.135
+ns-svc-07220942-01	3600	A	10.130.2.136
+ns-svc-07220942-02	3600	A	10.130.2.137
+ns-bc-07220942		3600	A	10.130.2.159
+ns-ora-07220942-01-sto	3600	A	10.131.2.130
+ns-ora-07220942-02-sto	3600	A	10.131.2.131
+ns-cen-07220942-01-sto	3600	A	10.131.2.132
+ns-cen-07220942-02-sto	3600	A	10.131.2.133
+ns-sto-07220942-assets	3600	A	10.131.2.134
+ns-sto-07220942-rman	3600	A	10.131.2.135
+ns-css-07220942-01	3600	A	213.95.85.25
+ns-css-07220942-02	3600	A	213.95.85.26
+ns-web-07220942-01	3600	A	213.95.85.163
+ns-web-07220942-02	3600	A	213.95.85.164
+buegch-prodns-css01		CNAME	ns-cen-07220942-01
+buegch-testns-css01		CNAME	ns-cen-07220942-02
+buegch-prodns-db			CNAME	ns-ora-07220942-01
+buegch-testns-db			CNAME	ns-ora-07220942-02
+buegch-prodns-rnd01		CNAME	ns-rnd-07220942-01
+buegch-prodns-rnd02		CNAME	ns-rnd-07220942-02
+buegch-testns-rnd01		CNAME	ns-ora-07220942-01
+buegch-testns-rnd02		CNAME	ns-ora-07220942-02
+buegch-prodns-img01		CNAME	ns-svc-07220942-01
+buegch-prodns-img02		CNAME	ns-svc-07220942-02
+buegch-testns-img01		CNAME	ns-ora-07220942-01
+buegch-testns-img02		CNAME	ns-svc-07220942-02
+buegch-css			CNAME	ns-css-07220942-01
+buegch				CNAME	ns-web-07220942-01
+buegch-test-css			CNAME	ns-css-07220942-02
+buegch-test			CNAME	ns-web-07220942-02
